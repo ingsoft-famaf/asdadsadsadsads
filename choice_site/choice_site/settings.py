@@ -39,6 +39,7 @@ AUTHENTICATION_BACKENDS = (
 # Application definition
 
 INSTALLED_APPS = [
+    'choicemaster',
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
