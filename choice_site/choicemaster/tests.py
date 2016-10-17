@@ -17,14 +17,19 @@ class UserTestCase(TestCase):
 
     def test_login_view(self):
         self.c.logout()
-        response = self.c.get('/accounts/login')
+        response = self.c.get('/accounts/login/')
         self.assertEqual(response.status_code, 200)
-        logged_in = self.c.login(username='testuser', password='12345')
+        self.logged_in = self.c.login(username='testuser', password='12345')
 
     def test_index_view(self):
-        response = self.c.get('/home/')
+        response = self.c.get('/')
         self.assertEqual(response.status_code, 200)
 
     def test_logout_view(self):
-        response = self.c.get('/accounts/logout')
+        response = self.c.get('/accounts/logout/')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_signup_view(self):
+        self.c.logout()
+        response = self.c.get('/accounts/signup/')
         self.assertEqual(response.status_code, 200)
