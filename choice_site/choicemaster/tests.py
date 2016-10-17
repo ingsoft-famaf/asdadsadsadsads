@@ -3,36 +3,28 @@ from django.contrib.auth.models import User
 
 # Create your tests here.
 
+
 class UserTestCase(TestCase):
-	def setUp(self):
-		user = User.objects.create(username='testuser')
-		user.set_password('12345')
-		user.save()
+    def setUp(self):
+        self.user = User.objects.create(username='testuser')
+        self.user.set_password('12345')
+        self.user.save()
+        self.c = Client()
+        self.logged_in = self.c.login(username='testuser', password='12345')
 
-		
-	def test_user_can_login(self):
-		c = Client()
-		logged_in = c.login(username='testuser', password='12345')
-		self.assertTrue(logged_in)
-		c.logout()
+    def test_user_can_login(self):
+        self.assertTrue(self.logged_in)
 
+    def test_login_view(self):
+        self.c.logout()
+        response = self.c.get('/accounts/login')
+        self.assertEqual(response.status_code, 200)
+        logged_in = self.c.login(username='testuser', password='12345')
 
-class Client():
-	
-	def test_login_view(self):
-		c = Client()
-		response = c.get('/accounts/login')
-		self.assertEqual(response.status_code, 200)
+    def test_index_view(self):
+        response = self.c.get('/home/')
+        self.assertEqual(response.status_code, 200)
 
-
-	def test_index_view(self):
-		c = Client()
-		logged_in = c.login(username='smarro', password='12345')
-		response = c.get('/home/')
-		self.assertEqual(response.status_code, 200)
-
-	def test_logout_view(self):
-		c = Client()
-		logged_in = c.login(username='smarro', password='12345')
-		response = c.get('/accounts/logout')
-		self.assertEqual(response.status_code, 200)		
+    def test_logout_view(self):
+        response = self.c.get('/accounts/logout')
+        self.assertEqual(response.status_code, 200)
