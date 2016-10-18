@@ -55,3 +55,8 @@ class UserTestCase(TestCase):
         self.c.logout()
         response = self.c.get('/accounts/signup/')
         self.assertEqual(response.status_code, 200)
+   
+    def test_user_wrong_credentials(self):
+        self.c.logout()
+        self.logged_in = self.c.login(username='testuser', password='1234')
+        self.assertFalse(self.logged_in)
