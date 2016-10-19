@@ -89,6 +89,7 @@ SITE_ID = 1
 WSGI_APPLICATION = 'choice_site.wsgi.application'
 
 ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_REQUIRED = True
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
