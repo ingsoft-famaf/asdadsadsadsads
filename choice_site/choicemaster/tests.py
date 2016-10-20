@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 
 
 class UserTestCase(TestCase):
-
     def setUp(self):
         """
         Create a new user and verify that the login function works properly
@@ -43,7 +42,7 @@ class UserTestCase(TestCase):
     def test_logout_view(self):
         """
         Test that our website returns an HTTP 200 status after a successful
-        logout request 
+        logout request
         """
         response = self.c.get('/accounts/logout/')
         self.assertEqual(response.status_code, 200)
@@ -59,36 +58,53 @@ class UserTestCase(TestCase):
 
     def test_password_wrong(self):
         c = Client()
-        response = c.post('/accounts/signup/', {'email': 'prueba@gmail.com', 'password1': '1234567a',
-                                               'password2': '12345678b', 'username': 'prueba'})
+        response = c.post('/accounts/signup/', {'email': 'prueba@gmail.com',
+                                                'password1': '1234567a',
+                                                'password2': '12345678b',
+                                                'username': 'prueba'})
 
         self.assertEquals(response.status_code, 200)
-        self.assertTrue("You must type the same password each time." in response.content)
+        self.assertTrue("You must type the same password each time."
+                        in response.content)
 
     def test_short_password(self):
         c = Client()
-        response = c.post('/accounts/signup/', {'email': 'prueba@gmail.com', 'password1': '123456',
-                                                'password2': '123456', 'username': 'prueba'})
+        response = c.post('/accounts/signup/', {'email': 'prueba@gmail.com',
+                                                'password1': '123456',
+                                                'password2': '123456',
+                                                'username': 'prueba'})
         self.assertEquals(response.status_code, 200)
-        self.assertTrue("This password is too short. It must contain at least 8 characters." in response.content)
+        self.assertTrue("This password is too short. It must contain "
+                        "at least 8 characters." in response.content)
 
     def test_password_without_character(self):
         c = Client()
-        response = c.post('/accounts/signup/', {'email': 'prueba@gmail.com', 'password1': '123456789',
-                                                'password2': '123456789', 'username': 'prueba'})
+        response = c.post('/accounts/signup/', {'email': 'prueba@gmail.com',
+                                                'password1': '123456789',
+                                                'password2': '123456789',
+                                                'username': 'prueba'})
         self.assertEquals(response.status_code, 200)
-        self.assertTrue("This password is entirely numeric." in response.content)
+        self.assertTrue("This password is entirely numeric."
+                        in response.content)
 
     def test_Username_already_registered(self):
         self.c.logout()
-        response = self.c.post('/accounts/signup/', {'email': 'prueba@gmail.com', 'password1': '123456789a',
-                                                'password2': '123456789a', 'username': 'testuser'})
+        response = self.c.post('/accounts/signup/', {'email': 'prueba'
+                                                              '@gmail.com',
+                                                     'password1': '123456789a',
+                                                     'password2': '123456789a',
+                                                     'username': 'testuser'})
         self.assertEquals(response.status_code, 200)
-        self.assertTrue("A user with that username already exists." in response.content)
+        self.assertTrue("A user with that username already exists."
+                        in response.content)
 
     def test_email_already_registered(self):
         self.c.logout()
-        response = self.c.post('/accounts/signup/', {'email': 'testmail@test.com', 'password1': '123456789a',
-                                                'password2': '123456789a', 'username': 'prueba'})
+        response = self.c.post('/accounts/signup/', {'email': 'testmail@'
+                                                              'test.com',
+                                                     'password1': '123456789a',
+                                                     'password2': '123456789a',
+                                                     'username': 'prueba'})
         self.assertEquals(response.status_code, 200)
-        self.assertTrue("A user is already registered with this e-mail address." in response.content)
+        self.assertTrue("A user is already registered with this e-mail "
+                        "address." in response.content)
