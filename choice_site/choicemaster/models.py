@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Subject(models.Model):
     subject_title = models.CharField(max_length=40)
     subject_description = models.CharField(max_length=200)
-
+    subject_department = models.CharField(max_length= 50)
 
 class Topic(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
@@ -21,6 +22,7 @@ class Question(models.Model):
 
 
 class Exam(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     exam_quantity_questions = models.IntegerField(default=0)
     exam_result = models.IntegerField(default=0)
     exam_timer = models.IntegerField(default=60)
@@ -45,4 +47,3 @@ class Report(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     report_state = models.CharField(max_length=2, choices=STATE_CHOICES, default=NOT_EVALUATED)
     report_description = models.CharField(max_length=200)
-
