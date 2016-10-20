@@ -1,3 +1,11 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import *
+
+
+admin.site.register(Subject)
+admin.site.register(Topic)
+admin.site.register(Question)
+admin.site.register(Exam)
+admin.site.register(Answer)
+admin.site.register(Report)
