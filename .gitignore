@@ -31,8 +31,6 @@ var/
 *.manifest
 *.spec
 
-#Database
-*.sqlite3
 
 # Installer logs
 pip-log.txt
