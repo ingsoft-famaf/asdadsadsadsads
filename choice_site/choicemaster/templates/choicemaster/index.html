@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choice Master</title>
+</head>
+<body>
+    <h1>Choice Master</h1>
+    {% if request.user.get_username %}
+        Hello {{ request.user.get_username }}!
+        <br>
+        Welcome.
+        <br>
+        <br>
+        <a href="/accounts/logout">Logout.</a>
+    {% else %}
+        Hello friend!
+        <br>
+        Welcome. You should think about logging in.
+    {% endif %}
+</body>
+</html>
