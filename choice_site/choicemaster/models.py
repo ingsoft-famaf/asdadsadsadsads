@@ -20,6 +20,12 @@ class Question(models.Model):
     right_answer_id = models.IntegerField()
 
 
+class Exam(models.Model):
+    exam_quantity_questions = models.IntegerField(default=0)
+    exam_result = models.IntegerField(default=0)
+    exam_timer = models.IntegerField(default=60)
+
+
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     exam = models.ManyToManyField(Exam)
@@ -40,8 +46,3 @@ class Report(models.Model):
     report_state = models.CharField(max_length=2, choices=STATE_CHOICES, default=NOT_EVALUATED)
     report_description = models.CharField(max_length=200)
 
-
-class Exam(models.Model):
-    exam_quantity_questions = models.IntegerField(default=0)
-    exam_result = models.IntegerField(default=0)
-    exam_timer = models.IntegerField(default=60)
