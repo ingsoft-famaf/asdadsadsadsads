@@ -19,7 +19,6 @@ class Topic(models.Model):
 class Question(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)
-    right_answer_id = models.IntegerField()
 
 
 class Exam(models.Model):
@@ -32,6 +31,15 @@ class Exam(models.Model):
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=200)
+    correct = models.BooleanField(default=False)
+
+
+class QuestionSnapshot(models.Model):
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    question_text = models.CharField(max_length=200)
+    chosen_answer = models.CharField(max_length=200)
+    correct_answer = models.CharField(max_length=200)
+    choice_correct = models.BooleanField(default=True)
 
 
 class Report(models.Model):
