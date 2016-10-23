@@ -14,12 +14,25 @@ class UserTestCase(TestCase):
         self.c = Client()
         self.logged_in = self.c.login(username='testuser', password='12345')
 
+        
+        self.user_staff = User.objects.create_superuser(username='teststaff', email='', password='123456789a')
+        self.user_staff.save()
+        self.cp = Client()
+
     def test_user_can_login(self):
         """
         Check that the user entity has its logged_in state equal to TRUE,
         since it just logged in
         """
         self.assertTrue(self.logged_in)
+
+    def test_user_staff_can_login(self):
+        """
+        Check that the user staff entity has its logged_in state equal to TRUE,
+        since it just logged in
+        """
+        logged_in_staff = self.cp.login(username='teststaff', password='123456789a')
+        self.assertTrue(logged_in_staff)
 
     def test_login_view(self):
         """i
@@ -108,3 +121,13 @@ class UserTestCase(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTrue("A user is already registered with this e-mail "
                         "address." in response.content)
+
+
+    def test_staff_has_special_homepage(self):
+        self.cp.logout()
+        logged_in_staff = self.cp.login(username='teststaff', password='123456789a')
+        response = self.cp.get('/')
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue("Add subject" in response.content)
+        self.assertTrue("Add topic" in response.content)
+        self.assertTrue("Add questions" in response.content)
