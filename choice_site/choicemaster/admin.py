@@ -9,3 +9,15 @@ admin.site.register(Question)
 admin.site.register(Exam)
 admin.site.register(Answer)
 admin.site.register(Report)
+
+
+
+''' Modelos InLine '''
+
+class AnswerInline(admin.TabularInline):
+    model = Answer
+
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = [
+        AnswerInline,
+    ]

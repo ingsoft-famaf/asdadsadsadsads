@@ -9,16 +9,25 @@ class Subject(models.Model):
     subject_description = models.CharField(max_length=200)
     subject_department = models.CharField(max_length=50)
 
+    def __unicode__(self):
+        return self.subject_title
+
 
 class Topic(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     topic_title = models.CharField(max_length=40)
     topic_description = models.CharField(max_length=200)
 
+    def __unicode__(self):
+        return self.topic_title
+
 
 class Question(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return self.question_text
 
 
 class Exam(models.Model):
@@ -32,6 +41,9 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=200)
     correct = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.question.question_text + ' - ' +self.answer_text
 
 
 class QuestionSnapshot(models.Model):
@@ -56,3 +68,6 @@ class Report(models.Model):
     report_state = models.CharField(max_length=2, choices=STATE_CHOICES,
                                     default=NOT_EVALUATED)
     report_description = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return self.question.question_text
