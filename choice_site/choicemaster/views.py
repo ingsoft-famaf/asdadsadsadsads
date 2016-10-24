@@ -32,6 +32,3 @@ def parseQuestionXML(xmlFile):
             questions_list.append(question)
             question = {}
     return questions_list
-
-if __name__ == "__main__":
-    parseBookXML("/choicemaster/questionSample.xml")
