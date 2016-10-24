@@ -9,7 +9,7 @@ def index(request):
     return render(request, 'choicemaster/index.html')
 
 
-def parseXML(xmlFile):
+def parseQuestionXML(xmlFile):
     """
     Parse the xml
     """
@@ -18,11 +18,20 @@ def parseXML(xmlFile):
     f.close()
  
     tree = etree.parse(StringIO(xml))
-    # e.g. tree = etree.parse("/choicemaster/questionSample.xml")
     context = etree.iterparse(StringIO(xml))
+    question = {}
+    questions_list = []
     for action, elem in context:
         if not elem.text:
             text = "None"
         else:
             text = elem.text
         print elem.tag + " => " + text
+        question[elem.tag] = text
+        if elem.tag == "book":
+            questions_list.append(question)
+            question = {}
+    return questions_list
+
+if __name__ == "__main__":
+    parseBookXML("/choicemaster/questionSample.xml")
