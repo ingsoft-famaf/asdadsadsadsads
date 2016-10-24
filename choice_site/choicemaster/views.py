@@ -28,7 +28,7 @@ def parseQuestionXML(xmlFile):
             text = elem.text
         print elem.tag + " => " + text
         question[elem.tag] = text
-        if elem.tag == "book":
+        if elem.tag == "question":
             questions_list.append(question)
             question = {}
     return questions_list
