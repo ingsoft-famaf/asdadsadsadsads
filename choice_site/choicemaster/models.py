@@ -55,7 +55,7 @@ class Answer(models.Model):
     Method to show the correct object name in the admin interface.
     """
     def __unicode__(self):
-        return self.question.question_text + ' - ' +self.answer_text
+        return self.question.question_text + ' - ' + self.answer_text
 
 
 class QuestionSnapshot(models.Model):
@@ -81,7 +81,7 @@ class Report(models.Model):
                                     default=NOT_EVALUATED)
     report_description = models.CharField(max_length=200)
 
-    """ 
+    """
     Method to show the correct object name in the admin interface.
     """
     def __unicode__(self):
