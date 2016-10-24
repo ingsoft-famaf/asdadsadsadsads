@@ -13,7 +13,6 @@ class UserTestCase(TestCase):
         self.user.save()
         self.c = Client()
         self.logged_in = self.c.login(username='testuser', password='12345')
-
         
         self.user_staff = User.objects.create_superuser(username='teststaff', email='', password='123456789a')
         self.user_staff.save()
