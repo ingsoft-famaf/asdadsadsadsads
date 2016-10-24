@@ -121,10 +121,9 @@ class UserTestCase(TestCase):
         self.assertTrue("A user is already registered with this e-mail "
                         "address." in response.content)
 
-
     def test_staff_has_special_homepage(self):
         self.cp.logout()
-        logged_in_staff = self.cp.login(username='teststaff', password='123456789a')
+        self.cp.login(username='teststaff', password='123456789a')
         response = self.cp.get('/')
         self.assertEquals(response.status_code, 200)
         self.assertTrue("Add subject" in response.content)
