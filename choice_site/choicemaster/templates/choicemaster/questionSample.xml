@@ -1,27 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<users>
-    <user data-id="101">
-        <nom>Zorro</nom>
-        <metier>Danseur</metier>
-    </user>
-    <user data-id="102">
-        <nom>Hulk</nom>
-        <metier>Footballeur</metier>
-    </user>
-    <user data-id="103">
-        <nom>Zidane</nom>
-        <metier>Star</metier>
-    </user>
-    <user data-id="104">
-        <nom>Beans</nom>
-        <metier>Epicier</metier>
-    </user>
-    <user data-id="105">
-        <nom>Batman</nom>
-        <metier>Veterinaire</metier>
-    </user>
-    <user data-id="106">
-        <nom>Spiderman</nom>
-        <metier>Veterinaire</metier>
-    </user>
-</users>
+<?xml version="1.0"?>
+<quiz>
+<question>
+<questionText>Which of the following activities is part in the cleanroom process?</questionText>
+<incorrect>increment planning</incorrect>
+<incorrect>requirements gathering</incorrect>
+<incorrect>statistical use testing</incorrect>
+<correct>all of the above</correct>
+</question>
+<question>
+<questionText>The cleanroom strategy is based on the ________ software process model.</questionText>
+<incorrect>evolutionary</incorrect>
+<incorrect>incremental</incorrect>
+<correct>revolutionary</correct>
+<incorrect>spiral</incorrect>
+</question>
+<question>
+<questionText>The cleanroom strategy relies on</questionText>
+<incorrect>exhaustive testing</incorrect>
+<correct>extensive unit testing of all modules</correct>
+<incorrect>tests that exercise the software as it is really used</incorrect>
+<incorrect>white box testing strategies</incorrect>
+</question>
+</quiz>
