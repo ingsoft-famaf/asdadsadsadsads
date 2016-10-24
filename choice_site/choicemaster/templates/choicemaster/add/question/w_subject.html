@@ -6,11 +6,14 @@
 </head>
 <body>
 <h1>Add questions</h1>
-First, choose a subject:
+
+<h2>Subject: {{ subject.subject_title }}</h2>
+
+Now choose a topic:
 <table>
-    {% for item in subjects %}
+    {% for item in topics %}
         <tr>
-            <td><a href="{% url 'add_question_w_subject' item.id %}">{{ item.subject_title }}</a></td>
+            <td><a href="{% url 'add_question_w_subject_topic' subject.id item.id %}">{{ item.topic_title }}</a></td>
         </tr>
     {% endfor %}
 </table>

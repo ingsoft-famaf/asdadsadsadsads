@@ -19,13 +19,35 @@ def add_question(request):
     return render(request, 'choicemaster/add/question.html', context)
 
 
-def parseQuestionXML(xmlfile, topic_id):
+@login_required
+@staff_member_required
+def add_question_w_subject(request, subject_id):
+    subject = models.Subject.objects.filter(id=subject_id)[0]
+    topics = models.Topic.objects.filter(subject_id=subject_id)
+    context = dict()
+    context['subject'] = subject
+    context['topics'] = topics
+    return render(request, 'choicemaster/add/question/w_subject.html', context)
+
+
+@login_required
+@staff_member_required
+def add_question_w_subject_topic(request, subject_id, topic_id):
+    subject = models.Subject.objects.filter(id=subject_id)[0]
+    topic = models.Topic.objects.filter(id=topic_id)[0]
+    context = dict()
+    context['subject'] = subject
+    context['topic'] = topic
+    return render(request, 'choicemaster/add/question/w_subject_topic.html', context)
+
+
+def parsequestion(xmlfile, topic_id):
     """
     Parse the xml uploaded by the admin to create and populate questions with their answers
     """
-    file = open(xmlfile)
-    xml = file.read()
-    file.close()
+    fl = open(xmlfile)
+    xml = fl.read()
+    fl.close()
 
     parser = etree.XMLParser()
     for data in StringIO(xml):
