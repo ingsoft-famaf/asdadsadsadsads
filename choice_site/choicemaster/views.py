@@ -44,10 +44,10 @@ def add_question_w_subject_topic(request, subject_id, topic_id):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             result = parse_xml_question(request.FILES['docfile'], topic_id)
-            if result == True:
+            if result['status'] == True:
                 return redirect(index)
             else:
-                return HttpResponse('An error occurred while loading the file')
+                return HttpResponse(result['message'])
     else:
         form = UploadFileForm()
         context['form'] = form
