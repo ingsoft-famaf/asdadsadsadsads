@@ -10,11 +10,15 @@
 <h2>Subject: {{ subject.subject_title }}</h2>
 <h2>Topic: {{ topic.topic_title }}</h2>
 
-<form action="{% url 'upload_xml' subject.id topic.id %}" enctype="multipart/form-data" method="post">
+<form action="{% url 'add_question_w_subject_topic' subject.id topic.id %}" enctype="multipart/form-data" method="post">
     {% csrf_token %}
-    <input type="file" name="xmlfile">
-
-    <input type="submit" value="Upload XML with questions.">
+    <p>{{ form.non_field_errors }}</p>
+    <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+    <p>
+        {{ form.docfile.errors }}
+        {{ form.docfile }}
+    </p>
+    <p><input type="submit" value="Upload" /></p>
 </form>
 
 </body>

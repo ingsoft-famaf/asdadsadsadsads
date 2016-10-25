@@ -1,13 +1,16 @@
+from lxml import etree
+from io import BytesIO, StringIO
+from choicemaster import models
+import os
+
 def question_has_similar(question_text, topic_id):
     """
     Checks if a question is already created in the db. Returns true in that case.
     """
-    questions = models.Question.objects.filter(question_text = question_text)
+    questions = models.Question.objects.filter(question_text = question_text, topic = topic_id)
     
-    if questions.count() > 0:
-        for q in questions:
-            if topic_id == q.topic_id:
-                return True
+    if questions.count():
+        return True
     return False
 
 
@@ -15,15 +18,22 @@ def parse_xml_question(xmlfile, topic_id):
     """
     Parse the xml uploaded by the admin to create and populate questions with their answers
     """
-    fl = open(xmlfile, 'r')
-    xml = fl.read()
-    fl.close()
+    script_dir = os.path.dirname(__file__)
 
-    fl = open('/quiz.xsd', 'r')
-    xsd = fl.read()
-    fl.close()
+    fl_xsd = open(os.path.join(script_dir, 'quiz.xsd'), 'r')
+    xsd = fl_xsd.read()
+    fl_xsd.close()
 
-    schema_root = etree.XML("'''" + xsd + "'''")
+    with open(os.path.join(script_dir, 'media/file_tmp.xml'), 'w') as destination:
+        for chunk in xmlfile.chunks():
+            destination.write(chunk)
+
+    fl_xml = open(os.path.join(script_dir, 'media/file_tmp.xml'), 'r')
+    xml = fl_xml.read()
+    fl_xml.close()
+
+
+    schema_root = etree.XML(xsd)
     schema = etree.XMLSchema(schema_root)
     etree.XMLParser(schema=schema)
 
@@ -37,10 +47,10 @@ def parse_xml_question(xmlfile, topic_id):
     for item in questions:
         """
         Check if every question already exists in the DB before adding them.
-        """ 
+        """
         if question_has_similar(item.text, topic_id):
             return False
-    
+
     """
     After checking all the questions are new, we add them to the DB.
     """
