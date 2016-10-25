@@ -3,20 +3,47 @@ from io import BytesIO, StringIO
 from choicemaster import models
 import os
 
-def question_has_similar(question_text, topic_id):
+
+def questions_already_exist(questions_xml, topic_id):
     """
-    Checks if a question is already created in the db. Returns true in that case.
+    From a list of questions, checks if any of them is already in the database.
+    Returns a dictionary with a key 'status' that is True if exists a similar
+    question, a 'question_id' from the question that would be equal and
+    a 'topic_id' from the topic the questions are in.
     """
-    questions = models.Question.objects.filter(question_text = question_text, topic = topic_id)
-    
-    if questions.count():
-        return True
-    return False
+    result = dict()
+    result['status'] = True
+    result['topic_id'] = topic_id
+
+    questions_db_texts = []
+    questions_xml_texts = []
+
+    questions_db = models.Question.objects.filter(topic_id=topic_id)
+    # Add all the questions that are already on the database
+    for q in questions_db:
+        questions_db_texts.append(q.question_text)
+
+    # Add all questions that we want to add, one by one, checking an equal
+    # question.
+    for q in questions_xml:
+        if q.text in questions_db_texts:
+            result['in_db'] = True
+            result['question_id'] = models.Question.objects.filter(question_text=q.text)[0]
+            return result
+        elif q.text in questions_xml_texts:
+            result['in_db'] = False
+            return result
+        else:
+            questions_xml_texts.append(q.text)
+
+    result['status'] = False
+    return result
 
 
 def parse_xml_question(xmlfile, topic_id):
     """
-    Parse the xml uploaded by the admin to create and populate questions with their answers
+    Parse the xml uploaded by the admin user to create and populate questions
+    with their respective answers.
     """
     result = dict()
     result['status'] = True
@@ -46,18 +73,21 @@ def parse_xml_question(xmlfile, topic_id):
 
     questions = root.findall('question')
 
-    for item in questions:
-        """
-        Check if every question already exists in the DB before adding them.
-        """
-        if question_has_similar(item.text, topic_id):
-            result['status'] = False
-            result['message'] = 'Similar question already exists'
-            return result
+    # Check if every question already exists in the DB before adding them.
+    qae = questions_already_exist(questions, topic_id)
+    if qae['status']:
+        result['status'] = False
+        if qae['in_db']:
+            result['message'] = 'Similar question already present in database.'
+            result['topic_id'] = qae['topic_id']
+            result['question_id'] = qae['question_id']
+        else:
+            result['message'] = 'Similar question already being added in xml' \
+                                'file'
 
-    """
-    After checking all the questions are new, we add them to the DB.
-    """
+        return result
+
+    # After checking all the questions are new, we add them to the DB.
     for item in questions:
         question = models.Question()
         question.question_text = item.text
@@ -68,7 +98,7 @@ def parse_xml_question(xmlfile, topic_id):
             answer = models.Answer()
             answer.answer_text = children.text
             if children.tag == 'corrrect':
-                answer.corrrect = True
+                answer.correct = True
             else:
                 answer.correct = False
             answer.question_id = question.id

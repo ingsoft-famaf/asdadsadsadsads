@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 <quiz>
-    <question>Which of the following activities is part in the cleanroom process?
+    <question>Which of the following activities is part in the dirty-cleanroom process?
+        <correct>all of the above</correct>
+        <incorrect>increment planning</incorrect>
+        <incorrect>requirements gathering</incorrect>
+        <incorrect>statistical use testing</incorrect>
+    </question>
+
+    <question>Which of the following activities is part in the dirty-cleanroom process?
         <correct>all of the above</correct>
         <incorrect>increment planning</incorrect>
         <incorrect>requirements gathering</incorrect>
