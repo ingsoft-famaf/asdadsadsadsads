@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <quiz>
     <question>
-        <questionText>
             Which of the following activities is part in the cleanroom process?
-        </questionText>
             <incorrect>
                 increment planning
             </incorrect>
@@ -19,9 +17,7 @@
     </question>
 
     <question>
-        <questionText>
             The cleanroom strategy is based on the ________ software process model.
-        </questionText>
             <incorrect>
                 evolutionary
             </incorrect>
@@ -37,9 +33,7 @@
     </question>
 
     <question>
-        <questionText>
             The cleanroom strategy relies on
-        </questionText>
             <incorrect>
                 exhaustive testing
             </incorrect>

@@ -10,5 +10,11 @@
 <h2>Subject: {{ subject.subject_title }}</h2>
 <h2>Topic: {{ topic.topic_title }}</h2>
 
-Upload XML with questions.
+<form action="{% url 'upload_xml' subject.id topic.id %}" enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    <input type="file" name="xmlfile">
+
+    <input type="submit" value="Upload XML with questions.">
+</form>
+
 </body>
