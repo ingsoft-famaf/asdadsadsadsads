@@ -55,11 +55,16 @@ def parse_xml_question(xmlfile, topic_id):
         xsd = fl_xsd.read()
         fl_xsd.close()
 
-    with open(os.path.join(script_dir, 'media/file_tmp.xml'), 'w') as destination:
+    media_dir = os.path.join(script_dir, 'media')
+
+    if not os.path.exists(media_dir):
+        os.makedirs(media_dir)
+
+    with open(os.path.join(media_dir, 'file_tmp.xml'), 'w') as destination:
         for chunk in xmlfile.chunks():
             destination.write(chunk)
 
-    with open(os.path.join(script_dir, 'media/file_tmp.xml'), 'r') as fl_xml:
+    with open(os.path.join(media_dir, 'file_tmp.xml'), 'r') as fl_xml:
         xml = fl_xml.read()
         fl_xml.close()
 
