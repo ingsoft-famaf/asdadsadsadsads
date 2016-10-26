@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<quiz>
+    <question>The cleanroom strategy relies on
+        <correct>extensive unit testing of all modules</correct>
+        <incorrect>exhaustive testing</incorrect>
+        <incorrect>tests that exercise the software as it is really used</incorrect>
+        <incorrect>white box testing strategies</incorrect>
+    </question>
+</quiz>
