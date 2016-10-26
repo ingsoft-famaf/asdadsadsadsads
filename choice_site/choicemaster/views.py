@@ -11,3 +11,6 @@ def index(request):
 Le paso al template la cantidad de reportes sin ser evaluados que hay en el
 momento.
 """
+def report(request):
+    reports = Report.objects.all()
+    return render(request, 'choicemaster/report.html', {"reports": reports})

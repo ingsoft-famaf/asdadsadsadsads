@@ -13,11 +13,11 @@
         <br>
         <br>
         {% if request.user.is_staff %}
-            <a href="/admin/choicemaster/subject/">Add subject.</a>
+            <a href="admin/choicemaster/subject/">Add subject.</a>
             <a href="admin/choicemaster/topic/">Add topic.</a>
-            <a href="/admin/choicemaster/question/add/">Add questions.</a>
+            <a href="admin/choicemaster/question/add/">Add questions.</a>
             {% if reported > 0 %}
-                <a href="http://localhost:8000/admin/choicemaster/report/">
+                <a href="report">
                     Reported questions({{reported}}).</a>
             {% else %}
                 No complaints.
