@@ -1,27 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Choice Master</title>
-</head>
-<body>
-    <h1>Choice Master</h1>
+{% extends 'choicemaster/base.html' %}
+
+{% block content %}
     {% if request.user.get_username %}
-        Hello {{ request.user.get_username }}!
-        <br>
-        Welcome.
-        <br>
-        <br>
-        {% if request.user.is_staff %}
-            <a href="/admin/choicemaster/subject/">Add subject<br></a>
-            <a href="admin/choicemaster/topic/">Add topic<br></a>
-            <a href="/add/question">Add questions<br></a>
-        {% endif %}
-        <a href="/accounts/logout">Logout</a>
+        <h2>Hello {{ request.user.get_username }}!</h2>
+        Welcome. What do you want to exercise today?
     {% else %}
-        Hello friend!
+        <h2>Hello friend!</h2>
         <br>
         Welcome. You should think about logging in.
     {% endif %}
-</body>
-</html>
+{% endblock %}

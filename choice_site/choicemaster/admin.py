@@ -12,6 +12,7 @@ admin.site.register(Report)
 
 ''' Modelos Inline '''
 
+
 class AnswerInline(admin.TabularInline):
     model = Answer
 

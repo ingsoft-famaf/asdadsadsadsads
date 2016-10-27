@@ -8,8 +8,12 @@ from .upload import parse_xml_question
 
 
 @login_required
-def index(request):
-    return render(request, 'choicemaster/index.html')
+def index(request, message=''):
+    if message:
+        context = {'message': message}
+    else:
+        context = {'message': 'Everything ok!'}
+    return render(request, 'choicemaster/index.html', context)
 
 
 @login_required
@@ -33,7 +37,7 @@ def add_question_w_subject(request, subject_id):
 
 @login_required
 @staff_member_required
-def add_question_w_subject_topic(request, subject_id, topic_id):
+def add_question_w_subject_topic(request, subject_id, topic_id, message=''):
     subject = models.Subject.objects.filter(id=subject_id)[0]
     topic = models.Topic.objects.filter(id=topic_id)[0]
     context = dict()
@@ -44,10 +48,16 @@ def add_question_w_subject_topic(request, subject_id, topic_id):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             result = parse_xml_question(request.FILES['docfile'], topic_id)
-            if result['status'] == True:
-                return redirect(index)
+            # TODO revisar como hacer el redirect.
+            '''
+            if result['status']:
+                return redirect('index', message=result['message'])
             else:
-                return HttpResponse(result['message'])
+                return redirect('add_question_w_subject_topic',
+                                subject_id=subject_id, topic_id=topic_id,
+                                message=result['message'])
+            '''
+            return redirect('index')
     else:
         form = UploadFileForm()
         context['form'] = form

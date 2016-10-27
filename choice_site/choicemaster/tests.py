@@ -14,7 +14,6 @@ class UserTestCase(TestCase):
         self.user.save()
         self.c = Client()
         self.logged_in = self.c.login(username='testuser', password='12345')
-
         
         self.user_staff = User.objects.create_superuser(username='teststaff', \
                             email='', password='123456789a')
@@ -124,7 +123,6 @@ class UserTestCase(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTrue("A user is already registered with this e-mail "
                         "address." in response.content)
-
 
     def test_staff_has_special_homepage(self):
         self.cp.logout()

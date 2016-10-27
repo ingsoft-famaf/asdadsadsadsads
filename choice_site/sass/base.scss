@@ -1,0 +1,49 @@
+// Our variables
+$base-font-family:  'Open Sans', sans-serif;
+$base-font-size:    16px;
+$light-font-weight: 300;
+$base-font-weight:  400;
+$heavy-font-weight: 700;
+$small-font-size:   $base-font-size * 0.875;
+$big-font-size:     $base-font-size * 1.250;
+$base-line-height:  1.5;
+
+$spacing-unit:      30px;
+
+$text-color:        #111;
+$background-color:  #fdfdfd;
+$brand-color: rgba(203, 152, 80, 0.6);
+$brand-color-light: lighten($brand-color, 40%);
+$brand-color-dark:  darken($brand-color, 15%);
+
+$grey-color: #c6c6c6;
+$grey-color-light:  lighten($grey-color, 40%);
+$grey-color-dark:   darken($grey-color, 25%);
+
+// Width of the content area
+$wrapper-width:     950px;
+
+/**
+ * Reset some basic elements
+ */
+body, h1, h2, h3, h4, h5, h6,
+p, blockquote, pre, hr,
+dl, dd, ol, ul, figure {
+  margin: 0;
+  padding: 0;
+}
+
+/**
+ * Basic styling
+ */
+body {
+  font: $base-font-weight #{$base-font-size}/#{$base-line-height} $base-font-family;
+  color: $text-color;
+  background-color: $background-color;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-feature-settings: "kern" 1;
+  -moz-font-feature-settings: "kern" 1;
+  -o-font-feature-settings: "kern" 1;
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
+}

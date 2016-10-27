@@ -1,0 +1,122 @@
+@import "base";
+
+/**
+ * Site header
+ */
+.header {
+  border-top: 1px solid $grey-color;
+  border-bottom: 3px solid darken($brand-color, 15%);
+  background-color: $brand-color;
+  width: 100%;
+
+  a {
+
+    text-decoration: none;
+    color: black;
+
+    &:visited {
+      color: black;
+    }
+
+    &:hover {
+      color: lighten(black, 20%)
+    }
+  }
+}
+
+.c-nav {
+  margin: 10px;
+  margin-left: 20px;
+
+  a {
+    font-family: $base-font-family;
+    font-weight: $light-font-weight;
+  }
+}
+
+/**
+ * Position
+ */
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.center {
+  margin: auto;
+}
+
+/**
+ * Container
+ */
+.container {
+  height: 100%;
+  border-right: 1px solid #f0f0f0;
+  border-left: 1px solid #f0f0f0;
+}
+
+.section {
+  a {
+    color: #3e3e3e;
+    font-weight: $light-font-weight;
+    text-decoration: none;
+  }
+}
+/**
+ * Button
+ */
+.button {
+  text-align: center;
+  background: linear-gradient(#707070 , #474747);
+  border-top: #7f7f7f;
+  border-top-width: 5px;
+  border-top-style: solid;
+  height: 4%;
+
+  &:hover {
+    background: linear-gradient(#4e4e4e, #3a3a3a);
+
+    a {
+      display: inline-block;
+      color: darken(white, 10%)
+    }
+  }
+  .staff {
+    background-color: #70406a;
+  }
+}
+
+/**
+ * Style
+ */
+.light {
+  font-weight: $light-font-weight;
+}
+
+.heavy {
+  font-weight: $heavy-font-weight;
+}
+
+.medium-text {
+  font-size: 20px;
+}
+
+.clean-a {
+  text-decoration: none;
+  color: white;
+
+  &:visited {
+    color: white;
+  }
+
+  &:hover {
+    color: darken(white, 15%)
+  }
+}
