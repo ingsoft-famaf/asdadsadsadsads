@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
+from models import *
 
 
 class UserTestCase(TestCase):
@@ -13,8 +13,9 @@ class UserTestCase(TestCase):
         self.user.save()
         self.c = Client()
         self.logged_in = self.c.login(username='testuser', password='12345')
-        
-        self.user_staff = User.objects.create_superuser(username='teststaff', email='', password='123456789a')
+        self.user_staff = User.objects.create_superuser(username='teststaff',
+                                                        email='',
+                                                        password='123456789a')
         self.user_staff.save()
         self.cp = Client()
 
@@ -30,7 +31,8 @@ class UserTestCase(TestCase):
         Check that the user staff entity has its logged_in state equal to TRUE,
         since it just logged in
         """
-        logged_in_staff = self.cp.login(username='teststaff', password='123456789a')
+        logged_in_staff = self.cp.login(username='teststaff',
+                                        password='123456789a')
         self.assertTrue(logged_in_staff)
 
     def test_login_view(self):
@@ -123,9 +125,45 @@ class UserTestCase(TestCase):
 
     def test_staff_has_special_homepage(self):
         self.cp.logout()
-        self.cp.login(username='teststaff', password='123456789a')
+        logged_in_staff = self.cp.login(username='teststaff',
+                                        password='123456789a')
         response = self.cp.get('/')
         self.assertEquals(response.status_code, 200)
         self.assertTrue("Add subject" in response.content)
         self.assertTrue("Add topic" in response.content)
         self.assertTrue("Add questions" in response.content)
+
+    def test_report(self):
+        """
+         Se fija si hay denuncias si no hay crea una y corrobora que aparesca
+         en la pagina de reporte.
+        """
+        self.cp.logout()
+        logged_in_staff = self.cp.login(username='teststaff',
+                                        password='123456789a')
+        response = self.cp.get('/')
+        self.assertEquals(response.status_code, 200)
+        if len(Report.objects.all()) == 0:
+            # Se crea una denuncia.
+            self.assertTrue("No complaints" in response.content)
+
+            subject = Subject.objects.create(subject_title="Materia",
+                                             subject_description="Comentario",
+                                             subject_department="Famaf")
+
+            topic = Topic.objects.create(subject=subject,
+                                         topic_title="un tema",
+                                         topic_description="Una descripcion")
+
+            question = Question.objects.create(topic=topic,
+                                               question_text="Una pregunta")
+
+            report = Report.objects.create(report_state="NE",
+                                           report_description="Esto es una"
+                                                              "prueba",
+                                           question=question)
+            response = self.cp.get('/')
+
+        self.assertTrue("Reported questions" in response.content)
+        response = self.cp.get('/report/')
+        self.assertEquals(response.status_code, 200)

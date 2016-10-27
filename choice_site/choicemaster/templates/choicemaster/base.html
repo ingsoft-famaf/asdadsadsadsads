@@ -24,8 +24,8 @@
                     {% if request.user.get_username %}
                         <td><a class="light medium-text" href="/accounts/logout">Sign out</a></td>
                     {% else %}
-                        <td><a class="center" href="/accounts/login">SIGN IN</a></td>
-                        <td><a class="center" href="/accounts/signup">SIGN UP</a></td>
+                        <td><a class="center" href="/accounts/login">Sign in</a></td>
+                        <td><a class="center" href="/accounts/signup">Sign up</a></td>
                     {% endif %}
                 </table>
             </div>
@@ -49,16 +49,23 @@
                         {% if request.user.is_staff %}
                             <div class="section">
                                 <h3>Admin</h3>
-                                <a href="/admin/choicemaster/subject/">Add subject.</a>
+                                <a class="section-a" href="/admin/choicemaster/subject/">Add subject.</a>
                                 <br>
-                                <a href="admin/choicemaster/topic/">Add topic.</a>
+                                <a class="section-a" href="admin/choicemaster/topic/">Add topic.</a>
                                 <br>
-                                <a href="/admin/choicemaster/question/add/">Add questions.</a>
+                                <a class="section-a" href="/admin/choicemaster/question/add/">Add questions.</a>
+
+                                <h4><a class="sauvage-a" href="{% url 'report' %}">Reports</a></h4>
+                                {% if reported > 0 %}
+                                    Reported questions({{reported}}).
+                                {% else %}
+                                    No complaints.
+                                {% endif %}
                             </div>
                         {% endif %}
                         {% if message %}
                             <div class="section">
-                                <h3>Message</h3>
+                                <h3>Messages</h3>
                                 <p>{{ message }}</p>
                             </div>
                         {% endif %}
