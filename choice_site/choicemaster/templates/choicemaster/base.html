@@ -1,0 +1,70 @@
+{% load staticfiles %}
+{% load static %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Choice Master</title>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,700" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{% static "css/main.css" %}">
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    </head>
+
+    <body>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+        <div class="header">
+            <h1><a href="/"><img src="{% static "choicemaster.png" %}" alt="Choice Master"></a></h1>
+
+            <div class="c-nav">
+                <table>
+                    {% if request.user.get_username %}
+                        <td><a class="light medium-text" href="/accounts/logout">Sign out</a></td>
+                    {% else %}
+                        <td><a class="center" href="/accounts/login">SIGN IN</a></td>
+                        <td><a class="center" href="/accounts/signup">SIGN UP</a></td>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+
+                <div class="col-md-3">
+                    {% if request.user.get_username %}
+                        {% if exams %}
+                        <div class="section">
+                            <h3>Last exams</h3>
+                            <p>Mumbo jumbo</p>
+                        </div>
+                        {% endif %}
+                        {% if request.user.is_staff %}
+                            <div class="section">
+                                <h3>Admin</h3>
+                                <a href="/admin/choicemaster/subject/">Add subject.</a>
+                                <br>
+                                <a href="admin/choicemaster/topic/">Add topic.</a>
+                                <br>
+                                <a href="/admin/choicemaster/question/add/">Add questions.</a>
+                            </div>
+                        {% endif %}
+                        {% if message %}
+                            <div class="section">
+                                <h3>Message</h3>
+                                <p>{{ message }}</p>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

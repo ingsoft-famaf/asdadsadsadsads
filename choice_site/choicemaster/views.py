@@ -3,5 +3,9 @@ from django.contrib.auth.decorators import login_required
 
 
 @login_required
-def index(request):
-    return render(request, 'choicemaster/index.html')
+def index(request, message=''):
+    if message:
+        context = {'message': message}
+    else:
+        context = {'message': 'Everything ok!'}
+    return render(request, 'choicemaster/index.html', context)
