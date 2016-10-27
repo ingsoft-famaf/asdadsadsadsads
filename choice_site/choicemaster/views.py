@@ -46,21 +46,26 @@ def add_question_w_subject_topic(request, subject_id, topic_id, message=''):
     context = dict()
     context['subject'] = subject
     context['topic'] = topic
+    if message:
+        context['message'] = message
+    else:
+        context['message'] = 'Everything ok!'
 
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             result = parse_xml_question(request.FILES['docfile'], topic_id)
             # TODO revisar como hacer el redirect.
-            '''
+            
             if result['status']:
-                return redirect('index', message=result['message'])
+                context['message'] = result['message']
+                return render(request, 'choicemaster/index.html',context)
             else:
-                return redirect('add_question_w_subject_topic',
-                                subject_id=subject_id, topic_id=topic_id,
-                                message=result['message'])
-            '''
-            return redirect('index')
+                context['message'] = result['message']
+                return render(request, 'choicemaster/add/question/w_subject_topic.html',context)
+
+            
+            # return redirect('index')
     else:
         form = UploadFileForm()
         context['form'] = form

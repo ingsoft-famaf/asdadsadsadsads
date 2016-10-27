@@ -82,9 +82,14 @@ def parse_xml_question(xmlfile, topic_id):
 
     # Define XML parser with XSD validation
     parser = etree.XMLParser(schema=schema)
-    for data in xml:
-        parser.feed(data)
-    root = parser.close()
+    try:
+        for data in xml:
+            parser.feed(data)
+        root = parser.close()
+    except:
+        result['status'] = False
+        result['message'] = 'Wrong format in uploaded file.'
+        return result
 
     # Create a list with the questions in root as its elements
     questions = root.findall('question')
@@ -120,4 +125,5 @@ def parse_xml_question(xmlfile, topic_id):
                 answer.correct = False
             answer.question_id = question.id
             answer.save()
+            
     return result
