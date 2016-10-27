@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Report</title>
 </head>
-    <body>
-        <h1> Pending reports </h1>
-        {% for report in reports %}
-           <li>
-               {{report.report_description}}
-                <button>
-                    <a href= "/admin/choicemaster/report/{{ report.id}}/change/">Eliminar/Editar</a>
-                </button>
-           </li>
-                Pregunta: {{report.question.question_text}}
-                <button>
-                    <a href= "/admin/choicemaster/question/{{ report.question.id}}/change/">Eliminar/Editar</a>
-                </button>
-            <ul>
-                Respuestas: <br>
-                {% for answer in report.question.answer_set.all %}
-                    <li> {{answer.answer_text}}
-                        <button>
-                            <a href= "/admin/choicemaster/answer/{{ answer.id}}/change/">Eliminar/Editar</a>
-                        </button>
-                    </li>
 
-                {% endfor %}
-
-            </ul>
-
-        {% endfor %}
-    </body>
+<body>
+    <h1> Pending reports </h1>
+    {% for report in reports %}
+        <li>
+            {{report.report_description}}
+            <button>
+                <a href= "/admin/choicemaster/report/{{ report.id}}/change/">Eliminar/Editar</a>
+            </button>
+        </li>
+        Pregunta: {{report.question.question_text}}
+        <button>
+            <a href= "/admin/choicemaster/question/{{ report.question.id}}/change/">Eliminar/Editar</a>
+        </button>
+        <ul>
+            Respuestas: <br>
+            {% for answer in report.question.answer_set.all %}
+                <li> {{answer.answer_text}}
+                    <button>
+                        <a href= "/admin/choicemaster/answer/{{ answer.id}}/change/">Eliminar/Editar</a>
+                    </button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</body>
 </html>

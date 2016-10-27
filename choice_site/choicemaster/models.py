@@ -9,7 +9,7 @@ class Subject(models.Model):
     subject_description = models.CharField(max_length=200)
     subject_department = models.CharField(max_length=50)
 
-    """ 
+    """
     Method to show the correct object name in the admin interface.
     """
     def __unicode__(self):
@@ -21,7 +21,7 @@ class Topic(models.Model):
     topic_title = models.CharField(max_length=40)
     topic_description = models.CharField(max_length=200)
 
-    """ 
+    """
     Method to show the correct object name in the admin interface.
     """
     def __unicode__(self):
@@ -32,7 +32,7 @@ class Question(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)
 
-    """ 
+    """
     Method to show the correct object name in the admin interface.
     """
     def __unicode__(self):
@@ -51,11 +51,11 @@ class Answer(models.Model):
     answer_text = models.CharField(max_length=200)
     correct = models.BooleanField(default=False)
 
-    """ 
+    """
     Method to show the correct object name in the admin interface.
     """
     def __unicode__(self):
-        return self.question.question_text + ' - ' +self.answer_text
+        return self.question.question_text + ' - ' + self.answer_text
 
 
 class QuestionSnapshot(models.Model):
@@ -81,7 +81,7 @@ class Report(models.Model):
                                     default=NOT_EVALUATED)
     report_description = models.CharField(max_length=200)
 
-    """ 
+    """
     Method to show the correct object name in the admin interface.
     """
     def __unicode__(self):
