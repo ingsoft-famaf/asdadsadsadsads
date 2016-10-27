@@ -1,0 +1,17 @@
+{% extends 'choicemaster/base.html' %}
+
+{% block content %}
+    {% if subjects %}
+        <h1>Add questions</h1>
+        First, choose a subject:
+        <table>
+            {% for item in subjects %}
+                <tr>
+                    <td><a href="{% url 'add_question_w_subject' item.id %}">{{ item.subject_title }}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h1>No subject exists!</h1>
+    {% endif %}
+{% endblock %}
