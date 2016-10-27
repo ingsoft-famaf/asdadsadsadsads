@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-
+from .models import *
 
 
 class UserTestCase(TestCase):
@@ -138,7 +138,7 @@ class UserTestCase(TestCase):
 
 
 class LoadQuestionsTestCase(TestCase):
-    def setup(self):
+    def setUp(self):
         """
         Create a new admin user, and test subject and topic in which to test
         different questions files
@@ -147,7 +147,8 @@ class LoadQuestionsTestCase(TestCase):
                           email='adminstaff@staff.com', password='123456789a')
         self.user_staff.save()
 
-        self.subj1 = Subject.objects.create(subject_title='Test Subject',
+        self.subj1 = Subject.objects.create(
+                                subject_title='Test Subject',
                                 subject_description='Test subject description',
                                 subject_department='Test Department')
 
@@ -158,25 +159,28 @@ class LoadQuestionsTestCase(TestCase):
 
     def test_question_file_wrong_format(self):
         c = Client()
-        response = c.post('add/question/'+ self.subj1.pk +'/'
-            + self.topc1.pk + '/', {'xml_files/wrong_format.xml': open(
-            'xml_files/wrong_format.xml', 'rb')})
+        response = c.post('add/question/'+ str(self.subj1.id) +'/'
+            + str(self.topc1.id) + '/', files={'wrong_format.xml': 
+            open('/choicemaster/xml_files/wrong_format.xml', 'rb')})
         self.assertEquals(response.status_code, 500)
 
     def test_duplicate_question_with_db(self):
         c = Client()
-        response = c.post('add/question/'+ self.subj1.pk +'/'
-            + self.topc1.pk + '/', {'xml_files/simple_question.xml': open(
-            'xml_files/wrong_format.xml', 'rb')})
+        response = c.post('add/question/'+ str(self.subj1.id) +'/'
+            + str(self.topc1.id) + '/', files={'simple_question.xml': 
+            open('/xml_files/wrong_format.xml', 'rb')})
+
         self.assertEquals(response.status_code, 200)
-        response = c.post('add/question/'+ self.subj1.pk +'/'
-            + self.topc1.pk + '/', {'xml_files/simple_question.xml': open(
-            'xml_files/wrong_format.xml', 'rb')})
+
+        response = c.post('add/question/'+ str(self.subj1.id) +'/'
+            + str(self.topc1.id) + '/', files={'simple_question.xml':
+            open('/xml_files/wrong_format.xml', 'rb')})
+
         self.assertEquals(response.status_code, 500)
 
     def test_duplicate_question_with_question_file(self):
         c = Client()
-        response = c.post('add/question/'+ self.subj1.pk +'/'
-            + self.topc1.pk + '/', {'xml_files/duplicate_with_qf.xml': open(
-            'xml_files/wrong_format.xml', 'rb')})
+        response = c.post('add/question/'+ str(self.subj1.id) +'/'
+            + str(self.topc1.id) + '/', files={'/xml_files/duplicate\
+            _with_qf.xml': open('/xml_files/wrong_format.xml', 'rb')})
         self.assertEquals(response.status_code, 500)
