@@ -1,5 +1,4 @@
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
 from models import *
 
 
@@ -14,7 +13,6 @@ class UserTestCase(TestCase):
         self.user.save()
         self.c = Client()
         self.logged_in = self.c.login(username='testuser', password='12345')
-
         self.user_staff = User.objects.create_superuser(username='teststaff',
                                                         email='',
                                                         password='123456789a')
@@ -135,21 +133,18 @@ class UserTestCase(TestCase):
         self.assertTrue("Add topic" in response.content)
         self.assertTrue("Add questions" in response.content)
 
-    """
-     Se fija si hay denuncias si no hay crea una y corrobora que aparesca
-     en la pagina de reporte.
-    """
-
     def test_report(self):
+        """
+         Se fija si hay denuncias si no hay crea una y corrobora que aparesca
+         en la pagina de reporte.
+        """
         self.cp.logout()
         logged_in_staff = self.cp.login(username='teststaff',
                                         password='123456789a')
         response = self.cp.get('/')
         self.assertEquals(response.status_code, 200)
         if len(Report.objects.all()) == 0:
-            """
-            Se crea una denuncia.
-            """
+            # Se crea una denuncia.
             self.assertTrue("No complaints" in response.content)
 
             subject = Subject.objects.create(subject_title="Materia",
@@ -164,9 +159,9 @@ class UserTestCase(TestCase):
                                                question_text="Una pregunta")
 
             report = Report.objects.create(report_state="NE",
-                                           report_description=
-                                           "Esto es una prueba", question=
-                                           question)
+                                           report_description="Esto es una"
+                                                              "prueba",
+                                           question=question)
             response = self.cp.get('/')
 
         self.assertTrue("Reported questions" in response.content)

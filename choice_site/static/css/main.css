@@ -1,0 +1,96 @@
+/**
+ * Reset some basic elements
+ */
+body, h1, h2, h3, h4, h5, h6,
+p, blockquote, pre, hr,
+dl, dd, ol, ul, figure {
+  margin: 0;
+  padding: 0; }
+
+/**
+ * Basic styling
+ */
+body {
+  font: 400 16px/1.5 "Open Sans", sans-serif;
+  color: #111;
+  background-color: #fdfdfd;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-feature-settings: "kern" 1;
+  -moz-font-feature-settings: "kern" 1;
+  -o-font-feature-settings: "kern" 1;
+  font-feature-settings: "kern" 1;
+  font-kerning: normal; }
+
+/**
+ * Site header
+ */
+.header {
+  border-top: 1px solid #c6c6c6;
+  border-bottom: 3px solid rgba(159, 113, 47, 0.6);
+  background-color: rgba(203, 152, 80, 0.6);
+  width: 100%; }
+  .header a {
+    text-decoration: none;
+    color: black; }
+    .header a:visited {
+      color: black; }
+    .header a:hover {
+      color: #333333; }
+
+.c-nav {
+  margin: 10px;
+  margin-left: 20px; }
+  .c-nav a {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 300; }
+
+/**
+ * Position
+ */
+.left {
+  float: left; }
+
+.right {
+  float: right; }
+
+.fixed {
+  position: fixed; }
+
+.center {
+  margin: auto; }
+
+/**
+ * Container
+ */
+.container {
+  height: 100%;
+  border-right: 1px solid #f0f0f0;
+  border-left: 1px solid #f0f0f0; }
+
+.section-a {
+  color: #3e3e3e;
+  font-weight: 300;
+  text-decoration: none; }
+
+/**
+ * Style
+ */
+.light {
+  font-weight: 300; }
+
+.heavy {
+  font-weight: 700; }
+
+.medium-text {
+  font-size: 20px; }
+
+.sauvage-a {
+  text-decoration: none;
+  color: black;
+  font-weight: 400; }
+  .sauvage-a:visited {
+    color: black; }
+  .sauvage-a:hover {
+    color: #262626; }
+
+/*# sourceMappingURL=main.css.map */
