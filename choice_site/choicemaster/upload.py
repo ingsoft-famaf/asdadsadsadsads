@@ -49,7 +49,7 @@ def parse_xml_question(xmlfile, topic_id):
     """
     result = dict()
     result['status'] = True
-    result['message'] = 'Questions added succesfully'
+    result['message'] = 'Questions succesfully uploaded.'
 
     script_dir = os.path.dirname(__file__)
 
@@ -82,9 +82,17 @@ def parse_xml_question(xmlfile, topic_id):
 
     # Define XML parser with XSD validation
     parser = etree.XMLParser(schema=schema)
-    for data in xml:
-        parser.feed(data)
-    root = parser.close()
+    try:
+        for data in xml:
+            parser.feed(data)
+        root = parser.close()
+    except:
+        result['status'] = False
+        result['message'] = 'Wrong format in uploaded file. Please, check ' \
+                            'that the file you are trying to upload has the' \
+                            ' right question format and does not contain any' \
+                            ' duplicate questions.' 
+        return result
 
     # Create a list with the questions in root as its elements
     questions = root.findall('question')
@@ -95,12 +103,18 @@ def parse_xml_question(xmlfile, topic_id):
         result['status'] = False
         if qae['in_db']:
             result['message'] = 'Similar question already present in' \
-                                'database.'
+                                'database, please check that the ' \
+                                'file you are trying to upload has the ' \
+                                'correct question format and does not contain' \
+                                'any duplicate questions.'
             result['topic_id'] = qae['topic_id']
             result['question_id'] = qae['question_id']
         else:
-            result['message'] = 'Similar question already being added in ' \
-                                'xml file'
+            result['message'] = 'Duplicate questions have been found in the' \
+                                'uploaded xml file, please check that the ' \
+                                'file you are trying to upload has the ' \
+                                'correct question format and does not contain' \
+                                'any duplicate questions.'
 
         return result
 
@@ -120,4 +134,5 @@ def parse_xml_question(xmlfile, topic_id):
                 answer.correct = False
             answer.question_id = question.id
             answer.save()
+            
     return result

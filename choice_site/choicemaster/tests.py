@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from .models import *
+from models import *
+import os
 
 
 class UserTestCase(TestCase):
@@ -14,10 +15,9 @@ class UserTestCase(TestCase):
         self.user.save()
         self.c = Client()
         self.logged_in = self.c.login(username='testuser', password='12345')
-
-        
-        self.user_staff = User.objects.create_superuser(username='teststaff', \
-                            email='', password='123456789a')
+        self.user_staff = User.objects.create_superuser(username='teststaff',
+                                                        email='',
+                                                        password='123456789a')
         self.user_staff.save()
         self.cp = Client()
 
@@ -33,8 +33,8 @@ class UserTestCase(TestCase):
         Check that the user staff entity has its logged_in state equal to TRUE,
         since it just logged in
         """
-        logged_in_staff = self.cp.login(username='teststaff', password= \
-                            '123456789a')
+        logged_in_staff = self.cp.login(username='teststaff',
+                                        password='123456789a')
         self.assertTrue(logged_in_staff)
 
     def test_login_view(self):
@@ -125,11 +125,10 @@ class UserTestCase(TestCase):
         self.assertTrue("A user is already registered with this e-mail "
                         "address." in response.content)
 
-
     def test_staff_has_special_homepage(self):
         self.cp.logout()
-        logged_in_staff = self.cp.login(username='teststaff', password= \
-                            '123456789a')
+        logged_in_staff = self.cp.login(username='teststaff',
+                                        password='123456789a')
         response = self.cp.get('/')
         self.assertEquals(response.status_code, 200)
         self.assertTrue("Add subject" in response.content)
@@ -159,28 +158,96 @@ class LoadQuestionsTestCase(TestCase):
 
     def test_question_file_wrong_format(self):
         c = Client()
+
+        script_dir = os.path.dirname(__file__)
+        rel_path = "xml_files/wrong_format.xml"
+        abs_file_path = os.path.join(script_dir, rel_path)
+
         response = c.post('add/question/'+ str(self.subj1.id) +'/'
             + str(self.topc1.id) + '/', files={'wrong_format.xml': 
-            open('/choicemaster/xml_files/wrong_format.xml', 'rb')})
-        self.assertEquals(response.status_code, 500)
+            open(abs_file_path, 'rb')})
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue('Wrong format in uploaded file. Please, check that ' \
+                        'the file you are trying to upload has the right ' \
+                        'question format and does not contain any duplicate ' \
+                        'questions.'
+                        in response.content)
 
     def test_duplicate_question_with_db(self):
         c = Client()
+
+        script_dir = os.path.dirname(__file__)
+        rel_path = "xml_files/simple_question.xml"
+        abs_file_path = os.path.join(script_dir, rel_path)
+
         response = c.post('add/question/'+ str(self.subj1.id) +'/'
             + str(self.topc1.id) + '/', files={'simple_question.xml': 
-            open('/xml_files/wrong_format.xml', 'rb')})
+            open(abs_file_path, 'rb')})
 
         self.assertEquals(response.status_code, 200)
+        self.assertTrue("Questions succesfully uploaded."
+                        in response.content)
 
         response = c.post('add/question/'+ str(self.subj1.id) +'/'
             + str(self.topc1.id) + '/', files={'simple_question.xml':
-            open('/xml_files/wrong_format.xml', 'rb')})
+            open(abs_file_path, 'rb')})
 
-        self.assertEquals(response.status_code, 500)
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue('Similar question already present in database, please'\
+                        ' check that the file you are trying to upload has '\
+                        'the correct question format and does not contain any'\
+                        'any duplicate questions.'
+                        in response.content)
 
     def test_duplicate_question_with_question_file(self):
         c = Client()
+
+        script_dir = os.path.dirname(__file__)
+        rel_path = "xml_files/duplicate_with_qf.xml"
+        abs_file_path = os.path.join(script_dir, rel_path)
+
         response = c.post('add/question/'+ str(self.subj1.id) +'/'
             + str(self.topc1.id) + '/', files={'/xml_files/duplicate\
-            _with_qf.xml': open('/xml_files/wrong_format.xml', 'rb')})
-        self.assertEquals(response.status_code, 500)
+            _with_qf.xml': open(abs_file_path, 'rb')})
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue('Duplicate questions have been found in the uploaded '\
+                        'xml file, please check that the file you are trying '\
+                        'to upload has the correct question format and does ' \
+                        'not contain any duplicate questions.'
+                        in response.content)
+
+
+    def test_report(self):
+        """
+         Se fija si hay denuncias si no hay crea una y corrobora que aparesca
+         en la pagina de reporte.
+        """
+        self.cp.logout()
+        logged_in_staff = self.cp.login(username='teststaff',
+                                        password='123456789a')
+        response = self.cp.get('/')
+        self.assertEquals(response.status_code, 200)
+        if len(Report.objects.all()) == 0:
+            # Se crea una denuncia.
+            self.assertTrue("No complaints" in response.content)
+
+            subject = Subject.objects.create(subject_title="Materia",
+                                             subject_description="Comentario",
+                                             subject_department="Famaf")
+
+            topic = Topic.objects.create(subject=subject,
+                                         topic_title="un tema",
+                                         topic_description="Una descripcion")
+
+            question = Question.objects.create(topic=topic,
+                                               question_text="Una pregunta")
+
+            report = Report.objects.create(report_state="NE",
+                                           report_description="Esto es una"
+                                                              "prueba",
+                                           question=question)
+            response = self.cp.get('/')
+
+        self.assertTrue("Reported questions" in response.content)
+        response = self.cp.get('/report/')
+        self.assertEquals(response.status_code, 200)
