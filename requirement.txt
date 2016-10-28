@@ -5,3 +5,4 @@ mock>=1.0.1
 python-openid>=2.2.5
 requests>=2.0.0
 requests-oauthlib>=0.3.0
+django-ajax-selects
