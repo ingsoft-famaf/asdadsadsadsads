@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^', include('choicemaster.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('allauth.urls')),
+    # url(r'^ajax_select/', include(ajax_select_urls)),
 ]

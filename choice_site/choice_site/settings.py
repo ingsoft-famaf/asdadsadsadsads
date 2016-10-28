@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # django-ajax-select 
+    'ajax_select',
+    
     # django-allauth:
     'allauth',
     'allauth.account',
@@ -65,6 +68,20 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+# DEFINE THE SEARCH CHANNELS:
+
+AJAX_LOOKUP_CHANNELS = {
+    # simplest way, automatically construct a search channel by passing a dict
+    # 'label': {'model': 'example.label', 'search_field': 'name'},
+
+    # Custom channels are specified with a tuple
+    # channel: ( module.where_lookup_is, ClassNameOfLookup )
+    'subject': ('choicemaster.lookups', 'SubjectLookup'),
+    'topic': ('choicemaster.lookups', 'TopicLookup'),
+}
+
 
 ROOT_URLCONF = 'choice_site.urls'
 

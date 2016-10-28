@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from choicemaster import models
-from .forms import UploadFileForm
+from .forms import UploadFileForm, ConfigureExamForm
 
 from .upload import parse_xml_question
 from models import Report
@@ -82,3 +82,22 @@ def report(request):
     context = dict()
     context['reports'] = Report.objects.all()
     return render(request, 'choicemaster/report.html', context)
+
+def configure_exam(request):
+    if request.method == 'POST':
+        form = ConfigureExamForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, 'choicemaster/index.html')
+    else:
+        form = ConfigureExamForm()
+        context = dict()
+        context['request'] = request
+        return render(request, 'choicemaster/exam/configure_exam.html', {'form': form}, context)
+
+#class Create(generic.CreateView):
+#    template_name = "configure_exam.html"
+#    form_class = ConfigureExamForm
+#    success_url = 'create'
+
+#create = Create.as_view()
