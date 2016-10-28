@@ -82,4 +82,3 @@ def report(request):
     context = dict()
     context['reports'] = Report.objects.all()
     return render(request, 'choicemaster/report.html', context)
-
