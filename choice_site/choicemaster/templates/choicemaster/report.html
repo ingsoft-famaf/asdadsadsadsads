@@ -1,13 +1,24 @@
 {% extends 'choicemaster/base.html' %}
 
 {% block content %}
+    <script>
+        function delete_report(id) {
+            console.log("Eliminando reporte");
+            $.ajax({
+                type: "POST",
+                url: "/ajax/delete/",
+                dataType: "json",
+                data: {'id':id}
+            });
+        }
+    </script>
     <h1> Pending reports </h1>
     {% if reports %}
         {% for report in reports %}
             <li>
                 {{report.report_description}}
-                <button>
-                    <a href= "/admin/choicemaster/report/{{ report.id}}/change/">Eliminar/Editar</a>
+                <button onclick="delete_report({{ report.id }})">
+                    Eliminar/Editar
                 </button>
             </li>
             Pregunta: {{report.question.question_text}}
