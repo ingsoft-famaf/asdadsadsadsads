@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from choicemaster import models
-from .forms import UploadFileForm, ConfigureExamForm
+from .forms import UploadFileForm, ConfigureExamForm, AjaxForm
 
 from .upload import parse_xml_question
 from models import Report
@@ -83,17 +83,32 @@ def report(request):
     context['reports'] = Report.objects.all()
     return render(request, 'choicemaster/report.html', context)
 
-def configure_exam(request):
+def configure_exam(request, subject_id =''):
     if request.method == 'POST':
         form = ConfigureExamForm(request.POST)
         if form.is_valid():
             form.save()
             return render(request, 'choicemaster/index.html')
     else:
-        form = ConfigureExamForm()
         context = dict()
+        context = { 'formid' : 'createform',
+                   'submiturl' : "configure_exam",
+                   'btntxt' : "Submit form",
+                    'jsurl' : 'djhform.js' }
+        context['form'] = AjaxForm().ajaxRequest(request) # Magic!
         context['request'] = request
-        return render(request, 'choicemaster/exam/configure_exam.html', {'form': form}, context)
+        # form = ConfigureExamForm()
+        if request.GET:
+            '''
+            This is an AJAX request with form parameters set.
+            Generate a form snippet here, so don't use the entire template
+            '''
+            return HttpResponse(context["form"].as_table(), content_type="application/xhtml")        
+        else:
+            '''
+            Generate a brand new form
+            '''
+        return render_to_response('choicemaster/exam/configure_exam_two.html', context)
 
 #class Create(generic.CreateView):
 #    template_name = "configure_exam.html"
@@ -101,3 +116,19 @@ def configure_exam(request):
 #    success_url = 'create'
 
 #create = Create.as_view()
+
+
+def javascript(request):
+    '''
+    This view generates the javascript for the form.  The javascript can be served as
+    a static file, but this view injects the form url for the script to call back to the server.
+    This could be hardcoded into the javscript if you'd like.
+    
+    The javascript handles hierarchical field selection actions.  On each selection it calls back
+    to the form url, which returns html snippets of the new form fields.
+    The javascript then replaces the existing form fields with the new ones.
+    '''
+    params = { 'formid' : 'createform',
+               'ajaxurl': ''
+             }
+    return render_to_response('choicemaster/exam/djhform.js', params, content_type='application/javascript')

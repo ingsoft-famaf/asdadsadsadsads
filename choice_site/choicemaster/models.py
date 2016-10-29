@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-
+from .fields import HierarchicalForeignKey
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -26,6 +26,18 @@ class Topic(models.Model):
     """
     def __unicode__(self):
         return self.topic_title
+
+class Subject_Topic(models.Model):
+    '''
+    This is a model for a hierarchical AJAX form.
+    The HierarchicalForeignKey allows the form to check the relationship between them.
+    You can have other normal ForeignKeys to non-hierarchical data, and the form generation will ignore them.
+    
+    The order of the fields is important.  The top of the hierarchy needs to be at the top.
+    If the order is inverted, modifying a higher field will not properly reset the lower fields in the form.
+    '''
+    subject = HierarchicalForeignKey(Subject)
+    topic = HierarchicalForeignKey(Topic)
 
 
 class Question(models.Model):

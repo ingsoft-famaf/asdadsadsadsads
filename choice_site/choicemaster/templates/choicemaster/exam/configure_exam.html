@@ -1,16 +1,18 @@
-<html>
-<body>
-    <form action="{% url configure_exam %}" method="POST">
-    <table>
-    <tr>
-        <th></th>
-        <td>
-        <p>{{ form }}</p>
+<!DOCTYPE html>
+<head>
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script src="{{STATIC_URL}}ajax_select/js/ajax_select.js"></script>
+<link rel="stylesheet" href="{{STATIC_URL}}ajax_select/css/ajax_select.css" />
 
-        </td>
-    </tr>
-    </table>
-    </form>
+</head>
+<body>
+<form method="post" action="{% url 'configure_exam' %}">{% csrf_token %}
     
+    {{form.subject.help_text}}
+    {{form.subject_title}}
+    <input type="submit" value="Submit" />
+
+ </form>
 </body>
 </html>
