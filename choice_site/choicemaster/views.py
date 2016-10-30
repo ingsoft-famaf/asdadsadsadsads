@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from choicemaster import models
-from .forms import UploadFileForm
+from .forms import UploadQuestionFileForm
 
 from .upload import parse_xml_question
 from models import Report
@@ -52,22 +52,19 @@ def add_question_w_subject_topic(request, subject_id, topic_id, message=''):
         context['message'] = 'Everything ok!'
 
     if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadQuestionFileForm(request.POST, request.FILES)
         if form.is_valid():
             result = parse_xml_question(request.FILES['docfile'], topic_id)
             # TODO revisar como hacer el redirect.
-            
             if result['status']:
                 context['message'] = result['message']
-                return render(request, 'choicemaster/index.html',context)
+                return redirect(index)
             else:
                 context['message'] = result['message']
-                return render(request, 'choicemaster/add/question/w_subject_topic.html',context)
-
-            
-            # return redirect('index')
+                return render(request, 'choicemaster/add/question/'
+                                       'w_subject_topic.html', context)
     else:
-        form = UploadFileForm()
+        form = UploadQuestionFileForm()
         context['form'] = form
 
     return render(request, 'choicemaster/add/question/w_subject_topic.html',
