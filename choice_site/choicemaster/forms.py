@@ -1,4 +1,4 @@
-from django.forms import Form, ModelForm, FileField
+from django.forms import Form, ModelForm, FileField, DecimalField
 from .models import Subject, Topic, Subject_Topic
 from ajax_select import make_ajax_field
 from .fields import HierarchicalForm
@@ -20,13 +20,15 @@ class ConfigureExamForm(ModelForm):
         model = Subject
         exclude = []
 
-class AjaxForm(HierarchicalForm):
-    '''
-    Demo form based on the demo model.
-    All you have to do is inherit from HierarchicalForm
-    '''    
-    # subject = make_ajax_field(Subject, 'subject_title', 'subject', help_text="Write a subject", show_help_text=True, label='Select a subject')
-    # topic = make_ajax_field(Topic, 'topic_title', 'topic', help_text="Write a topic", show_help_text=True, label='Select a topic')
-    class Meta:
-        model = Subject_Topic
-        exclude = []
+class ConfigureForm(Form):
+    timer = DecimalField(
+        label = 'Time for each question',
+        help_text = 'In minutes',
+        max_value = 60,
+        min_value = 0,
+        )
+    quantity = DecimalField(
+        label = 'Amount of questions',
+        # max_value = 60, Deberia ser la cantidad de preguntas para los temas elegidos.
+        min_value = 0,
+        )
