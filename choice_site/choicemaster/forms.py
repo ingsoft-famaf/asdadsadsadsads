@@ -1,7 +1,6 @@
 from django.forms import Form, ModelForm, FileField, DecimalField
-from .models import Subject, Topic, Subject_Topic
+from .models import Subject, Topic
 from ajax_select import make_ajax_field
-from .fields import HierarchicalForm
 from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
 
 
