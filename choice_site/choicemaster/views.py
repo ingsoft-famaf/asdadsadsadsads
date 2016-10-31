@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from choicemaster import models
-from .forms import UploadFileForm, ConfigureExamForm, ConfigureForm, ExamForm
+from .forms import UploadFileForm, ConfigureExamForm2, ConfigureForm, ExamForm
 from django.views import View
 
 from .upload import parse_xml_question
@@ -84,6 +84,20 @@ def report(request):
     context['reports'] = Report.objects.all()
     return render(request, 'choicemaster/report.html', context)
 
+
+@login_required
+def configure_exam2(request):
+    if request.method == 'POST':
+        form = ConfigureExamForm2(request.POST)
+        if form.is_valid():
+            subject = request.POST.get('subject')
+            mult_topics = request.POST.getlist('mult_topics[]')
+            timer = request.POST.get('timer')
+            quantity = request.POST.get('quantity')
+            # GENERAR EXAMEN
+    else:
+        form = ConfigureExamForm2()
+    return render(request, 'choicemaster/exam/configure_exam.html', {'form': form})
 
 ''' Views to configure the exam - Las hace nacho las dejo para guiarme 
 

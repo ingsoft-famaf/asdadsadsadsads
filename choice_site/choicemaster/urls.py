@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from . import views
+from . import views, ajax
 from ajax_select import urls as ajax_select_urls
 
 urlpatterns = [
@@ -11,7 +11,9 @@ urlpatterns = [
         views.add_question_w_subject_topic,
         name='add_question_w_subject_topic'),
     url(r'^report/$', views.report, name='report'),
-    
+
+    url(r'^configure/$', views.configure_exam2, name='configure_exam'),
+    url(r'^ajax/get_checkboxes/$', ajax.get_checkboxes, name='ajax_get_checkoxes')
 ]
 '''
 url(r'^configure/$', views.configure_exam_subject, name='configure_subject'),

@@ -48,8 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # django-ajax-select 
-    'ajax_select',
+    # django-ajax-select
+    # 'ajax_select',
     
     # django-allauth:
     'allauth',
@@ -69,26 +69,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
-# DEFINE THE SEARCH CHANNELS:
-
-AJAX_LOOKUP_CHANNELS = {
-    # simplest way, automatically construct a search channel by passing a dict
-    # 'label': {'model': 'example.label', 'search_field': 'name'},
-
-    # Custom channels are specified with a tuple
-    # channel: ( module.where_lookup_is, ClassNameOfLookup )
-    'subject': ('choicemaster.lookups', 'SubjectLookup'),
-    'topic': ('choicemaster.lookups', 'TopicLookup'),
-}
-
-
 ROOT_URLCONF = 'choice_site.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates').replace('\\','/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -109,11 +95,6 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_EMAIL_REQUIRED = True
 
 LOGIN_REDIRECT_URL = '/'
-
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
@@ -163,3 +144,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
