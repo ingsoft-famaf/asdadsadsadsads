@@ -4,8 +4,7 @@
     <h1></h1>
     <h2> Subject: {{ subject }} </h2>
     <h2> Question : {{ question.question_text }}</h2>
-    <form action="{% url '/generate' question topic_ids %}" enctype="multipart/
-        form-data" method="post">
+    <form action="{% url '/generate' question topic_ids %}" enctype="multipart/form-data" method="post">
         {% csrf_token %}
         <p>
             {{ form }}

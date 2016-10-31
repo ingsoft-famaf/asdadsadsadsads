@@ -5,7 +5,7 @@ from choicemaster import models
 from .forms import UploadFileForm
 
 from .upload import parse_xml_question
-from models import Report
+from .models import Report
 
 
 @login_required
