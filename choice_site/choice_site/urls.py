@@ -15,11 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from ajax_select import urls as ajax_select_urls
 
 urlpatterns = [
     url(r'^', include('choicemaster.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('allauth.urls')),
-    url(r'^ajax_select/', include(ajax_select_urls)),
 ]
