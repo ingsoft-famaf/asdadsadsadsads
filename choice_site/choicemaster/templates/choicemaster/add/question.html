@@ -4,7 +4,10 @@
     <h1>Add questions</h1>
     <form id="question_form" action="{% url 'add_question' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form }}
+        <p> {{ form.subject }} </p>
+        <p> {{ form.topic }} </p>
+        <p> {{ form.xmlfile.label }} </p>
+        <p> {{ form.xmlfile }} </p>
         <br>
         <input type="submit" value="Submit" />
     </form>

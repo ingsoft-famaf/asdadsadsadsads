@@ -6,7 +6,7 @@ def get_subjects():
     choices = dict()
     for s in subjects:
         choices[str(s.id)] = s.subject_title
-    choices['0'] = 'None'
+    choices['0'] = 'Select Subject'
     choices = choices.items()
     choices.sort()
     return choices
@@ -17,12 +17,12 @@ def get_topics(subject_id=0):
     choices = dict()
     for s in topics:
         choices[str(s.id)] = s.topic_title
-    choices['0'] = 'None'
+    choices['0'] = 'Select Topic'
     choices = choices.items()
     choices.sort()
     return choices
 
-TOPICS = (('0', 'None'), ('1', '---'))
+TOPICS = (('0', 'Select Topic'), ('1', '---'))
 
 
 class UploadQuestionForm(forms.Form):
