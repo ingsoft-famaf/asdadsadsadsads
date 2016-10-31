@@ -160,14 +160,116 @@ def test_exam(request):
     subject = models.Subject.objects.get(pk = 1)
     topic = models.Topic.objects.filter(subject = subject.id)
     context = dict()
+    context['subject_id'] = subject.id
     context['subject'] = subject
     context['topic'] = topic
     context['topic_ids'] = topic[0].id
     context['timer'] = 30
     context['quantity'] = 2
     context['algorithm'] = 0
-    return render(request, 'choicemaster/exam/resolve_exam.html', context)
+    exam = ExamView()
+    return render(request, 'generate', context)
 
+
+def resolve_exam(self, request):
+    
+    if request.method != 'POST':
+
+        subject_id = request.GET.get('subject')
+        topic_ids = request.GET.get('topic_ids')
+        timer = request.GET.get('timer')
+        quantity = request.GET.get('quantity')
+        algorithm = request.GET.get('algorithm')
+
+        # Create the exam model with all the configurations
+        exam = Exam.objects.create(exam_subject = self.subject_id,
+            exam_quantity_questions = self.remaining, exam_timer = self.timer,
+            exam_algorithm = self.algorithm)
+        
+        exam_id = exam.pk
+        exam.save()
+
+        kwargs = dict()
+        kwargs['subject_id'] = subject_id
+        kwargs['topic_ids'] = topic_ids
+        kwargs['timer'] = topic_ids
+        kwargs['quantity'] = quantity
+        kwargs['algorithm'] = topic_ids
+        kwargs['exam_id'] = exam.id
+
+        exam_tmp = ExamView(kwargs)
+
+        # We store all the questions of the selected topics
+        for item in topic_ids:
+            questions_tmp = Topic.objects.filter(id=topic_id)
+            for q in questions_tmp:
+                self.questions[str(q.id)] = q
+            
+        # Select a random question for the first one.
+        question = getQuestion()
+        self.remaining =- 1
+
+        # Generate the form
+        self.initial = {'question': question.id}
+        form = self.form_class(initial=self.initial)
+        context['subject'] = subject.subject_title
+        context['topic'] = question.topic
+        context['form'] = form
+        context['question'] = question
+        context['exam_tmp'] = exam_tmp
+
+        return render(request, 'choicemaster/exam/resolve_exam.html', context)
+
+    else:
+        
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            exam_tmp = request.POST.get('exam_tmp')
+            answer_id = request.POST.get('answer')
+            answer = Answer.objects.get(pk=answer_id)
+            question_id = answer.question
+            # topic_id = kwargs['topic_id'] TODO
+            correct_answer = Answer.objects.get(question=question_id, correct=True)
+
+            # Generate the snapshot of the answer
+            snap = QuestionSnapshot.objects.create(exam=self.exam.id, question=question_id,
+                choosen_answer=answer.answer_text, correct_answer=correct_answer.answer_text,
+                choice_correct=correct_answer.answer_text.equals(answer.answer_text))
+            snap.save()
+
+            exam_tmp.remaining=- 1
+
+            if not answer.correct:
+                exam_tmp.mistakes[topic_id] += 1
+            else:
+                exam_tmp.amount_correct += 1
+
+            if exam_tmp.remaining:
+                # Get the next question
+                question = exam_tmp.getQuestion()
+                topic_id = question.topic
+                # Generate the form
+                exam_tmp.initial = {'question': question.id}
+                form = exam_tmp.form_class(initial=self.initial)
+                
+                # Build the context for the next iteration
+                context = dict()
+                context['question'] = question
+                context['topic_id'] = topic_id
+                context['form'] = form
+
+                return render(request, 'choicemaster/exam/resolve_exam.html', context)
+            else:
+                # End of the exam
+                exam = Exam.objects.get(pk = self.exam_id)
+                exam.result = exam_tmp.amount_correct
+                exam.save()
+
+                # Return to the index page with the amount of correct answers on the message board
+                return render(request, 'index', {message: self.amount_correct})
+        
+        # TODO Check if it is needed the context here
+        return render(request, 'choicemaster/exam/resolve_exam.html', {'form': form})
 
 
 
@@ -184,96 +286,19 @@ class ExamView(View):
     algorithm = 0
     mistakes = {}
     amount_correct = 0
-    show_answer = 1
 
-    def get(self, request, *args, **kwargs):
-        subject = kwargs['subject']
-        self.subject_id = subject.id
-        self.topic_ids = kwargs['topic_ids']
-        self.timer = kwargs['timer']
-        self.remaining = kwargs['quantity']
-        self.algorithm = kwargs['algorithm']
-        
-        # Create the exam model with all the configurations
-        exam = Exam.objects.create(exam_subject = self.subject_id,
-            exam_quantity_questions = self.remaining, exam_timer = self.timer,
-            exam_algorithm = self.algorithm)
-        
-        self.exam_id = exam.pk
-        exam.save()
+    def __init__(self, *args, **kwargs):
+        exam_id = kwargs['exam_id']
+        subject_id = kwargs['subject_id']
+        topic_ids = kwargs['topic_ids']
+        timer = kwargs['timer']
+        remaining = kwargs['quantity']
+        algorithm = kwargs['algorithm']
+        mistakes = {}
+        initial = {}
+        questions = {}
+        amount_correct = 0
 
-        # We store all the questions of the selected topics
-        for item in topic_ids:
-            questions_tmp = Topic.objects.filter(id = topic_id)
-            for q in questions_tmp:
-                self.questions[str(q.id)] = q
-            
-        # Select a random question for the first one.
-        question = getQuestion()
-        self.remaining =- 1
-
-        # Generate the form
-        self.initial = {'question': question.id}
-        form = self.form_class(initial=self.initial)
-        context['subject'] = subject.subject_title
-        context['topic'] = question.topic
-        context['form'] = form
-        context['question'] = question
-
-        return render(request, self.template_name, context)
-
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            answer_id = request.POST.get('answer')
-            answer = Answer.objects.get(pk = answer_id)
-            question_id = kwargs['question'].id
-            topic_id = kwargs['topic_id']
-            correct_answer = Answer.objects.get(question = question_id, correct = True)
-
-            if show_answer:            
-                # Generate the snapshot of the answer
-                snap = QuestionSnapshot.objects.create(exam = self.exam.id, question = question_id,
-                    choosen_answer = answer.answer_text, correct_answer = correct_answer.answer_text,
-                    choice_correct = correct_answer.answer_text.equals(answer.answer_text))
-                snap.save()
-                show_answer = 0
-                kwargs['snap'] = snap
-                return render(request, 'choicemaster/exam/show_result.hmtl', kwargs)
-            
-            self.remaining=- 1
-
-            if not answer.correct:
-                mistakes[topic_id] += 1
-            else:
-                self.amount_correct += 1
-
-            if self.remaining:
-                # Get the next question
-                question = getQuestion()
-                topic_id = question.topic
-                # Generate the form
-                self.initial = {'question': question.id}
-                form = self.form_class(initial=self.initial)
-                
-                # Build the context for the next iteration
-                context = dict()
-                context['question'] = question
-                context['topic_id'] = topic_id
-                context['form'] = form
-
-                return render(request, self.template_name, context)
-            else:
-                # End of the exam
-                exam = Exam.objects.get(pk = self.exam_id)
-                exam.result = self.amount_correct
-                exam.save()
-
-                # Return to the index page with the amount of correct answers on the message board
-                return render(request, 'index', {message: self.amount_correct})
-        
-        # TODO Check if it is needed the context here
-        return render(request, self.template_name, {'form': form})
 
     def getQuestion(self):
         

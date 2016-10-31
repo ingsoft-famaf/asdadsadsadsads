@@ -15,7 +15,7 @@ urlpatterns = [
     url(r'^configure/$', views.configure_exam2, name='configure_exam'),
     url(r'^ajax/get_checkboxes/$', ajax.get_checkboxes, name='ajax_get_checkoxes'),
     url(r'^test/$', views.test_exam, name='test'),
-    url(r'^generate/$', views.ExamView.as_view())
+    url(r'^generate/$', views.ExamView.as_view(), name='generate')
 ]
 '''
 url(r'^configure/$', views.configure_exam_subject, name='configure_subject'),

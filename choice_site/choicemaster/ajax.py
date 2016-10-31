@@ -14,3 +14,13 @@ def get_checkboxes(request):
         return HttpResponse(json.dumps(data), content_type='application/json')
     else:
         return HttpResponse("Something went wrong")
+
+
+@csrf_exempt
+def get_correct(request):
+    if request.method == 'POST' and request.is_ajax:
+        answer = Answer.objects.get(question=request.POST.get('question_id'))
+        data = {'answer': answer.answer_text}
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    else:
+        return HttpResponse("Something went wrong")

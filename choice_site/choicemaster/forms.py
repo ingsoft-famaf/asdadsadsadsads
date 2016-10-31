@@ -46,7 +46,7 @@ class UploadFileForm(Form):
 
 class ExamForm(ModelForm):
     
-    answer = forms.ModelChoiceField(required = True, widget = forms.RadioSelect, queryset = Answer.objects.all())
+    answer = forms.ModelChoiceField(required=True, widget=forms.RadioSelect, queryset=Answer.objects.all())
 
     class Meta:
         model = Answer
@@ -56,5 +56,5 @@ class ExamForm(ModelForm):
         question_id = kwargs['question']
         super(ExamForm, self).__init__(*args, **kwargs)
         if question_id:
-            self.fields['answer'].queryset = Answer.objects.filter(question = question_id)
+            self.fields['answer'].queryset = Answer.objects.filter(question=question_id)
 
