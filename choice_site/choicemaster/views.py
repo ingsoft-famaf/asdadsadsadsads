@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from choicemaster import models
-from .forms import UploadFileForm, ConfigureExamForm2, ConfigureForm, ExamForm
+from .forms import UploadFileForm, ConfigureExamForm2, ExamForm
 from django.views import View
 
 from .upload import parse_xml_question
@@ -156,10 +156,24 @@ def generate_exam(request, subject_id ='', topic_id ='', timer='', quantity=''):
         return render(request, 'choicemaster/exam/resolve.html', context)
     questions = 
 '''
+def test_exam(request):
+    subject = models.Subject.objects.get(pk = 1)
+    topic = models.Topic.objects.filter(subject = subject.id)
+    context = dict()
+    context['subject'] = subject
+    context['topic'] = topic
+    context['topic_ids'] = topic[0].id
+    context['timer'] = 30
+    context['quantity'] = 2
+    context['algorithm'] = 0
+    return render(request, 'choicemaster/exam/resolve_exam.html', context)
 
-class Exam(View):
+
+
+
+class ExamView(View):
     form_class = ExamForm
-    template_name = 'resolve_exam.html'
+    template_name = 'choicemaster/exam/resolve_exam.html'
     exam_id = 0
     initial = {}
     questions = {}
@@ -170,10 +184,11 @@ class Exam(View):
     algorithm = 0
     mistakes = {}
     amount_correct = 0
+    show_answer = 1
 
     def get(self, request, *args, **kwargs):
-        
-        self.subject_id = kwargs['subject_id']
+        subject = kwargs['subject']
+        self.subject_id = subject.id
         self.topic_ids = kwargs['topic_ids']
         self.timer = kwargs['timer']
         self.remaining = kwargs['quantity']
@@ -190,8 +205,8 @@ class Exam(View):
         # We store all the questions of the selected topics
         for item in topic_ids:
             questions_tmp = Topic.objects.filter(id = topic_id)
-            for q in questions_tmp, i in range(0, len(questions_tmp)):
-                self.questions[q.id] = questions_tmp[i]
+            for q in questions_tmp:
+                self.questions[str(q.id)] = q
             
         # Select a random question for the first one.
         question = getQuestion()
@@ -200,8 +215,10 @@ class Exam(View):
         # Generate the form
         self.initial = {'question': question.id}
         form = self.form_class(initial=self.initial)
+        context['subject'] = subject.subject_title
         context['topic'] = question.topic
         context['form'] = form
+        context['question'] = question
 
         return render(request, self.template_name, context)
 
@@ -213,19 +230,24 @@ class Exam(View):
             question_id = kwargs['question'].id
             topic_id = kwargs['topic_id']
             correct_answer = Answer.objects.get(question = question_id, correct = True)
-            self.remaining =- 1
+
+            if show_answer:            
+                # Generate the snapshot of the answer
+                snap = QuestionSnapshot.objects.create(exam = self.exam.id, question = question_id,
+                    choosen_answer = answer.answer_text, correct_answer = correct_answer.answer_text,
+                    choice_correct = correct_answer.answer_text.equals(answer.answer_text))
+                snap.save()
+                show_answer = 0
+                kwargs['snap'] = snap
+                return render(request, 'choicemaster/exam/show_result.hmtl', kwargs)
+            
+            self.remaining=- 1
 
             if not answer.correct:
                 mistakes[topic_id] += 1
             else:
                 self.amount_correct += 1
-            
-            # Generate the snapshot of the answer
-            snap = QuestionSnapshot.objects.create(exam = self.exam.id, question = question_id,
-                choosen_answer = answer.answer_text, correct_answer = correct_answer.answer_text,
-                choice_correct = correct_answer.answer_text.equals(answer.answer_text))
 
-            snap.save()
             if self.remaining:
                 # Get the next question
                 question = getQuestion()
@@ -258,34 +280,15 @@ class Exam(View):
         if self.algorithm:
             topic_id = max(mistakes, key = mistakes.get)
             questions_topic = Question.objects.filter(topic = topic_id)
-            looking = True
             try:
                 question = random.choice(questions_topic)
-                if (question.id not in self.questions_used):
-                    del questions_topic[question.id]
-                    looking = False
+                del self.questions[question.id]
             except IndexError:
                 question = random.choice(self.questions)
-                del questions_topic[question.id]
+                del self.questions[question.id]
 
         else:
             question = random.choice(self.questions)
-            del questions_topic[question.id]
+            del self.questions[question.id]
             
         return question
-'''
-def javascript(request):
-    
-    This view generates the javascript for the form.  The javascript can be served as
-    a static file, but this view injects the form url for the script to call back to the server.
-    This could be hardcoded into the javscript if you'd like.
-    
-    The javascript handles hierarchical field selection actions.  On each selection it calls back
-    to the form url, which returns html snippets of the new form fields.
-    The javascript then replaces the existing form fields with the new ones.
-    
-    params = { 'formid' : 'createform',
-               'ajaxurl': ''
-             }
-    return render_to_response('choicemaster/exam/djhform.js', params, content_type='application/javascript')
-'''
