@@ -6,36 +6,57 @@
             console.log("Eliminando reporte");
             $.ajax({
                 type: "POST",
-                url: "/ajax/delete/",
+                url: "/ajax/delete/report",
                 dataType: "json",
                 data: {'id':id}
             });
+            location.reload(false);
         }
     </script>
+
+    <script>
+        function delete_question(idR, idQ) {
+            console.log("Eliminando question");
+            $.ajax({
+                type: "POST",
+                url: "/ajax/delete/question",
+                dataType: "json",
+                data: {'idR':idR , 'idQ':idQ}
+            });
+            location.reload(false);
+        }
+    </script>
+
+    {% load static %}
     <h1> Pending reports </h1>
     {% if reports %}
-        {% for report in reports %}
-            <li>
-                {{report.report_description}}
-                <button onclick="delete_report({{ report.id }})">
-                    Eliminar/Editar
-                </button>
-            </li>
-            Pregunta: {{report.question.question_text}}
-            <button>
-                <a href= "/admin/choicemaster/question/{{ report.question.id}}/change/">Eliminar/Editar</a>
-            </button>
+        <blockquote>
+        <blockquote>
             <ul>
-                Respuestas: <br>
-                {% for answer in report.question.answer_set.all %}
-                    <li> {{answer.answer_text}}
-                        <button>
-                            <a href= "/admin/choicemaster/answer/{{ answer.id}}/change/">Eliminar/Editar</a>
-                        </button>
+                {% for report in reports %}
+                    <li>
+                        {{report.report_description}}
+                        <img src="{% static 'delete.png' %}" height="20" width="20" onclick="delete_report({{ report.id }})">
                     </li>
+                    <blockquote>
+                        {{report.question.question_text}}
+                        <img src="{% static 'delete.png' %}" height="20" width="20" onclick="delete_question({{report.id}}, {{report.question.id}})">
+                        <img src="{% static 'edit.png' %}" height="20" width="20">
+                        <blockquote>
+                            <ul>
+                                {% for answer in report.question.answer_set.all %}
+                                    <li> {{answer.answer_text}}
+                                        <Img src="{% static 'delete.png' %}" height="20" width="20">
+                                        <img src="{% static 'edit.png' %}"height="20" width="20">
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </blockquote>
+                    </blockquote>
                 {% endfor %}
             </ul>
-        {% endfor %}
+        </blockquote>
+        </blockquote>
     {% else %}
         <p>No reports pending!</p>
     {% endif %}

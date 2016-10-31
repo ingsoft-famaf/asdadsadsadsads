@@ -80,6 +80,6 @@ def report(request):
     momento.
     """
     context = dict()
-    context['reports'] = Report.objects.all()
+    context['reports'] =Report.objects.exclude(report_state="E")
     return render(request, 'choicemaster/report.html', context)
 

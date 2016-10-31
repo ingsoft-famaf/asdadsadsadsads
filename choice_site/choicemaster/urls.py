@@ -11,6 +11,7 @@ urlpatterns = [
         views.add_question_w_subject_topic,
         name='add_question_w_sdeect_topic'),
     url(r'^report/$', views.report, name='report'),
-    url(r'^ajax/delete/$', ajax.delete_report, name="delete_report")
+    url(r'^ajax/delete/report$', ajax.delete_report, name="delete_report"),
+    url(r'^ajax/delete/question$', ajax.delete_question, name="delete_question")
 
 ]
