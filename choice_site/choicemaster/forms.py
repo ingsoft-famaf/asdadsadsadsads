@@ -51,8 +51,11 @@ class ExamForm(ModelForm):
         exclude = ['question', 'correct']
 
     def __init__ (self, *args, **kwargs):
-        question_id = kwargs['question']
-        super(ExamForm, self).__init__(*args, **kwargs)
-        if question_id:
-            self.fields['answer'].queryset = Answer.objects.filter(question=question_id)
+        try:
+            question_id = kwargs['question']
+            super(ExamForm, self).__init__(*args, **kwargs)
+            if question_id:
+                self.fields['answer'].queryset = Answer.objects.filter(question=question_id)
+        except KeyError:
+            pass
 

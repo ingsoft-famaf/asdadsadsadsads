@@ -99,63 +99,6 @@ def configure_exam2(request):
         form = ConfigureExamForm2()
     return render(request, 'choicemaster/exam/configure_exam.html', {'form': form})
 
-''' Views to configure the exam - Las hace nacho las dejo para guiarme 
-
-#@login_required
-def configure_exam_subject(request):
-    context = dict()
-    context['subjects'] = models.Subject.objects.all()
-    return render(request, 'choicemaster/exam/configure_exam.html', context)
-
-
-#@login_required
-def configure_exam_topic(request, subject_id):
-    subject = models.Subject.objects.filter(id=subject_id)[0]
-    topics = models.Topic.objects.filter(subject_id=subject_id)
-    context = dict()
-    context['subject'] = subject
-    context['topics'] = topics
-    return render(request, 'choicemaster/exam/configure_topic.html', context)
-
-
-#@login_required
-def configure_exam(request, subject_id ='', topic_ids =''):
-    
-    subject = models.Subject.objects.filter(id=subject_id)[0]
-    for item in topic_ids
-    topic = models.Topic.objects.filter(id=topic_id)[0]
-    context = dict()
-    context['subject'] = subject
-    context['topics'] = topic
-
-    if request.method == 'POST':
-        form = ConfigureForm(request.POST)
-        if form.is_valid():
-            form.save()
-            timer = request.POST.get('timer')
-            quantity = request.POST.get('quantity')
-            context['timer'] = timer
-            context['quantity'] = quantity
-            exam = Exam.objects.create(exam_quantity_questions = quantity, exam_timer = timer,
-                    exam_subject = subject_id, exam_topics)
-        return render('choicemaster/exam/generate_exam.html', context)
-    else:
-        context['form'] = ConfigureForm()
-        context['request'] = request
-        return render(request, 'choicemaster/exam/configure_timer_quantity.html', context)
-
-
-def generate_exam(request, subject_id ='', topic_id ='', timer='', quantity=''):
-
-    if request.method == 'POST':
-        request.POST.get('')
-
-    else:
-        context['form'] = GenerateExamForm(question)
-        context['request'] = request
-        return render(request, 'choicemaster/exam/resolve.html', context)
-    questions = 
-'''
 def test_exam(request):
     subject = models.Subject.objects.get(pk = 1)
     topic = models.Topic.objects.filter(subject = subject.id)
@@ -167,24 +110,24 @@ def test_exam(request):
     context['timer'] = 30
     context['quantity'] = 2
     context['algorithm'] = 0
-    exam = ExamView()
-    return render(request, 'generate', context)
+    # exam = ExamView()
+    return render(request, 'choicemaster/exam/resolve_exam.html', context)
 
 
-def resolve_exam(self, request):
+def resolve_exam(request, subject='', topic_ids={}, timer='', quantity='', algorithm=''):
     
     if request.method != 'POST':
 
-        subject_id = request.GET.get('subject')
-        topic_ids = request.GET.get('topic_ids')
-        timer = request.GET.get('timer')
-        quantity = request.GET.get('quantity')
-        algorithm = request.GET.get('algorithm')
+        subject_id = subject
+        topic_ids_tmp = topic_ids
+        timer_tmp = timer
+        quantity_tmp = quantity
+        algorithm_tmp = algorithm
 
         # Create the exam model with all the configurations
-        exam = Exam.objects.create(exam_subject = self.subject_id,
-            exam_quantity_questions = self.remaining, exam_timer = self.timer,
-            exam_algorithm = self.algorithm)
+        exam = models.Exam.objects.create(exam_subject=self.subject_id,
+            exam_quantity_questions=self.remaining, exam_timer=self.timer,
+            exam_algorithm=self.algorithm) # TODO Poner el usuario que lo realiza
         
         exam_id = exam.pk
         exam.save()
@@ -222,7 +165,7 @@ def resolve_exam(self, request):
 
     else:
         
-        form = self.form_class(request.POST)
+        form = ExamForm(request.POST)
         if form.is_valid():
             exam_tmp = request.POST.get('exam_tmp')
             answer_id = request.POST.get('answer')
@@ -279,6 +222,7 @@ class ExamView(View):
     exam_id = 0
     initial = {}
     questions = {}
+    questions_used = {}
     subject_id = ''
     topic_ids = {}
     timer = 1
@@ -297,6 +241,7 @@ class ExamView(View):
         mistakes = {}
         initial = {}
         questions = {}
+        questions_used = {}
         amount_correct = 0
 
 
@@ -307,13 +252,16 @@ class ExamView(View):
             questions_topic = Question.objects.filter(topic = topic_id)
             try:
                 question = random.choice(questions_topic)
+                self.questions_used[question.id] = question
                 del self.questions[question.id]
             except IndexError:
                 question = random.choice(self.questions)
+                self.questions_used[question.id] = question
                 del self.questions[question.id]
 
         else:
             question = random.choice(self.questions)
+            self.questions_used[question.id] = question
             del self.questions[question.id]
             
         return question
