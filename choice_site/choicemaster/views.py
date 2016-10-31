@@ -62,7 +62,8 @@ def add_question_w_subject_topic(request, subject_id, topic_id, message=''):
                 return render(request, 'choicemaster/index.html',context)
             else:
                 context['message'] = result['message']
-                return render(request, 'choicemaster/add/question/w_subject_topic.html',context)
+                return render(request, 'choicemaster/add/question/w_subject'
+                    '_topic.html',context)
 
             
             # return redirect('index')
@@ -74,7 +75,6 @@ def add_question_w_subject_topic(request, subject_id, topic_id, message=''):
         context)
 
 def report(request):
-    # TODO Check function. Documentation doesn't match implementation. Spanish?
     """
     Le paso al template la cantidad de reportes sin ser evaluados que hay en el
     momento.

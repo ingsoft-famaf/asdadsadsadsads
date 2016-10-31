@@ -7,7 +7,8 @@
     <table>
         {% for item in topics %}
             <tr>
-                <td><a href="{% url 'add_question_w_subject_topic' subject.id item.id %}">{{ item.topic_title }}</a></td>
+                <td><a href="{% url 'add_question_w_subject_topic' subject.id 
+                    item.id %}">{{ item.topic_title }}</a></td>
             </tr>
         {% endfor %}
     </table>

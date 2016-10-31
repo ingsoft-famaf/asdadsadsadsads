@@ -1,0 +1,15 @@
+{% extends 'choicemaster/base.html' %}
+
+{% block content %}
+    <h1></h1>
+    <h2> Subject: {{ subject }} </h2>
+    <h2> Question : {{ question.question_text }}</h2>
+    <form action="{% url '/generate' question topic_ids %}" enctype="multipart/
+        form-data" method="post">
+        {% csrf_token %}
+        <p>
+            {{ form }}
+        </p>
+        <p><input type="submit" value="Next" /></p>
+    </form>
+{% endblock %}

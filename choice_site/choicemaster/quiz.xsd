@@ -3,11 +3,14 @@
     <xs:element name="quiz">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="question" maxOccurs="unbounded" minOccurs="0">
+                <xs:element name="question" maxOccurs="unbounded" 
+                    minOccurs="0">
                     <xs:complexType mixed="true">
                         <xs:sequence>
-                            <xs:element type="xs:string" name="correct" maxOccurs="1" minOccurs="1"/>
-                            <xs:element type="xs:string" name="incorrect" maxOccurs="unbounded" minOccurs="0"/>
+                            <xs:element type="xs:string" name="correct" 
+                                maxOccurs="1" minOccurs="1"/>
+                            <xs:element type="xs:string" name="incorrect" 
+                                maxOccurs="unbounded" minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

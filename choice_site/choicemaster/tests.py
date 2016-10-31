@@ -200,10 +200,21 @@ class LoadQuestionsTestCase(TestCase):
         self.assertEquals(response.status_code, 500)
 
 
-    def test_report(self):
+class ReportTestCase(TestCase):
+    def setUp(self):
         """
-         Se fija si hay denuncias si no hay crea una y corrobora que aparesca
-         en la pagina de reporte.
+        Create a new user and verify that the login function works properly
+        """
+        self.user_staff = User.objects.create_superuser(username='teststaff',
+                                                        email='',
+                                                        password='123456789a')
+        self.user_staff.save()
+        self.cp = Client()
+
+    def test_check_reports(self):
+        """
+        Checks existing reports. In case there is none, create one and make
+        sure it appears in the reports page site.
         """
         self.cp.logout()
         logged_in_staff = self.cp.login(username='teststaff',
