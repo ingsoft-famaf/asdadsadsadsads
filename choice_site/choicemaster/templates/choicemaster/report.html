@@ -118,8 +118,7 @@
                         <img style="display:none" id="Aq{{report.question.id}}" src="{% static 'send.png' %}"height="20" width="20" onclick="send_question({{report.question.id}},{{ report.id }})">
                         <blockquote>
                             <ul>
-                                {% for answer in report.question.answer_set.all
-                                 %}
+                                {% for answer in report.question.answer_set.all %}
                                     <li> {{answer.answer_text}}
                                         {% if answer.correct == True %}
                                             <img src="{% static 'tick.png' %}" height="20" width="20">
@@ -128,8 +127,7 @@
                                         <img src="{% static 'edit.png' %}" height="20" width="20" onclick="edit_ans({{ answer.id }})">
                                     </li>
                                         <input style="display:none" id="T{{ answer.id }}" type="text"name="Edit" Value="{{answer.answer_text}}">
-                                        <img style="display:none" id="A{{ answer.id }}" src="{% static 'send.png'
-                                         %}"height="20" width="20" onclick="send_ans({{answer.id}},{{ report.id }})">
+                                        <img style="display:none" id="A{{ answer.id }}" src="{% static 'send.png'%}"height="20" width="20" onclick="send_ans({{answer.id}},{{ report.id }})">
                                 {% endfor %}
                             </ul>
                         </blockquote>
