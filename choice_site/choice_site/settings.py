@@ -47,9 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # django-ajax-select
-    # 'ajax_select',
     
     # django-allauth:
     'allauth',
