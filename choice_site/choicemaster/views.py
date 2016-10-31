@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from choicemaster import models
-from .forms import UploadQuestionFileForm
+from .forms import *
 
 from .upload import parse_xml_question
 from models import Report
@@ -23,7 +23,20 @@ def index(request, message=''):
 @staff_member_required
 def add_question(request):
     context = dict()
-    context['subjects'] = models.Subject.objects.all()
+    if request.method == 'POST':
+        form = UploadQuestionForm(request.POST, request.FILES)
+        if form.is_valid():
+            topic = request.POST.get('topic')
+            file = request.FILES['xmlfile']
+            if topic > 0:
+                parse_xml_question(file, topic)
+            redirect(index)
+        else:
+            print form.errors
+            redirect(add_question)
+    else:
+        form = UploadQuestionForm()
+        context['form'] = form
     return render(request, 'choicemaster/add/question.html', context)
 
 
