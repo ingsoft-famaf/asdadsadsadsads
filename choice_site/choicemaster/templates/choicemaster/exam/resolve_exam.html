@@ -23,7 +23,7 @@
             <input type="checkbox" id="C{{ quest.id }}">{{quest.question_text}}
             <p></p>
         {% endfor %}
-        <button onclick="reporting({{ exam_tmp.questions_used }},{{ question.id  }} )">
+        <button onclick="reporting({{ questions_used }},{{ question.id  }} )">
             Reporting</button>
     </ul>
 

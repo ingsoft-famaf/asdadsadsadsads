@@ -5,7 +5,7 @@ from choicemaster import models
 from .forms import *
 from django.views import View
 import random
-#import ipdb
+import ipdb
 from .upload import parse_xml_question
 from models import Report
 
@@ -135,8 +135,8 @@ def configure_exam3(request, exam_id):
             quantity = request.POST.get('quantity')
             timer = request.POST.get('timer')
             e = models.Exam.objects.get(pk=exam_id)
-            e.quantity_questions = quantity
-            e.timer = timer
+            e.exam_quantity_questions = quantity
+            e.exam_timer = timer
             e.save()
             return redirect('resolve_exam', exam_id=exam_id)
     else:
@@ -159,28 +159,22 @@ def test_exam(request):
     e.save()
     return redirect('resolve_exam', exam_id=e.id)
 
+global_exams = None
 
-def resolve_exam(request, exam_id='', subject_id='', topic_id='', timer='', quantity='', algorithm='', exam_tmp=''):
+def resolve_exam(request, exam_id=''):
     if request.method != 'POST':
-        if not exam_id:
-            # Create the exam model with all the configurations
-            exam = models.Exam.objects.create(user=models.User.objects.get(pk=1),
-                subject=models.Subject.objects.get(pk=subject_id),
-                exam_quantity_questions=quantity, exam_timer=timer,
-                exam_algorithm=algorithm) # TODO Poner el usuario que lo realiza
+    
+        exam = models.Exam.objects.get(pk=exam_id)
+        subject = exam.subject
+        timer = exam.exam_timer
+        quantity = exam.exam_quantity_questions
+        algorithm = exam.exam_algorithm
 
-            subject = models.Subject.objects.get(pk=subject_id)
-            exam_id = exam.id
-            exam.save()
-        else:
-            exam = models.Exam.objects.get(pk=exam_id)
-            subject = exam.subject
-        
 
-        exam_tmp = ExamView(subject_id, timer, quantity, algorithm, exam.id)
+        exam_tmp = ExamView(subject.id, timer, quantity, algorithm, exam.id)
 
         topic_ids = exam.topic.all() # TODO
-
+        # ipdb.set_trace()
         # We store all the questions of the selected topics
         for item in topic_ids:
             questions_tmp = models.Question.objects.filter(topic=models.Topic.objects.get(pk=item.id))
@@ -199,26 +193,32 @@ def resolve_exam(request, exam_id='', subject_id='', topic_id='', timer='', quan
         context['topic'] = question.topic
         context['form'] = form
         context['question'] = question
-        context['exam_tmp'] = exam_tmp
+        
+        global global_exams
+        ipdb.set_trace()
+        global_exams = exam_tmp
 
         return render(request, 'choicemaster/exam/resolve_exam.html', context)
 
     else:
         form = ExamForm(request.POST)
-        pepe = request.POST.get('answer')
-        answer_id = pepe
+        answer_id = request.POST.get('answer')
+        ipdb.set_trace()
+        exam_tmp = global_exams
 
         answer = Answer.objects.get(pk=answer_id)
         
-        #ipdb.set_trace()
-        questionn = answer.question
-        topic_id = questionn.topic.id
-        correct_answer = Answer.objects.get(question=questionn.id, correct=True)
+        question = answer.question
+        topic_id = question.topic.id
+        answers = Answer.objects.filter(question=question.id)
+        correct_answer = answers.filter(correct=True)[0]
 
+
+        value = (correct_answer.id == answer.id)
         # Generate the snapshot of the answer
-        snap = QuestionSnapshot.objects.create(exam=exam_id, question=questionn,
+        snap = QuestionSnapshot.objects.create(exam=models.Exam.objects.get(pk=exam_tmp.exam), question=question,
             chosen_answer=answer.answer_text, correct_answer=correct_answer.answer_text,
-            choice_correct=correct_answer.answer_text.equals(answer.answer_text))
+            choice_correct=value)
         snap.save()
 
         exam_tmp.remaining=- 1
@@ -230,15 +230,17 @@ def resolve_exam(request, exam_id='', subject_id='', topic_id='', timer='', quan
 
         if exam_tmp.remaining:
             # Get the next question
-            questionn = exam_tmp.getQuestion()
+            question = exam_tmp.getQuestion()
             # Generate the form
-            form = exam_tmp.form_class(questionn.id)
+            form = exam_tmp.form_class(question.id)
             
             # Build the context for the next iteration
             context = dict()
-            context['question'] = questionn
+            context['question'] = question
             context['form'] = form
-            context['exam_tmp'] = exam_tmp
+            context['questions_used'] = exam_tmp.questions_used
+            context['subject'] = models.Subject.objects.get(pk=exam_tmp.subject_id)
+            context['question'] = question
 
             return render(request, 'choicemaster/exam/resolve_exam.html', context)
         else:
@@ -252,6 +254,7 @@ def resolve_exam(request, exam_id='', subject_id='', topic_id='', timer='', quan
     
         # TODO Check if it is needed the context here
         #return render(request, 'choicemaster/exam/resolve_exam.html', {'form': form})
+
 
 
 
