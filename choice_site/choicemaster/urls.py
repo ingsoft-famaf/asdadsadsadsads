@@ -11,9 +11,18 @@ urlpatterns = [
         name='add_question_w_subject_topic'),
     url(r'^report/$', views.report, name='report'),
 
-    url(r'^configure/$', views.configure_exam2, name='configure_exam'),
+    url(r'^configure1/$', views.configure_exam1, name='configure_exam1'),
+    url(r'^configure2/(?P<exam_id>[0-9]+)/$', views.configure_exam2, name='configure_exam2'),
+    url(r'^configure3/(?P<exam_id>[0-9]+)/$', views.configure_exam3,
+        name='configure_exam3'),
+
     url(r'^ajax/get_checkboxes/$', ajax.get_checkboxes, name='ajax_get_checkoxes'),
+
+    url(r'^configure/$', views.configure_exam2, name='configure_exam'),
     url(r'^test/$', views.test_exam, name='test'),
-    url(r'^generate/$', views.resolve_exam, name='resolve_exam')
+    url(r'^generate/$', views.resolve_exam, name='resolve_exam'),
+    url(r'^generate/(?P<subject_id>[0-9]+)/(?P<topic_id>[0-9]+)/(?P<timer>[0-9]+)/(?P<quantity>[0-9]+)/(?P<algorithm>[0-1]+)/$',
+        views.resolve_exam, name='resolve_exam_')
+
 ]
 

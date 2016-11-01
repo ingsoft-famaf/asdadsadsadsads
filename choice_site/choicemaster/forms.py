@@ -2,7 +2,6 @@ from django.forms import Form, ModelForm, FileField, DecimalField
 from django import forms
 from .models import Subject, Topic, Question, Answer
 
-
 # Ignacio
 
 def get_subjects():
@@ -15,12 +14,19 @@ def get_subjects():
     choices.sort()
     return choices
 
-TOPICS = (('0', 'None'), ('0', '---'))
+def get_topics(ids):
+    topics = Topic.objects.filter(subject_id=ids)
+    choices = dict()
+    for t in topics:
+        choices[str(t.id)] = t.topic_title
+    choices = choices.items()
+    choices.sort()
+    return choices
 
 class ConfigureExamForm2(forms.Form):
     subject = forms.ChoiceField(choices=get_subjects(), widget=forms.Select(
         attrs={'onchange': "get_topics()"}))
-    mult_topics = forms.MultipleChoiceField(choices=TOPICS,
+    mult_topics = forms.MultipleChoiceField(choices=(),
         widget=forms.CheckboxSelectMultiple)
     timer = forms.DecimalField(
         label = 'Time for each question',
@@ -32,6 +38,23 @@ class ConfigureExamForm2(forms.Form):
         # max_value = 60, Deberia ser la cantidad de preguntas para los temas elegidos.
         min_value = 1)
 
+
+class SubjectForm(forms.Form):
+    subject = forms.ChoiceField(choices=get_subjects(), widget=forms.Select(attrs={'onchange': 'form.submit();'}))
+
+
+class MultipleTopicForm(forms.Form):
+    topic = forms.MultipleChoiceField(choices=get_subjects(),
+                                        widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, ids, *args, **kwargs):
+        super(MultipleTopicForm, self).__init__(*args, **kwargs)
+        self.fields['topic'].choices = get_topics(ids)
+
+
+class ConfigForm(forms.Form):
+    quantity = forms.IntegerField()
+    timer = forms.IntegerField()
 
 # Ignacio
 
@@ -55,7 +78,7 @@ class ExamForm(ModelForm):
             question_id = kwargs['question']
             super(ExamForm, self).__init__(*args, **kwargs)
             if question_id:
-                self.fields['answer'].queryset = Answer.objects.filter(question=question_id)
+                    self.fields['answer'].queryset = Answer.objects.filter(question=question_id)
         except KeyError:
             pass
 

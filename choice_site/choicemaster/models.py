@@ -40,12 +40,12 @@ class Question(models.Model):
 
 class Exam(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    exam_subject = models.ForeignKey(Subject, on_delete=models.CASCADE, default=0)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, default=0)
     exam_quantity_questions = models.IntegerField(default=0)
     exam_timer = models.IntegerField(default=60)
     exam_algorithm = models.CharField(max_length=200, default=0)
     exam_result = models.IntegerField(default=0)
-    # exam_topics = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    topic = models.ManyToManyField(Topic)
 
 
 class Answer(models.Model):

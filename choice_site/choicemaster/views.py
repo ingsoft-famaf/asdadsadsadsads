@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect, HttpResponse, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from choicemaster import models
-from .forms import UploadFileForm, ConfigureExamForm2, ExamForm
+from .forms import *
 from django.views import View
-
+import random
+import ipdb
 from .upload import parse_xml_question
 from models import Report
 
@@ -85,26 +86,70 @@ def report(request):
     return render(request, 'choicemaster/report.html', context)
 
 
+# Nuevos configure
 @login_required
-def configure_exam2(request):
+def configure_exam1(request):
     if request.method == 'POST':
-        form = ConfigureExamForm2(request.POST)
+        form = SubjectForm(request.POST)
         if form.is_valid():
-            subject = request.POST.get('subject')
-            mult_topics = request.POST.getlist('mult_topics[]')
-            timer = request.POST.get('timer')
-            quantity = request.POST.get('quantity')
-            # GENERAR EXAMEN
+            subject_id = request.POST.get('subject')
+            exam = models.Exam(user=models.User.objects.get(pk=1))
+            # ipdb.set_trace()
+            exam.subject = models.Subject.objects.get(pk=subject_id)
+            exam.save()
+            return redirect('configure_exam2', exam_id=exam.id)
     else:
-        form = ConfigureExamForm2()
-    return render(request, 'choicemaster/exam/configure_exam.html', {'form': form})
+        form = SubjectForm()
+    return render(request, 'choicemaster/exam/configure_exam1.html',
+                  {'form': form})
+
+
+@login_required
+def configure_exam2(request, exam_id):
+    e = models.Exam.objects.get(pk=exam_id)
+    if request.method == 'POST':
+        form = MultipleTopicForm(request.POST)
+        if form.is_valid():
+            topic_ids = request.POST.getlist('topic')
+            for idt in topic_ids:
+                t = models.Topic.objects.get(pk=idt)
+                e.topic.add(t)
+            e.save()
+            redirect('configure_exam3', exam_id=exam_id)
+    else:
+        #ipdb.set_trace()
+        form = MultipleTopicForm(e.subject.id)
+    return render(request, 'choicemaster/exam/configure_exam2.html',
+                  {'form': form})
+
+
+@login_required
+def configure_exam3(request, exam_id):
+    if request.method == 'POST':
+        form = ConfigForm(request.POST)
+        if form.is_valid():
+            quantity = request.POST.get('quantity')
+            timer = request.POST.get('timer')
+            e = models.Exam.objects.get(pk=exam_id)
+            e.quantity_questions = quantity
+            e.timer = timer
+            e.save()
+            redirect('generate_exam', exam_id=exam_id)
+    else:
+        form = ConfigForm()
+    return render(request, 'choicemaster/exam/configure_exam2.html',
+                  {'form': form})
+
+
+# Nuevos configure
+
 
 def test_exam(request):
-    subject = models.Subject.objects.get(pk = 1)
-    topic = models.Topic.objects.filter(subject = subject.id)
+    subject = models.Subject.objects.get(pk=1)
+    topic = models.Topic.objects.filter(subject=subject.id)
     context = dict()
-    context['subject_id'] = subject.id
     context['subject'] = subject
+    context['subject_id'] = subject.id
     context['topic'] = topic
     context['topic_ids'] = topic[0].id
     context['timer'] = 30
@@ -114,48 +159,56 @@ def test_exam(request):
     return render(request, 'choicemaster/exam/resolve_exam.html', context)
 
 
-def resolve_exam(request, subject='', topic_ids={}, timer='', quantity='', algorithm=''):
-    
+def resolve_exam(request, subject_id='', topic_id='', timer='', quantity='', algorithm='', exam_tmp=''):
+    # ipdb.set_trace()
     if request.method != 'POST':
-
-        subject_id = subject
+        '''
+        subject_id_tmp = subject
         topic_ids_tmp = topic_ids
         timer_tmp = timer
         quantity_tmp = quantity
         algorithm_tmp = algorithm
+        '''
+        subject =models.Subject.objects.get(pk=subject_id)
 
         # Create the exam model with all the configurations
-        exam = models.Exam.objects.create(exam_subject=self.subject_id,
-            exam_quantity_questions=self.remaining, exam_timer=self.timer,
-            exam_algorithm=self.algorithm) # TODO Poner el usuario que lo realiza
+        exam = models.Exam.objects.create(user=models.User.objects.get(pk=1),
+            exam_subject=models.Subject.objects.get(pk=subject_id),
+            exam_quantity_questions=quantity, exam_timer=timer,
+            exam_algorithm=algorithm) # TODO Poner el usuario que lo realiza
         
-        exam_id = exam.pk
+        exam_id = exam.id
         exam.save()
-
+        a = []   # Just to check
+        a.append(1) # To check
         kwargs = dict()
         kwargs['subject_id'] = subject_id
-        kwargs['topic_ids'] = topic_ids
-        kwargs['timer'] = topic_ids
+        kwargs['topic_ids'] = a
+        kwargs['timer'] = timer
         kwargs['quantity'] = quantity
-        kwargs['algorithm'] = topic_ids
-        kwargs['exam_id'] = exam.id
+        kwargs['algorithm'] = algorithm
+        kwargs['exam'] = exam
 
-        exam_tmp = ExamView(kwargs)
+        exam_tmp = ExamView(subject_id, a, timer, quantity, algorithm, exam)
 
+        topic_ids = [topic_id]
         # We store all the questions of the selected topics
+        ipdb.set_trace()
         for item in topic_ids:
-            questions_tmp = Topic.objects.filter(id=topic_id)
+            questions_tmp = models.Question.objects.filter(topic=models.Topic.objects.get(pk=item))
             for q in questions_tmp:
-                self.questions[str(q.id)] = q
+                exam_tmp.questions[str(q.id)] = q
             
         # Select a random question for the first one.
-        question = getQuestion()
-        self.remaining =- 1
+        question = exam_tmp.getQuestion()
+        exam_tmp.remaining =- 1
 
         # Generate the form
-        self.initial = {'question': question.id}
-        form = self.form_class(initial=self.initial)
-        context['subject'] = subject.subject_title
+        exam_tmp.initial = {'question': question.id}
+        form = exam_tmp.form_class(initial=exam_tmp.initial)
+        
+        context = dict()
+        context['subject'] = subject
         context['topic'] = question.topic
         context['form'] = form
         context['question'] = question
@@ -219,7 +272,7 @@ def resolve_exam(request, subject='', topic_ids={}, timer='', quantity='', algor
 class ExamView(View):
     form_class = ExamForm
     template_name = 'choicemaster/exam/resolve_exam.html'
-    exam_id = 0
+    exam = 0
     initial = {}
     questions = {}
     questions_used = {}
@@ -231,37 +284,38 @@ class ExamView(View):
     mistakes = {}
     amount_correct = 0
 
-    def __init__(self, *args, **kwargs):
-        exam_id = kwargs['exam_id']
-        subject_id = kwargs['subject_id']
-        topic_ids = kwargs['topic_ids']
-        timer = kwargs['timer']
-        remaining = kwargs['quantity']
-        algorithm = kwargs['algorithm']
-        mistakes = {}
-        initial = {}
-        questions = {}
-        questions_used = {}
-        amount_correct = 0
+    def __init__(self, subject_id, topic_ids, timer, quantity, algorithm, exam):
+        self.subject_id = subject_id
+        self.exam =  exam
+        self.topic_ids = topic_ids
+        self.timer = timer
+        self.remaining = quantity
+        self.algorithm = 0
+        self.mistakes = {}
+        self.initial = {}
+        self.questions = {}
+        self.questions_used = {}
+        self.amount_correct = 0
 
 
     def getQuestion(self):
-        
+        #ipdb.set_trace()
         if self.algorithm:
-            topic_id = max(mistakes, key = mistakes.get)
+            topic_id = max(self.mistakes, key=self.mistakes.get)
             questions_topic = Question.objects.filter(topic = topic_id)
             try:
-                question = random.choice(questions_topic)
-                self.questions_used[question.id] = question
-                del self.questions[question.id]
+                question = self.questions[random.choice(self.questions.keys())]
+                self.questions_used[str(question.id)] = question
+                del self.questions[str(question.id)]
             except IndexError:
-                question = random.choice(self.questions)
-                self.questions_used[question.id] = question
-                del self.questions[question.id]
+                question = self.questions[random.choice(self.questions.keys())]
+                self.questions_used[str(question.id)] = question
+                del self.questions[str(question.id)]
 
         else:
-            question = random.choice(self.questions)
-            self.questions_used[question.id] = question
-            del self.questions[question.id]
+            index = random.choice(self.questions.keys())
+            question = self.questions[index]
+            self.questions_used[str(question.id)] = question
+            del self.questions[str(question.id)]
             
         return question
