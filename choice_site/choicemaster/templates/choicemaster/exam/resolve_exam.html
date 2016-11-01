@@ -12,6 +12,7 @@
         <p> <button type="button" onclick="get_correct();"> Submit </button></p>
         <p><input type="submit" value="Next" /></p>
     </form>
+    <p><b>Correct answer: </b></p>
     <div id="correct_answer"></div>
     <div id="question_id" style="display:none">{{ question.id }}</div>
     <script type="text/javascript">
@@ -26,7 +27,7 @@
                 // Show correct answer
                 var idt = document.getElementById("correct_answer");
                 idt.innerHTML = data['answer'];
-                console.log("test:", data.answer_text);
+                console.log("test:", data.answer);
                 console.log("success!");
             }
         });

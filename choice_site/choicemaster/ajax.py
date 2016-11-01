@@ -1,6 +1,6 @@
 from django.shortcuts import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from models import Topic, Answer
+from models import Topic, Answer, Question
 import json
 
 @csrf_exempt
@@ -20,8 +20,10 @@ def get_checkboxes(request):
 def get_correct(request):
     if request.method == 'POST' and request.is_ajax:
         question_id = request.POST.get('idq')
-        answer = Answer.objects.get(pk=question_id)
-        data = {'answer': answer.answer_text}
+        question = Question.objects.get(pk=question_id)
+        answers = Answer.objects.filter(question=question.id)
+        correct_answer = answers.filter(correct=True)
+        data = {'answer': correct_answer[0].answer_text}
         return HttpResponse(json.dumps(data), content_type='application/json')
     else:
         return HttpResponse("Something went wrong")
