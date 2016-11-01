@@ -2,9 +2,7 @@ from django.forms import Form, ModelForm, FileField, DecimalField
 from django import forms
 from .models import Subject, Topic, Question, Answer, QuestionSnapshot
 from django.core.validators import MinValueValidator, MaxValueValidator
-#import ipdb
 
-# Ignacio
 
 def get_subjects():
     subjects = Subject.objects.all()
@@ -25,21 +23,6 @@ def get_topics(ids):
     choices.sort()
     return choices
 
-class ConfigureExamForm2(forms.Form):
-    subject = forms.ChoiceField(choices=get_subjects(), widget=forms.Select(
-        attrs={'onchange': "get_topics()"}))
-    mult_topics = forms.MultipleChoiceField(choices=(),
-        widget=forms.CheckboxSelectMultiple)
-    timer = forms.DecimalField(
-        label = 'Time for each question',
-        help_text = 'In minutes',
-        max_value = 60,
-        min_value = 0)
-    quantity = DecimalField(
-        label = 'Amount of questions',
-        # max_value = 60, Deberia ser la cantidad de preguntas para los temas elegidos.
-        min_value = 1)
-
 
 class SubjectForm(forms.Form):
     subject = forms.ChoiceField(choices=get_subjects(), widget=forms.Select(attrs={'onchange': 'form.submit();'}))
@@ -52,6 +35,7 @@ class MultipleTopicForm(forms.Form):
     def __init__(self, ids, *args, **kwargs):
         super(MultipleTopicForm, self).__init__(*args, **kwargs)
         self.fields['topic'].choices = get_topics(ids)
+
 
 ALGORITHMS = (('0', 'Based on errors'), ('1', 'Random'))
 
@@ -66,8 +50,6 @@ class ConfigForm(forms.Form):
         self.fields['quantity'].validators =\
             [MaxValueValidator(max_quantity)]
 
-
-# Ignacio
 
 class UploadFileForm(Form):
     docfile = FileField(
@@ -93,3 +75,20 @@ class ExamForm(ModelForm):
             self.fields['answer'].queryset = Answer.objects.filter(question=question_id)
         else:
             self.fields['answer'].queryset = Answer.objects.filter(question=0)
+
+TOPICS = (('0', 'Select Topic'), ('1', '---'))
+
+class UploadQuestionForm(forms.Form):
+    subject = forms.ChoiceField(choices=get_subjects(), widget=forms.Select(
+                                          attrs={'onchange': "get_topics()"}))
+    topic = forms.ChoiceField(choices=TOPICS)
+    xmlfile = forms.FileField(label='Choose XML file')
+
+
+# class TopicsForm(forms.Form):
+#    topic_field = forms.ChoiceField(choices=TOPICS, widget=forms.Select(
+#        attrs={'onchange': "this.form.submit();"}))
+
+
+class UploadQuestionFileForm(forms.Form):
+    docfile = forms.FileField(label='Select a file')

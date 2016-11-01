@@ -119,7 +119,7 @@ def parse_xml_question(xmlfile, topic_id):
         for children in item_children:
             answer = models.Answer()
             answer.answer_text = children.text
-            if children.tag == 'corrrect':
+            if children.tag == 'correct':
                 answer.correct = True
             else:
                 answer.correct = False

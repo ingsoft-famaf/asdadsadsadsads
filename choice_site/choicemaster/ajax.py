@@ -3,8 +3,9 @@ from django.views.decorators.csrf import csrf_exempt
 from models import Topic, Answer, Question, Report
 import json
 
+
 @csrf_exempt
-def get_checkboxes(request):
+def ajax_view(request):
     if request.method == 'POST' and request.is_ajax:
         topics = Topic.objects.all().filter(subject_id=request.POST.get('ids'))
         lt = []

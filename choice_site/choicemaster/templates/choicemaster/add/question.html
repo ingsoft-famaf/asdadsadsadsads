@@ -1,17 +1,43 @@
 {% extends 'choicemaster/base.html' %}
 
 {% block content %}
-    {% if subjects %}
-        <h1>Add questions</h1>
-        First, choose a subject:
-        <table>
-            {% for item in subjects %}
-                <tr>
-                    <td><a href="{% url 'add_question_w_subject' item.id %}">{{ item.subject_title }}</a></td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <h1>No subject exists!</h1>
-    {% endif %}
+    <h1>Add questions</h1>
+    <form id="question_form" action="{% url 'add_question' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p> {{ form.subject }} </p>
+        <p> {{ form.topic }} </p>
+        <p> {{ form.xmlfile.label }} </p>
+        <p> {{ form.xmlfile }} </p>
+        <br>
+        <input type="submit" value="Submit" />
+    </form>
+
+    <script type="text/javascript">
+    function get_topics() {
+        var frm = $('#subject_form');
+        var e = document.getElementById("id_subject");
+        var ids = e.value;
+        console.log("ids =", ids);
+        $.ajax({
+            type: 'POST',
+            url: '/ajax_view/',
+            dataType: 'json',
+            data: {'ids': ids},
+            success: function(data) {
+                var topics = data.topics;
+                var idt = document.getElementById("id_topic");
+                for (i = 0; i < topics.length; i++) {
+                    topic = topics[i];
+                    idt.options[i+1].value = topic[0];
+                    idt.options[i+1].text = topic[1];
+                    console.log("In position", i, "\nvalue =", topic[0],
+                        "\ntext =", topic[1])
+                }
+                console.log("success!");
+            }
+        });
+    }
+    </script>
+
+
 {% endblock %}
