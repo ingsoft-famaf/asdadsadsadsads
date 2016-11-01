@@ -66,7 +66,7 @@ def parse_xml_question(xmlfile, topic_id):
     if not os.path.exists(media_dir):
         os.makedirs(media_dir)
 
-    # Store file received from user in a temporary file 
+    # Store file received from user in a temporary file.
     with open(os.path.join(media_dir, 'file_tmp.xml'), 'w') as destination:
         for chunk in xmlfile.chunks():
             destination.write(chunk)
@@ -125,5 +125,5 @@ def parse_xml_question(xmlfile, topic_id):
                 answer.correct = False
             answer.question_id = question.id
             answer.save()
-            
+
     return result

@@ -6,7 +6,7 @@ from .forms import *
 from django.views import View
 import random
 from .upload import parse_xml_question
-from models import Report
+from .models import Report
 
 
 @login_required
@@ -26,7 +26,7 @@ def add_question(request):
     context = dict()
     if request.method == 'POST':
         form = UploadQuestionForm(request.POST, request.FILES)
-        #if form.is_valid():
+        # if form.is_valid():
         topic = request.POST.get('topic')
         file = request.FILES['xmlfile']
         if topic > 0:
@@ -42,13 +42,12 @@ def add_question(request):
 
 
 def report(request):
-    # TODO Check function. Documentation doesn't match implementation. Spanish?
     """
     Le paso al template la cantidad de reportes sin ser evaluados que hay en el
     momento.
     """
     context = dict()
-    context['reports'] = Report.objects.all()
+    context['reports'] = Report.objects.exclude(report_state="E")
     return render(request, 'choicemaster/report.html', context)
 
 
@@ -120,8 +119,10 @@ def test_exam(request):
     timer = 3
     quantity = 2
     algorithm = 0
-    e = models.Exam.objects.create(user=models.User.objects.get(pk=1), subject=subject,
-        exam_timer=timer, exam_algorithm=algorithm)
+    e = models.Exam.objects.create(user=models.User.objects.get(pk=1),
+                                   subject=subject,
+                                   exam_timer=timer,
+                                   exam_algorithm=algorithm)
     for idt in topics:
         e.topic.add(idt)
     e.save()
@@ -139,7 +140,6 @@ def resolve_exam(request, exam_id=''):
         quantity = exam.exam_quantity_questions
         algorithm = exam.exam_algorithm
 
-
         exam_tmp = ExamView(subject.id, timer, quantity, algorithm, exam.id)
 
         topic_ids = exam.topic.all() # TODO
@@ -151,7 +151,7 @@ def resolve_exam(request, exam_id=''):
                 exam_tmp.questions[str(q.id)] = q
             
         # Select a random question for the first one.
-        question = exam_tmp.getQuestion()
+        question = exam_tmp.get_question()
 
         # Generate the form
         form = exam_tmp.form_class(question=question.id)
@@ -179,12 +179,15 @@ def resolve_exam(request, exam_id=''):
         answers = Answer.objects.filter(question=question.id)
         correct_answer = answers.filter(correct=True)[0]
 
-
         value = (correct_answer.id == answer.id)
         # Generate the snapshot of the answer
-        snap = QuestionSnapshot.objects.create(exam=models.Exam.objects.get(pk=exam_tmp.exam), question=question,
-            chosen_answer=answer.answer_text, correct_answer=correct_answer.answer_text,
-            choice_correct=value)
+        snap = QuestionSnapshot.objects.create(exam=models.Exam.objects
+                                               .get(pk=exam_tmp.exam),
+                                               question=question,
+                                               chosen_answer=answer
+                                               .answer_text,
+                                               correct_answer=correct_answer.answer_text,
+                                               choice_correct=value)
         snap.save()
 
         exam_tmp.remaining -= 1
@@ -196,7 +199,7 @@ def resolve_exam(request, exam_id=''):
 
         if exam_tmp.remaining:
             # Get the next question
-            question = exam_tmp.getQuestion()
+            question = exam_tmp.get_question()
             # Generate the form
             form = ExamForm(question=question.id)
             
@@ -216,15 +219,15 @@ def resolve_exam(request, exam_id=''):
             exam.result = exam_tmp.amount_correct
             exam.save()
 
-            # Return to the index page with the amount of correct answers on the message board
+            # Return to the index page with the amount of correct answers on
+            # the message board
             message = "Of " + str(models.Exam.objects.get(pk=exam_tmp.exam).exam_quantity_questions) +\
                 " questions, correct: " + str(exam_tmp.amount_correct)
             return render(request, 'choicemaster/index.html', {'message': message})
     
         # TODO Check if it is needed the context here
-        #return render(request, 'choicemaster/exam/resolve_exam.html', {'form': form})
-
-
+        # return render(request, 'choicemaster/exam/resolve_exam.html',
+        # {'form': form})
 
 
 class ExamView(View):
@@ -254,8 +257,7 @@ class ExamView(View):
         self.questions_used = {}
         self.amount_correct = 0
 
-
-    def getQuestion(self):
+    def get_question(self):
         if self.algorithm:
             topic_id = max(self.mistakes, key=self.mistakes.get)
             questions_topic = Question.objects.filter(topic = topic_id)
@@ -269,8 +271,8 @@ class ExamView(View):
                 del self.questions[str(question.id)]
 
         else:
-            index = random.choice(self.questions.keys())
-            question = self.questions[index]
+            index_t = random.choice(self.questions.keys())
+            question = self.questions[index_t]
             self.questions_used[str(question.id)] = question
             del self.questions[str(question.id)]
             

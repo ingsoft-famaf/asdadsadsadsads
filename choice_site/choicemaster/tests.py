@@ -142,18 +142,22 @@ class LoadQuestionsTestCase(TestCase):
         Create a new admin user, and test subject and topic in which to test
         different questions files
         """
-        self.user_staff = User.objects.create_superuser(username='teststaff', \
-                          email='adminstaff@staff.com', password='123456789a')
+        self.user_staff = User.objects.create_superuser(username='teststaff',
+                                                        email='adminstaff@'
+                                                              'staff.com',
+                                                        password='123456789a')
         self.user_staff.save()
 
-        self.subj1 = Subject.objects.create(
-                                subject_title='Test Subject',
-                                subject_description='Test subject description',
-                                subject_department='Test Department')
+        self.subj1 = Subject.objects.create(subject_title='Test Subject',
+                                            subject_description='Test subject'
+                                            ' description',
+                                            subject_department='Test Departmen'
+                                            't')
 
         self.topc1 = Topic.objects.create(subject=self.subj1,
-                                    topic_title='Test topic',
-                                    topic_description='Test topic description')
+                                          topic_title='Test topic',
+                                          topic_description='Test topic '
+                                          'description')
         self.c = Client()
 
     def test_question_file_wrong_format(self):
@@ -163,9 +167,9 @@ class LoadQuestionsTestCase(TestCase):
         rel_path = "xml_files/wrong_format.xml"
         abs_file_path = os.path.join(script_dir, rel_path)
 
-        response = c.post('add/question/'+ str(self.subj1.id) +'/'
-            + str(self.topc1.id) + '/', files={'wrong_format.xml': 
-            open(abs_file_path, 'rb')})
+        response = c.post('add/question/' + str(self.subj1.id) + '/' +
+                          str(self.topc1.id) + '/', files={'wrong_format.xml':
+                          open(abs_file_path, 'rb')})
         self.assertEquals(response.status_code, 404)
 
     def test_duplicate_question_with_db(self):
@@ -175,13 +179,14 @@ class LoadQuestionsTestCase(TestCase):
         rel_path = "xml_files/simple_question.xml"
         abs_file_path = os.path.join(script_dir, rel_path)
 
-        response = c.post('add/question/'+ str(self.subj1.id) +'/'
-            + str(self.topc1.id) + '/', files={'simple_question.xml': 
-            open(abs_file_path, 'rb')})
+        response = c.post('add/question/' + str(self.subj1.id) + '/' +
+                          str(self.topc1.id) + '/', files={
+                          'simple_question.xml':
+                          open(abs_file_path, 'rb')})
 
         self.assertEquals(response.status_code, 200)
 
-        response = c.post('add/question/'+ str(self.subj1.id) +'/'
+        response = c.post('add/question/'+ str(self.subj1.id) + '/'
             + str(self.topc1.id) + '/', files={'simple_question.xml':
             open(abs_file_path, 'rb')})
 
@@ -200,10 +205,21 @@ class LoadQuestionsTestCase(TestCase):
         self.assertEquals(response.status_code, 500)
 
 
-    def test_report(self):
+class ReportTestCase(TestCase):
+    def setUp(self):
         """
-         Se fija si hay denuncias si no hay crea una y corrobora que aparesca
-         en la pagina de reporte.
+        Create a new user and verify that the login function works properly
+        """
+        self.user_staff = User.objects.create_superuser(username='teststaff',
+                                                        email='',
+                                                        password='123456789a')
+        self.user_staff.save()
+        self.cp = Client()
+
+    def test_check_reports(self):
+        """
+        Checks existing reports. In case there is none, create one and make
+        sure it appears in the reports page site.
         """
         self.cp.logout()
         logged_in_staff = self.cp.login(username='teststaff',

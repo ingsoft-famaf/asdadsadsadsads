@@ -14,6 +14,7 @@ def get_subjects():
     choices.sort()
     return choices
 
+
 def get_topics(ids):
     topics = Topic.objects.filter(subject_id=ids)
     choices = dict()
@@ -38,6 +39,7 @@ class MultipleTopicForm(forms.Form):
 
 
 ALGORITHMS = (('0', 'Based on errors'), ('1', 'Random'))
+
 
 class ConfigForm(forms.Form):
     quantity = forms.IntegerField()
@@ -76,7 +78,9 @@ class ExamForm(ModelForm):
         else:
             self.fields['answer'].queryset = Answer.objects.filter(question=0)
 
+
 TOPICS = (('0', 'Select Topic'), ('1', '---'))
+
 
 class UploadQuestionForm(forms.Form):
     subject = forms.ChoiceField(choices=get_subjects(), widget=forms.Select(
