@@ -58,22 +58,25 @@ def add_question_w_subject_topic(request, subject_id, topic_id, message=''):
         if form.is_valid():
             result = parse_xml_question(request.FILES['docfile'], topic_id)
             # TODO revisar como hacer el redirect.
-            
+
             if result['status']:
                 context['message'] = result['message']
-                return render(request, 'choicemaster/index.html',context)
+                return render(request, 'choicemaster/index.html', context)
             else:
                 context['message'] = result['message']
-                return render(request, 'choicemaster/add/question/w_subject_topic.html',context)
+                return render(request,
+                              'choicemaster/add/question/w_subject_topic.html',
+                              context)
 
-            
-            # return redirect('index')
+
+                # return redirect('index')
     else:
         form = UploadFileForm()
         context['form'] = form
 
     return render(request, 'choicemaster/add/question/w_subject_topic.html',
-        context)
+                  context)
+
 
 def report(request):
     # TODO Check function. Documentation doesn't match implementation. Spanish?
@@ -107,20 +110,21 @@ def configure_exam1(request):
 @login_required
 def configure_exam2(request, exam_id):
     e = models.Exam.objects.get(pk=exam_id)
+    ids = models.Subject.objects.get(pk=e.subject.id).id
     if request.method == 'POST':
-        form = MultipleTopicForm(request.POST)
+        form = MultipleTopicForm(ids, request.POST)
         if form.is_valid():
             topic_ids = request.POST.getlist('topic')
             for idt in topic_ids:
                 t = models.Topic.objects.get(pk=idt)
                 e.topic.add(t)
             e.save()
-            redirect('configure_exam3', exam_id=exam_id)
+            return redirect('configure_exam3', exam_id=exam_id)
     else:
-        #ipdb.set_trace()
+        # ipdb.set_trace()
         form = MultipleTopicForm(e.subject.id)
     return render(request, 'choicemaster/exam/configure_exam2.html',
-                  {'form': form})
+                  {'form': form, 'exam_id': exam_id})
 
 
 @login_required
@@ -134,11 +138,11 @@ def configure_exam3(request, exam_id):
             e.quantity_questions = quantity
             e.timer = timer
             e.save()
-            redirect('generate_exam', exam_id=exam_id)
+            return redirect('resolve_exam', exam_id=exam_id)
     else:
         form = ConfigForm()
     return render(request, 'choicemaster/exam/configure_exam2.html',
-                  {'form': form})
+                  {'form': form, 'exam_id': exam_id})
 
 
 # Nuevos configure
@@ -159,7 +163,7 @@ def test_exam(request):
     return render(request, 'choicemaster/exam/resolve_exam.html', context)
 
 
-def resolve_exam(request, subject_id='', topic_id='', timer='', quantity='', algorithm='', exam_tmp=''):
+def resolve_exam(request, exam_id):
     # ipdb.set_trace()
     if request.method != 'POST':
         '''
@@ -169,42 +173,41 @@ def resolve_exam(request, subject_id='', topic_id='', timer='', quantity='', alg
         quantity_tmp = quantity
         algorithm_tmp = algorithm
         '''
-        subject =models.Subject.objects.get(pk=subject_id)
+        e = models.Exam.objects.get(pk=exam_id)
 
-        # Create the exam model with all the configurations
-        exam = models.Exam.objects.create(user=models.User.objects.get(pk=1),
-            subject=models.Subject.objects.get(pk=subject_id),
-            exam_quantity_questions=quantity, exam_timer=timer,
-            exam_algorithm=algorithm) # TODO Poner el usuario que lo realiza
-        
-        exam_id = exam.id
-        exam.save()
-        a = []   # Just to check
-        a.append(1) # To check
+        subject = e.subject
+        subject_id = subject.id
+        timer = e.exam_timer
+        quantity = e.exam_quantity_questions
+        algorithm = e.exam_algorithm
+
+        a = []  # Just to check
+        a.append(1)  # To check
         kwargs = dict()
         kwargs['subject_id'] = subject_id
         kwargs['topic_ids'] = a
         kwargs['timer'] = timer
         kwargs['quantity'] = quantity
         kwargs['algorithm'] = algorithm
-        kwargs['exam'] = exam
+        kwargs['exam'] = e
 
-        exam_tmp = ExamView(subject_id, a, timer, quantity, algorithm, exam)
+        exam_tmp = ExamView(subject_id, a, timer, quantity, algorithm, e)
 
         topic_ids = [topic_id]
         # We store all the questions of the selected topics
         for item in topic_ids:
-            questions_tmp = models.Question.objects.filter(topic=models.Topic.objects.get(pk=item))
+            questions_tmp = models.Question.objects.filter(
+                topic=models.Topic.objects.get(pk=item))
             for q in questions_tmp:
                 exam_tmp.questions[str(q.id)] = q
-            
+
         # Select a random question for the first one.
         question = exam_tmp.getQuestion()
-        exam_tmp.remaining =- 1
+        exam_tmp.remaining = - 1
 
         # Generate the form
         form = exam_tmp.form_class(question.id)
-        
+
         context = dict()
         context['subject'] = subject
         context['topic'] = question.topic
@@ -215,7 +218,7 @@ def resolve_exam(request, subject_id='', topic_id='', timer='', quantity='', alg
         return render(request, 'choicemaster/exam/resolve_exam.html', context)
 
     else:
-        
+
         form = ExamForm(request.POST)
         if form.is_valid():
             exam_tmp = request.POST.get('exam_tmp')
@@ -223,15 +226,19 @@ def resolve_exam(request, subject_id='', topic_id='', timer='', quantity='', alg
             answer = Answer.objects.get(pk=answer_id)
             question_id = answer.question
             # topic_id = kwargs['topic_id'] TODO
-            correct_answer = Answer.objects.get(question=question_id, correct=True)
+            correct_answer = Answer.objects.get(question=question_id,
+                                                correct=True)
 
             # Generate the snapshot of the answer
-            snap = QuestionSnapshot.objects.create(exam=self.exam.id, question=question_id,
-                choosen_answer=answer.answer_text, correct_answer=correct_answer.answer_text,
-                choice_correct=correct_answer.answer_text.equals(answer.answer_text))
+            snap = QuestionSnapshot.objects.create(exam=self.exam.id,
+                                                   question=question_id,
+                                                   choosen_answer=answer.answer_text,
+                                                   correct_answer=correct_answer.answer_text,
+                                                   choice_correct=correct_answer.answer_text.equals(
+                                                       answer.answer_text))
             snap.save()
 
-            exam_tmp.remaining=- 1
+            exam_tmp.remaining = - 1
 
             if not answer.correct:
                 exam_tmp.mistakes[topic_id] += 1
@@ -245,26 +252,27 @@ def resolve_exam(request, subject_id='', topic_id='', timer='', quantity='', alg
                 # Generate the form
                 exam_tmp.initial = {'question': question.id}
                 form = exam_tmp.form_class(initial=self.initial)
-                
+
                 # Build the context for the next iteration
                 context = dict()
                 context['question'] = question
                 context['topic_id'] = topic_id
                 context['form'] = form
 
-                return render(request, 'choicemaster/exam/resolve_exam.html', context)
+                return render(request, 'choicemaster/exam/resolve_exam.html',
+                              context)
             else:
                 # End of the exam
-                exam = Exam.objects.get(pk = self.exam_id)
+                exam = Exam.objects.get(pk=self.exam_id)
                 exam.result = exam_tmp.amount_correct
                 exam.save()
 
                 # Return to the index page with the amount of correct answers on the message board
                 return render(request, 'index', {message: self.amount_correct})
-        
-        # TODO Check if it is needed the context here
-        return render(request, 'choicemaster/exam/resolve_exam.html', {'form': form})
 
+        # TODO Check if it is needed the context here
+        return render(request, 'choicemaster/exam/resolve_exam.html',
+                      {'form': form})
 
 
 class ExamView(View):
@@ -282,9 +290,10 @@ class ExamView(View):
     mistakes = {}
     amount_correct = 0
 
-    def __init__(self, subject_id, topic_ids, timer, quantity, algorithm, exam):
+    def __init__(self, subject_id, topic_ids, timer, quantity, algorithm,
+                 exam):
         self.subject_id = subject_id
-        self.exam =  exam
+        self.exam = exam
         self.topic_ids = topic_ids
         self.timer = timer
         self.remaining = quantity
@@ -295,12 +304,11 @@ class ExamView(View):
         self.questions_used = {}
         self.amount_correct = 0
 
-
     def getQuestion(self):
-        #ipdb.set_trace()
+        # ipdb.set_trace()
         if self.algorithm:
             topic_id = max(self.mistakes, key=self.mistakes.get)
-            questions_topic = Question.objects.filter(topic = topic_id)
+            questions_topic = Question.objects.filter(topic=topic_id)
             try:
                 question = self.questions[random.choice(self.questions.keys())]
                 self.questions_used[str(question.id)] = question
@@ -315,5 +323,5 @@ class ExamView(View):
             question = self.questions[index]
             self.questions_used[str(question.id)] = question
             del self.questions[str(question.id)]
-            
+
         return question

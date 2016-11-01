@@ -4,7 +4,8 @@
     <h1>Configure exam</h1>
     <br>
     <h3><b>SUBJECT:</b> {{ subject_text }}</h3>
-    <form id="form" action="{% url 'configure_exam3' %}" method="post">
+    <h3><b>TOPICS:</b> ...</h3>
+    <form id="form" action="{% url 'configure_exam3' exam_id %}" method="post">
         {% csrf_token %}
         {{ form }}
         <br>
