@@ -6,7 +6,8 @@ import os
 
 def questions_already_exist(questions_xml, topic_id):
     """
-    From a list of questions, checks if any of them is already in the database.
+    From a list of questions, checks if any of them is already in the
+    database.
     Returns a dictionary with a key 'status' that is True if exists a similar
     question, a 'question_id' from the question that would be equal and
     a 'topic_id' from the topic the questions are in.
@@ -118,7 +119,7 @@ def parse_xml_question(xmlfile, topic_id):
         for children in item_children:
             answer = models.Answer()
             answer.answer_text = children.text
-            if children.tag == 'corrrect':
+            if children.tag == 'correct':
                 answer.correct = True
             else:
                 answer.correct = False
