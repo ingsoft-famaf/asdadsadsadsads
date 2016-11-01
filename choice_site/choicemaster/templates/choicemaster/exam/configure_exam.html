@@ -1,0 +1,39 @@
+{% extends 'choicemaster/base.html' %}
+
+{% block content %}
+    <h1>Configure exam</h1>
+    <form id="form" action="{% url 'index' %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <br>
+    </form>
+
+    <script type="text/javascript">
+    function get_topics() {
+        var e = document.getElementById("id_subject");
+        var ids = e.value;
+        console.log("ids =", ids);
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/get_checkboxes/',
+            dataType: 'json',
+            data: {'ids': ids},
+            success: function(data) {
+                // Create checkboxes
+                var topics = data.topics;
+                var idt = document.getElementById("id_mult_topics");
+                console.log("test:", idt.options);
+                for (i = 0; i < topics.length; i++) {
+                    topic = topics[i];
+                    idt.options[i+1] = new Option(topic[0], topic[1]);
+                    //idt.options[i+1].value = topic[0];
+                    //idt.options[i+1].text = topic[1];
+                    console.log("In position", i, "\nvalue =", topic[0],
+                        "\ntext =", topic[1])
+                }
+                console.log("success!");
+            }
+        });
+    }
+    </script>
+{% endblock %}

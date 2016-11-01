@@ -1,7 +1,8 @@
 from django.shortcuts import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from models import Topic
+from models import Topic, Answer, Question, Report
 import json
+
 
 @csrf_exempt
 def ajax_view(request):
@@ -13,4 +14,27 @@ def ajax_view(request):
         data = {'topics': lt}
         return HttpResponse(json.dumps(data), content_type='application/json')
     else:
-        return HttpResponse("Something went wrong in ajax_view")
+        return HttpResponse("Something went wrong")
+
+
+@csrf_exempt
+def get_correct(request):
+    if request.method == 'POST' and request.is_ajax:
+        question_id = request.POST.get('idq')
+        question = Question.objects.get(pk=question_id)
+        answers = Answer.objects.filter(question=question.id)
+        correct_answer = answers.filter(correct=True)
+        data = {'answer': correct_answer[0].answer_text}
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    else:
+        return HttpResponse("Something went wrong")
+
+@csrf_exempt
+def autoreport(request):
+    if request.method == 'POST' and request.is_ajax:
+        question = Question.objects.get(id=request.POST.get('id2'))
+        id = request.POST.get('id1')
+        Report.objects.create(question=question,
+                              report_description="Esta pregunta esta "
+                                                 "duplicada con la pregunta "
+                                                 + str(id))

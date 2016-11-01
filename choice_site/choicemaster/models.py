@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -41,9 +40,12 @@ class Question(models.Model):
 
 class Exam(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, default=0)
     exam_quantity_questions = models.IntegerField(default=0)
-    exam_result = models.IntegerField(default=0)
     exam_timer = models.IntegerField(default=60)
+    exam_algorithm = models.CharField(max_length=200, default=0)
+    exam_result = models.IntegerField(default=0)
+    topic = models.ManyToManyField(Topic)
 
 
 class Answer(models.Model):
@@ -55,11 +57,12 @@ class Answer(models.Model):
     Method to show the correct object name in the admin interface.
     """
     def __unicode__(self):
-        return self.question.question_text + ' - ' + self.answer_text
+        return self.answer_text
 
 
 class QuestionSnapshot(models.Model):
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, default=0)
     question_text = models.CharField(max_length=200)
     chosen_answer = models.CharField(max_length=200)
     correct_answer = models.CharField(max_length=200)
