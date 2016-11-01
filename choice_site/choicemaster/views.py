@@ -192,7 +192,7 @@ def resolve_exam(request, exam_id='', subject_id='', topic_id='', timer='', quan
         exam_tmp.remaining =- 1
 
         # Generate the form
-        form = exam_tmp.form_class(question.id)
+        form = exam_tmp.form_class(question=question.id)
         
         context = dict()
         context['subject'] = subject
@@ -204,53 +204,54 @@ def resolve_exam(request, exam_id='', subject_id='', topic_id='', timer='', quan
         return render(request, 'choicemaster/exam/resolve_exam.html', context)
 
     else:
-        
         form = ExamForm(request.POST)
-        if form.is_valid():
-            answer_id = request.POST.get('answer')
-            answer = Answer.objects.get(pk=answer_id)
-            question = answer.question
-            topic_id = question.topic.id
-            # topic_id = kwargs['topic_id'] TODO
-            correct_answer = Answer.objects.get(question=question_id, correct=True)
+        pepe = request.POST.get('answer')
+        answer_id = pepe
 
-            # Generate the snapshot of the answer
-            snap = QuestionSnapshot.objects.create(exam=self.exam.id, question=question,
-                choosen_answer=answer.answer_text, correct_answer=correct_answer.answer_text,
-                choice_correct=correct_answer.answer_text.equals(answer.answer_text))
-            snap.save()
-
-            exam_tmp.remaining=- 1
-
-            if not answer.correct:
-                exam_tmp.mistakes[topic_id] += 1
-            else:
-                exam_tmp.amount_correct += 1
-
-            if exam_tmp.remaining:
-                # Get the next question
-                question = exam_tmp.getQuestion()
-                # Generate the form
-                form = exam_tmp.form_class(question.id)
-                
-                # Build the context for the next iteration
-                context = dict()
-                context['question'] = question
-                context['form'] = form
-                context['exam_tmp'] = exam_tmp
-
-                return render(request, 'choicemaster/exam/resolve_exam.html', context)
-            else:
-                # End of the exam
-                exam = Exam.objects.get(pk=exam_tmp.exam_id)
-                exam.result = exam_tmp.amount_correct
-                exam.save()
-
-                # Return to the index page with the amount of correct answers on the message board
-                return render(request, 'index', {message: exam_tmp.amount_correct})
+        answer = Answer.objects.get(pk=answer_id)
         
+        ipdb.set_trace()
+        questionn = answer.question
+        topic_id = questionn.topic.id
+        correct_answer = Answer.objects.get(question=questionn.id, correct=True)
+
+        # Generate the snapshot of the answer
+        snap = QuestionSnapshot.objects.create(exam=exam.id, question=questionn,
+            choosen_answer=answer.answer_text, correct_answer=correct_answer.answer_text,
+            choice_correct=correct_answer.answer_text.equals(answer.answer_text))
+        snap.save()
+
+        exam_tmp.remaining=- 1
+
+        if not answer.correct:
+            exam_tmp.mistakes[topic_id] += 1
+        else:
+            exam_tmp.amount_correct += 1
+
+        if exam_tmp.remaining:
+            # Get the next question
+            questionn = exam_tmp.getQuestion()
+            # Generate the form
+            form = exam_tmp.form_class(questionn.id)
+            
+            # Build the context for the next iteration
+            context = dict()
+            context['question'] = questionn
+            context['form'] = form
+            context['exam_tmp'] = exam_tmp
+
+            return render(request, 'choicemaster/exam/resolve_exam.html', context)
+        else:
+            # End of the exam
+            exam = Exam.objects.get(pk=exam_tmp.exam_id)
+            exam.result = exam_tmp.amount_correct
+            exam.save()
+
+            # Return to the index page with the amount of correct answers on the message board
+            return render(request, 'index', {message: exam_tmp.amount_correct})
+    
         # TODO Check if it is needed the context here
-        return render(request, 'choicemaster/exam/resolve_exam.html', {'form': form})
+        #return render(request, 'choicemaster/exam/resolve_exam.html', {'form': form})
 
 
 
