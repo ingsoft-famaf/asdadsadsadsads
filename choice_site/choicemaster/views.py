@@ -182,6 +182,7 @@ def resolve_exam(request, exam_id=''):
         # We store all the questions of the selected topics
         for item in topic_ids:
             questions_tmp = models.Question.objects.filter(topic=models.Topic.objects.get(pk=item.id))
+            exam_tmp.mistakes[str(item.id)] = item.id
             for q in questions_tmp:
                 exam_tmp.questions[str(q.id)] = q
             
@@ -225,7 +226,7 @@ def resolve_exam(request, exam_id=''):
         exam_tmp.remaining -= 1
 
         if not answer.correct:
-            exam_tmp.mistakes[topic_id] += 1
+            exam_tmp.mistakes[str(topic_id)] += 1
         else:
             exam_tmp.amount_correct += 1
 
@@ -233,12 +234,13 @@ def resolve_exam(request, exam_id=''):
             # Get the next question
             question = exam_tmp.getQuestion()
             # Generate the form
-            form = exam_tmp.form_class(question.id)
+            form = ExamForm(question=question.id)
             
             # Build the context for the next iteration
             context = dict()
             context['question'] = question
             context['form'] = form
+
             context['questions_used'] = exam_tmp.questions_used
             context['subject'] = models.Subject.objects.get(pk=exam_tmp.subject_id)
             context['question'] = question
@@ -251,7 +253,9 @@ def resolve_exam(request, exam_id=''):
             exam.save()
 
             # Return to the index page with the amount of correct answers on the message board
-            return redirect(index, {'message': exam_tmp.amount_correct})
+            message = "Of " + str(models.Exam.objects.get(pk=exam_tmp.exam).exam_quantity_questions) +\
+                " questions, correct: " + str(exam_tmp.amount_correct)
+            return render(request, 'choicemaster/index.html', {'message': message})
     
         # TODO Check if it is needed the context here
         #return render(request, 'choicemaster/exam/resolve_exam.html', {'form': form})

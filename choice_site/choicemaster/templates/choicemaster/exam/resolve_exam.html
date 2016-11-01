@@ -6,9 +6,7 @@
     <h2> Question : {{ question.question_text }}</h2>
     <form action="{% url 'resolve_exam' %}" method="post">
         {% csrf_token %}
-        <p>
-            {{ form.answer }}
-        </p>
+        <p>{{ form.answer }}</p>
         <p> <button type="button" onclick="get_correct();"> Submit </button></p>
         <p><input type="submit" value="Next" /></p>
     </form>
@@ -19,8 +17,8 @@
    <button onclick="open_report()"> Repeated question</button>
     <p></p>
     <ul style="display:none" id="IDR">
-        {% for quest in exam_tmp.questions_used %}
-            <input type="checkbox" id="C{{ quest.id }}">{{quest.question_text}}
+        {% for quest in questions_used %}
+            <input type="checkbox" id="C{{ quest.id|slugify }}">{{quest.question_text}}
             <p></p>
         {% endfor %}
         <button onclick="reporting({{ questions_used }},{{ question.id  }} )">
