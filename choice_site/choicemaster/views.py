@@ -157,7 +157,7 @@ def test_exam(request):
     for idt in topics:
         e.topic.add(idt)
     e.save()
-    redirect('resolve_exam', exam_id=e.id)
+    return redirect('resolve_exam', exam_id=e.id)
 
 
 def resolve_exam(request, exam_id='', subject_id='', topic_id='', timer='', quantity='', algorithm='', exam_tmp=''):
