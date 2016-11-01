@@ -161,7 +161,6 @@ def test_exam(request):
 
 
 def resolve_exam(request, exam_id='', subject_id='', topic_id='', timer='', quantity='', algorithm='', exam_tmp=''):
-    # ipdb.set_trace()
     if request.method != 'POST':
         if not exam_id:
             # Create the exam model with all the configurations
@@ -178,13 +177,13 @@ def resolve_exam(request, exam_id='', subject_id='', topic_id='', timer='', quan
             subject = exam.subject
         
 
-        exam_tmp = ExamView(subject_id, 1, timer, quantity, algorithm, exam.id)
+        exam_tmp = ExamView(subject_id, timer, quantity, algorithm, exam.id)
 
-        topic_ids = [topic_id] # TODO
+        topic_ids = exam.topic.all() # TODO
 
         # We store all the questions of the selected topics
         for item in topic_ids:
-            questions_tmp = models.Question.objects.filter(topic=models.Topic.objects.get(pk=item))
+            questions_tmp = models.Question.objects.filter(topic=models.Topic.objects.get(pk=item.id))
             for q in questions_tmp:
                 exam_tmp.questions[str(q.id)] = q
             
@@ -270,10 +269,9 @@ class ExamView(View):
     mistakes = {}
     amount_correct = 0
 
-    def __init__(self, subject_id, topic_ids, timer, quantity, algorithm, exam):
+    def __init__(self, subject_id, timer, quantity, algorithm, exam):
         self.subject_id = subject_id
         self.exam =  exam
-        self.topic_ids = topic_ids
         self.timer = timer
         self.remaining = quantity
         self.algorithm = 0
