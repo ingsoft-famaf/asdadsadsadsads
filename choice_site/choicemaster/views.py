@@ -11,6 +11,10 @@ from .models import Report
 
 @login_required
 def index(request, message=''):
+    """
+    Simple index view that renders a message passed by some request and
+    returns it as a HTML response
+    """
     if message:
         context = {'message': message}
     else:
@@ -23,6 +27,10 @@ def index(request, message=''):
 @login_required
 @staff_member_required
 def add_question(request):
+    """
+    Get the list of available subjects from request and return them rendered
+    as a response with the corresponding template
+    """
     context = dict()
     if request.method == 'POST':
         form = UploadQuestionForm(request.POST, request.FILES)
@@ -43,8 +51,7 @@ def add_question(request):
 
 def report(request):
     """
-    Le paso al template la cantidad de reportes sin ser evaluados que hay en el
-    momento.
+    Pass on to the reports template, the number of reports not evaluated so far
     """
     context = dict()
     context['reports'] = Report.objects.exclude(report_state="E")
@@ -54,6 +61,12 @@ def report(request):
 # Nuevos configure
 @login_required
 def configure_exam1(request):
+    """
+    First view regarding an exam configuration. Look for a form from the input
+    request. Retrieve the subject from the POST data and create an exam
+    instance related to the user to redirect it to the template in which he
+    chooses the topics he wants to include in the exam
+    """
     if request.method == 'POST':
         form = SubjectForm(request.POST)
         if form.is_valid():
@@ -71,6 +84,11 @@ def configure_exam1(request):
 
 @login_required
 def configure_exam2(request, exam_id):
+    """
+    Get a list of topics from request and include them in the exam given by
+    exam_id. Save it in the exam object and redirect it to the next exam
+    configuration template
+    """
     e = models.Exam.objects.get(pk=exam_id)
     ids = models.Subject.objects.get(pk=e.subject.id).id
     if request.method == 'POST':
@@ -91,6 +109,12 @@ def configure_exam2(request, exam_id):
 
 @login_required
 def configure_exam3(request, exam_id):
+    """
+    Add questions to the exam object according to the number required by the
+    user. Raise an error message in case the required number of questions is
+    greater than the number of questions available in the database for such
+    subject
+    """
     e = models.Exam.objects.get(pk=exam_id)
     max_quantity = 0
     for t in e.topic.all():
@@ -112,26 +136,24 @@ def configure_exam3(request, exam_id):
                   {'form': form, 'exam_id': exam_id})
 
 
-# Nuevos configure
-def test_exam(request):
-    subject = models.Subject.objects.get(pk=1)
-    topics = models.Topic.objects.filter(pk=subject.id)
-    timer = 3
-    quantity = 2
-    algorithm = 0
-    e = models.Exam.objects.create(user=models.User.objects.get(pk=1),
-                                   subject=subject,
-                                   exam_timer=timer,
-                                   exam_algorithm=algorithm)
-    for idt in topics:
-        e.topic.add(idt)
-    e.save()
-    return redirect('resolve_exam', exam_id=e.id)
-
+# Define a global exams variable
 global_exams = None
 
-
 def resolve_exam(request, exam_id=''):
+    """
+    View to actually solve the exam. Consider two cases:
+    1. request has been sent for the first time on this exam, in which case it
+    contains the information about the exam settings (subject, timer, quantity,
+    algorithm). Generate an ExamView for such settings, fill the exam object
+    with questions and then choose the first question from the first topic in
+    order to display it in the resolve_exam template
+    2. request method is POST, which means it has been triggered by a solution
+    submitted in the front end. Check whether the answer given by the user is
+    right or wrong, and create a snapshot accordingly. Keep a record of right
+    and wrong guesses to be used in the algorithm to display questions
+    afterwards. Also, keep track of remaining time and use it to pass to the
+    next question in case it is over.
+    """
     if request.method != 'POST':
     
         exam = models.Exam.objects.get(pk=exam_id)
@@ -258,6 +280,10 @@ class ExamView(View):
         self.amount_correct = 0
 
     def get_question(self):
+        """
+        Get a question from the list of questions of the given topics. Consider the
+        cases when the exam has the algorithm mode on and off as separate.
+        """
         if self.algorithm:
             topic_id = max(self.mistakes, key=self.mistakes.get)
             questions_topic = Question.objects.filter(topic = topic_id)

@@ -6,8 +6,7 @@ import os
 
 def questions_already_exist(questions_xml, topic_id):
     """
-    From a list of questions, checks if any of them is already in the
-    database.
+    From a list of questions, checks if any of them is already in the database.
     Returns a dictionary with a key 'status' that is True if exists a similar
     question, a 'question_id' from the question that would be equal and
     a 'topic_id' from the topic the questions are in.
