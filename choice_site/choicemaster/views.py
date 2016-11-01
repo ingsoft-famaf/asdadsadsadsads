@@ -56,23 +56,22 @@ def add_question_w_subject_topic(request, subject_id, topic_id, message=''):
         if form.is_valid():
             result = parse_xml_question(request.FILES['docfile'], topic_id)
             # TODO revisar como hacer el redirect.
-            
+
             if result['status']:
                 context['message'] = result['message']
-                return render(request, 'choicemaster/index.html',context)
+                return render(request, 'choicemaster/index.html', context)
             else:
                 context['message'] = result['message']
                 return render(request, 'choicemaster/add/question/w_subject'
-                    '_topic.html',context)
+                              '_topic.html', context)
 
-            
-            # return redirect('index')
     else:
         form = UploadFileForm()
         context['form'] = form
 
     return render(request, 'choicemaster/add/question/w_subject_topic.html',
-        context)
+                  context)
+
 
 def report(request):
     """
@@ -80,6 +79,5 @@ def report(request):
     momento.
     """
     context = dict()
-    context['reports'] =Report.objects.exclude(report_state="E")
+    context['reports'] = Report.objects.exclude(report_state="E")
     return render(request, 'choicemaster/report.html', context)
-
