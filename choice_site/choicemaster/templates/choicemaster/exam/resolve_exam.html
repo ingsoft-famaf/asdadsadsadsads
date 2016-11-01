@@ -1,0 +1,79 @@
+{% extends 'choicemaster/base.html' %}
+
+{% block content %}
+    <h1></h1>
+    <h2> Subject: {{ subject.subject_title }} </h2>
+    <h2> Question : {{ question.question_text }}</h2>
+    <form action="{% url 'resolve_exam' %}" method="post">
+        {% csrf_token %}
+        <p>{{ form.answer }}</p>
+        <p> <button type="button" onclick="get_correct();"> Submit </button></p>
+        <p><input type="submit" value="Next" /></p>
+    </form>
+    <p><b>Correct answer: </b></p>
+    <div id="correct_answer"></div>
+    <div id="question_id" style="display:none">{{ question.id }}</div>
+
+   <button onclick="open_report()"> Repeated question</button>
+    <p></p>
+    <ul style="display:none" id="IDR">
+        {% for quest in questions_used %}
+            <input type="checkbox" id="C{{ quest.id|slugify }}">{{quest.question_text}}
+            <p></p>
+        {% endfor %}
+        <button onclick="reporting({{ questions_used }},{{ question.id  }} )">
+            Reporting</button>
+    </ul>
+
+    <script type="text/javascript">
+    var id;
+        function reporting(questions, idq){
+            for (quest in questions){
+                var x = document.getElementById("C"+quest.id);
+                if(x.checked == true){
+                    id = quest.id;
+                    break;
+                }
+            }
+        $.ajax({
+                type: "POST",
+                url: "/ajax/edit/autoreport/",
+                dataType: "json",
+                data: {'id1':id ,
+                        'id2': idq
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        function open_report(){
+        var a = document.getElementById("IDR");
+        if(a.style.display == "none"){
+            a.style.display = "inline";
+        }
+        else{
+            a.style.display = "none";
+        }
+    }
+    </script>
+
+    <script type="text/javascript">
+    function get_correct() {
+        var e = document.getElementById("question_id").innerHTML;
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/get_correct/',
+            dataType: 'json',
+            data: {'idq': e},
+            success: function(data) {
+                // Show correct answer
+                var idt = document.getElementById("correct_answer");
+                idt.innerHTML = data['answer'];
+                console.log("test:", data.answer);
+                console.log("success!");
+            }
+        });
+    }
+    </script>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'choicemaster/base.html' %}
+
+{% block content %}
+    <h1>Configure your exam</h1>
+    <h2>Subject: {{ subject.subject_title }}</h2>
+    <h2>Topic: {{ topic.topic_title }}</h2>
+
+    <form action="{% url 'configure_exam' subject.id topic.id %}" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        
+        <p>{{ form }}</p>
+
+        <p><input type="submit" value="Start exam" /></p>
+    </form>
+{% endblock %}
