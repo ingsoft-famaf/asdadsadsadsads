@@ -1,6 +1,7 @@
 from django.forms import Form, ModelForm, FileField, DecimalField
 from django import forms
 from .models import Subject, Topic, Question, Answer, QuestionSnapshot
+from django.core.validators import MinValueValidator, MaxValueValidator
 import ipdb
 
 # Ignacio
@@ -52,10 +53,19 @@ class MultipleTopicForm(forms.Form):
         super(MultipleTopicForm, self).__init__(*args, **kwargs)
         self.fields['topic'].choices = get_topics(ids)
 
+ALGORITHMS = (('0', 'Based on errors'), ('1', 'Random'))
 
 class ConfigForm(forms.Form):
     quantity = forms.IntegerField()
-    timer = forms.IntegerField()
+    timer = forms.IntegerField(validators=[MinValueValidator(1),
+                                       MaxValueValidator(5)])
+    algorithm = forms.ChoiceField(choices=ALGORITHMS)
+
+    def __init__(self, max_quantity, *args, **kwargs):
+        super(ConfigForm, self).__init__(*args, **kwargs)
+        self.fields['quantity'].validators =\
+            [MaxValueValidator(max_quantity)]
+
 
 # Ignacio
 
