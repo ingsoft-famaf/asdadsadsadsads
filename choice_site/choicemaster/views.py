@@ -193,7 +193,6 @@ def resolve_exam(request, subject_id='', topic_id='', timer='', quantity='', alg
 
         topic_ids = [topic_id]
         # We store all the questions of the selected topics
-        ipdb.set_trace()
         for item in topic_ids:
             questions_tmp = models.Question.objects.filter(topic=models.Topic.objects.get(pk=item))
             for q in questions_tmp:
@@ -204,8 +203,7 @@ def resolve_exam(request, subject_id='', topic_id='', timer='', quantity='', alg
         exam_tmp.remaining =- 1
 
         # Generate the form
-        exam_tmp.initial = {'question': question.id}
-        form = exam_tmp.form_class(initial=exam_tmp.initial)
+        form = exam_tmp.form_class(question.id)
         
         context = dict()
         context['subject'] = subject

@@ -7,8 +7,7 @@
     <form action="{% url 'resolve_exam' %}" method="post">
         {% csrf_token %}
         <p>
-            {{ form.non_field_errors }}
-            {{ form }}
+            {{ form.answer }}
         </p>
         <p> <button type="button" onclick="get_correct();"> Submit </button></p>
         <p><input type="submit" value="Next" /></p>

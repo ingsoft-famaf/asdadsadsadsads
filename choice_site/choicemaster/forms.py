@@ -1,6 +1,7 @@
 from django.forms import Form, ModelForm, FileField, DecimalField
 from django import forms
 from .models import Subject, Topic, Question, Answer
+import ipdb
 
 # Ignacio
 
@@ -73,12 +74,8 @@ class ExamForm(ModelForm):
         model = Answer
         exclude = ['question', 'correct']
 
-    def __init__ (self, *args, **kwargs):
-        try:
-            question_id = kwargs['question']
-            super(ExamForm, self).__init__(*args, **kwargs)
-            if question_id:
-                    self.fields['answer'].queryset = Answer.objects.filter(question=question_id)
-        except KeyError:
-            pass
-
+    def __init__ (self, question=''):
+        question_id = question
+        super(ExamForm, self).__init__()
+        if question_id:
+                self.fields['answer'].queryset = Answer.objects.filter(question=question_id)
