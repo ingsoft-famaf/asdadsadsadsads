@@ -129,8 +129,13 @@ def configure_exam2(request, exam_id):
 
 @login_required
 def configure_exam3(request, exam_id):
+    e = models.Exam.objects.get(pk=exam_id)
+    max_quantity = 0
+    for t in e.topic.all():
+        questions = models.Question.objects.filter(topic=t.id)
+        max_quantity += len(questions)
     if request.method == 'POST':
-        form = ConfigForm(request.POST)
+        form = ConfigForm(max_quantity, request.POST)
         if form.is_valid():
             quantity = request.POST.get('quantity')
             timer = request.POST.get('timer')
@@ -140,7 +145,7 @@ def configure_exam3(request, exam_id):
             e.save()
             return redirect('resolve_exam', exam_id=exam_id)
     else:
-        form = ConfigForm()
+        form = ConfigForm(max_quantity)
     return render(request, 'choicemaster/exam/configure_exam3.html',
                   {'form': form, 'exam_id': exam_id})
 

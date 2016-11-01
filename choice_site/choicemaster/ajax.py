@@ -1,6 +1,6 @@
 from django.shortcuts import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from models import Topic, Answer, Question
+from models import Topic, Answer, Question, Report
 import json
 
 @csrf_exempt

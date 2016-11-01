@@ -1,6 +1,5 @@
 from django.conf.urls import url
 from . import views, ajax
-
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^add/question/$', views.add_question, name='add_question'),
@@ -18,12 +17,10 @@ urlpatterns = [
         name='configure_exam3'),
 
     url(r'^ajax/get_correct/$', ajax.get_correct, name='get_correct'),
+    url(r'^ajax/edit/autoreport/$', ajax.autoreport, name='AutoReport'),
 
     url(r'^test/$', views.test_exam, name='test'),
     url(r'^resolve_exam/$', views.resolve_exam, name='resolve_exam'),
-    url(r'^resolve_exam/(?P<exam_id>[0-9]+)/$', views.resolve_exam, name='resolve_exam'),
-    url(r'^generate/(?P<subject_id>[0-9]+)/(?P<topic_id>[0-9]+)/(?P<timer>[0-9]+)/(?P<quantity>[0-9]+)/(?P<algorithm>[0-1]+)/$',
-        views.resolve_exam, name='resolve_exam_'),
-    url(r'^/ajax/edit/autoreport/$', ajax.autoreport, name='AutoReport')
-
+    url(r'^resolve_exam/(?P<exam_id>[0-9]+)/$', views.resolve_exam, name='resolve_exam')
 ]
+
