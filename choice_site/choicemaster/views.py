@@ -5,7 +5,7 @@ from choicemaster import models
 from .forms import *
 from django.views import View
 import random
-import ipdb
+#import ipdb
 from .upload import parse_xml_question
 from models import Report
 
@@ -210,14 +210,14 @@ def resolve_exam(request, exam_id='', subject_id='', topic_id='', timer='', quan
 
         answer = Answer.objects.get(pk=answer_id)
         
-        ipdb.set_trace()
+        #ipdb.set_trace()
         questionn = answer.question
         topic_id = questionn.topic.id
         correct_answer = Answer.objects.get(question=questionn.id, correct=True)
 
         # Generate the snapshot of the answer
-        snap = QuestionSnapshot.objects.create(exam=exam.id, question=questionn,
-            choosen_answer=answer.answer_text, correct_answer=correct_answer.answer_text,
+        snap = QuestionSnapshot.objects.create(exam=exam_id, question=questionn,
+            chosen_answer=answer.answer_text, correct_answer=correct_answer.answer_text,
             choice_correct=correct_answer.answer_text.equals(answer.answer_text))
         snap.save()
 

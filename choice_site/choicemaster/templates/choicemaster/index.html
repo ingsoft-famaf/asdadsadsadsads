@@ -3,7 +3,8 @@
 {% block content %}
     {% if request.user.get_username %}
         <h2>Hello {{ request.user.get_username }}!</h2>
-        Welcome. What do you want to exercise today?
+        Welcome. What do you want to exercise today?<br>
+        <td><a class="light medium-text" href="/configure1">Take an exam</a></td>
     {% else %}
         <h2>Hello friend!</h2>
         <br>
