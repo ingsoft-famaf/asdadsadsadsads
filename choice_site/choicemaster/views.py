@@ -25,15 +25,15 @@ def add_question(request):
     context = dict()
     if request.method == 'POST':
         form = UploadQuestionForm(request.POST, request.FILES)
-        if form.is_valid():
-            topic = request.POST.get('topic')
-            file = request.FILES['xmlfile']
-            if topic > 0:
-                parse_xml_question(file, topic)
-            redirect(index)
-        else:
-            print form.errors
-            redirect(add_question)
+        #if form.is_valid():
+        topic = request.POST.get('topic')
+        file = request.FILES['xmlfile']
+        if topic > 0:
+            result = parse_xml_question(file, topic)
+            if result['status']:
+                return redirect('index', message=result['message'])
+            else:
+                form = UploadQuestionForm()
     else:
         form = UploadQuestionForm()
         context['form'] = form
@@ -49,4 +49,3 @@ def report(request):
     context = dict()
     context['reports'] = Report.objects.all()
     return render(request, 'choicemaster/report.html', context)
-
