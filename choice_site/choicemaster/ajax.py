@@ -27,3 +27,13 @@ def get_correct(request):
         return HttpResponse(json.dumps(data), content_type='application/json')
     else:
         return HttpResponse("Something went wrong")
+
+@csrf_exempt
+def autoreport(request):
+    if request.method == 'POST' and request.is_ajax:
+        question = Question.objects.get(id=request.POST.get('id2'))
+        id = request.POST.get('id1')
+        Report.objects.create(question=question,
+                              report_description="Esta pregunta esta "
+                                                 "duplicada con la pregunta "
+                                                 + str(id))
