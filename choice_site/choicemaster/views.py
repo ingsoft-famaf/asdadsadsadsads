@@ -173,7 +173,7 @@ def resolve_exam(request, subject_id='', topic_id='', timer='', quantity='', alg
 
         # Create the exam model with all the configurations
         exam = models.Exam.objects.create(user=models.User.objects.get(pk=1),
-            exam_subject=models.Subject.objects.get(pk=subject_id),
+            subject=models.Subject.objects.get(pk=subject_id),
             exam_quantity_questions=quantity, exam_timer=timer,
             exam_algorithm=algorithm) # TODO Poner el usuario que lo realiza
         
