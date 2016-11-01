@@ -14,9 +14,55 @@
     </form>
     <div id="correct_answer"></div>
     <div id="question_id" style="display:none">{{ question.id }}</div>
+
+   <button onclick="open_report()"> Repeated question</button>
+    <p></p>
+    <ul style="display:none" id="IDR">
+        {% for quest in exam_tmp.questions_used %}
+            <input type="checkbox" id="C{{ quest.id }}">{{quest.question_text}}
+            <p></p>
+        {% endfor %}
+        <button onclick="reporting({{ exam_tmp.questions_used }},{{ question.id  }} )">
+            Reporting</button>
+    </ul>
+
+    <script type="text/javascript">
+    var id;
+        function reporting(questions, idq){
+            for (quest in questions){
+                var x = document.getElementById("C"+quest.id);
+                if(x.checked == true){
+                    id = quest.id;
+                    break;
+                }
+            }
+        $.ajax({
+                type: "POST",
+                url: "/ajax/edit/autoreport/",
+                dataType: "json",
+                data: {'id1':id ,
+                        'id2': idq
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        function open_report(){
+        var a = document.getElementById("IDR");
+        if(a.style.display == "none"){
+            a.style.display = "inline";
+        }
+        else{
+            a.style.display = "none";
+        }
+    }
+    </script>
+
     <script type="text/javascript">
     function get_correct() {
         var e = document.getElementById("question_id").innerHTML;
+        console.log("ids =", ids);
         $.ajax({
             type: 'POST',
             url: '/ajax/get_correct/',
@@ -25,7 +71,7 @@
             success: function(data) {
                 // Show correct answer
                 var idt = document.getElementById("correct_answer");
-                idt.innerHTML = data['answer'];
+                idt.innerHTML = data['answer']
                 console.log("test:", data.answer_text);
                 console.log("success!");
             }

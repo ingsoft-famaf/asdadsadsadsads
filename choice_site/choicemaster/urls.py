@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^resolve_exam/$', views.resolve_exam, name='resolve_exam'),
     url(r'^resolve_exam/(?P<exam_id>[0-9]+)/$', views.resolve_exam, name='resolve_exam'),
     url(r'^generate/(?P<subject_id>[0-9]+)/(?P<topic_id>[0-9]+)/(?P<timer>[0-9]+)/(?P<quantity>[0-9]+)/(?P<algorithm>[0-1]+)/$',
-        views.resolve_exam, name='resolve_exam_')
+        views.resolve_exam, name='resolve_exam_'),
+    url(r'^/ajax/edit/autoreport/$', ajax.autoreport, name='AutoReport')
 
 ]
-
