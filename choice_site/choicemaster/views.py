@@ -5,7 +5,6 @@ from choicemaster import models
 from .forms import *
 from django.views import View
 import random
-import ipdb
 from .upload import parse_xml_question
 from models import Report
 
@@ -166,6 +165,7 @@ def test_exam(request):
 
 global_exams = None
 
+
 def resolve_exam(request, exam_id=''):
     if request.method != 'POST':
     
@@ -179,7 +179,6 @@ def resolve_exam(request, exam_id=''):
         exam_tmp = ExamView(subject.id, timer, quantity, algorithm, exam.id)
 
         topic_ids = exam.topic.all() # TODO
-        # ipdb.set_trace()
         # We store all the questions of the selected topics
         for item in topic_ids:
             questions_tmp = models.Question.objects.filter(topic=models.Topic.objects.get(pk=item.id))
@@ -188,7 +187,6 @@ def resolve_exam(request, exam_id=''):
             
         # Select a random question for the first one.
         question = exam_tmp.getQuestion()
-        exam_tmp.remaining =- 1
 
         # Generate the form
         form = exam_tmp.form_class(question=question.id)
@@ -200,7 +198,6 @@ def resolve_exam(request, exam_id=''):
         context['question'] = question
         
         global global_exams
-        ipdb.set_trace()
         global_exams = exam_tmp
 
         return render(request, 'choicemaster/exam/resolve_exam.html', context)
@@ -208,7 +205,6 @@ def resolve_exam(request, exam_id=''):
     else:
         form = ExamForm(request.POST)
         answer_id = request.POST.get('answer')
-        ipdb.set_trace()
         exam_tmp = global_exams
 
         answer = Answer.objects.get(pk=answer_id)
@@ -226,7 +222,7 @@ def resolve_exam(request, exam_id=''):
             choice_correct=value)
         snap.save()
 
-        exam_tmp.remaining=- 1
+        exam_tmp.remaining -= 1
 
         if not answer.correct:
             exam_tmp.mistakes[topic_id] += 1
@@ -250,12 +246,12 @@ def resolve_exam(request, exam_id=''):
             return render(request, 'choicemaster/exam/resolve_exam.html', context)
         else:
             # End of the exam
-            exam = Exam.objects.get(pk=exam_tmp.exam_id)
+            exam = models.Exam.objects.get(pk=exam_tmp.exam)
             exam.result = exam_tmp.amount_correct
             exam.save()
 
             # Return to the index page with the amount of correct answers on the message board
-            return render(request, 'index', {message: exam_tmp.amount_correct})
+            return redirect(index, {'message': exam_tmp.amount_correct})
     
         # TODO Check if it is needed the context here
         #return render(request, 'choicemaster/exam/resolve_exam.html', {'form': form})
@@ -292,7 +288,6 @@ class ExamView(View):
 
 
     def getQuestion(self):
-        #ipdb.set_trace()
         if self.algorithm:
             topic_id = max(self.mistakes, key=self.mistakes.get)
             questions_topic = Question.objects.filter(topic = topic_id)
