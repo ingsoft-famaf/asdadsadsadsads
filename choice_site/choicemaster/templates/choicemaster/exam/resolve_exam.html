@@ -9,6 +9,7 @@
         <p>{{ form.answer }}</p>
         <p> <button type="button" onclick="get_correct();"> Submit </button></p>
         <p><input type="submit" value="Next" /></p>
+        <input type="hidden" name="exam_id" value="{{ exam_id }}">
     </form>
     <p><b>Correct answer: </b></p>
     <div id="correct_answer"></div>
