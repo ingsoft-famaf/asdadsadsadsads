@@ -1,18 +1,18 @@
 {% extends 'choicemaster/base.html' %}
 
 {% block content %}
-    <h1></h1>
-    <h2> Subject: {{ subject.subject_title }} </h2>
-    <h2> Question : {{ question.question_text }}</h2>
+    <h2>Evaluation on {{ subject.subject_title }}</h2>
+    <h3> Question: {{ question.question_text }}</h3>
     <form action="{% url 'resolve_exam' %}" method="post">
         {% csrf_token %}
-        <p>{{ form.answer }}</p>
-        <p> <button type="button" onclick="get_correct();"> Submit </button></p>
-        <p><input type="submit" value="Next" /></p>
+        {{ form.answer }}
+        <p id="correct_answer_p" style="display: none">
+            <b>Correct answer: </b><span id="correct_answer"></span>
+        </p>
+        <p id="submit"><button type="button" onclick="get_correct();">Submit</button></p>
+        <p id="nextq" style="display: none;"><input type="submit" value="Next"/></p>
         <input type="hidden" name="exam_id" value="{{ exam_id }}">
     </form>
-    <p><b>Correct answer: </b></p>
-    <div id="correct_answer"></div>
     <div id="question_id" style="display:none">{{ question.id }}</div>
 
    <button onclick="open_report()"> Repeated question</button>
@@ -60,6 +60,10 @@
     </script>
 
     <script type="text/javascript">
+    $(document).ready(function() {
+        $('label[for="id_answer_0"]').parent().hide();
+    });
+
     function get_correct() {
         var e = document.getElementById("question_id").innerHTML;
         $.ajax({
@@ -69,8 +73,12 @@
             data: {'idq': e},
             success: function(data) {
                 // Show correct answer
-                var idt = document.getElementById("correct_answer");
-                idt.innerHTML = data['answer'];
+                $("#correct_answer_p").show();
+                $("#correct_answer").text(data['answer']);
+                //  Hide answers and show final submit button
+                $("#id_answer").hide();
+                $("#submit").hide();
+                $("#nextq").show();
                 console.log("test:", data.answer);
                 console.log("success!");
             }
