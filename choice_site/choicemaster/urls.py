@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^configure3/(?P<exam_id>[0-9]+)/$', views.configure_exam3,
         name='configure_exam3'),
 
-    url(r'^test/$', views.test_exam, name='test'),
+    # url(r'^test/$', views.test_exam, name='test'),
     url(r'^resolve_exam/$', views.resolve_exam, name='resolve_exam'),
     url(r'^resolve_exam/(?P<exam_id>[0-9]+)/$', views.resolve_exam, name='resolve_exam'),
 ]

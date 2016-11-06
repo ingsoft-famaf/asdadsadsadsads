@@ -46,6 +46,11 @@ class Exam(models.Model):
     exam_algorithm = models.CharField(max_length=200, default=0)
     exam_result = models.IntegerField(default=0)
     topic = models.ManyToManyField(Topic)
+    questions = models.ManyToManyField(Question, related_name="questions")
+    questions_used = models.ManyToManyField(Question, related_name="used")
+    remaining = models.IntegerField(default=0)
+    mistakes = models.TextField(null=True, default='{}') # JSON - serialized (text) version of the list
+    amount_correct = models.IntegerField(default=0)
 
 
 class Answer(models.Model):
