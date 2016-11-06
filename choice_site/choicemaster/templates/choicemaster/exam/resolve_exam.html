@@ -9,7 +9,10 @@
         <p id="correct_answer_p" style="display: none">
             <b>Correct answer: </b><span id="correct_answer"></span>
         </p>
-        <p id="submit"><button type="button" onclick="get_correct();">Submit</button></p>
+        <p id="chosen_answer_p" style="display: none">
+            <b>Chosen answer: </b><span id="chosen_answer"></span>
+        </p>
+        <p id="submit"><button type="button" onclick="submit_answer();">Submit</button></p>
         <p id="nextq" style="display: none;"><input type="submit" value="Next"/></p>
         <input type="hidden" name="exam_id" value="{{ exam_id }}">
     </form>
@@ -59,13 +62,19 @@
     }
     </script>
 
+
     <script type="text/javascript">
+    var t_out;
     $(document).ready(function() {
         $('label[for="id_answer_0"]').parent().hide();
+        var timer = {{ timer }};
+        var time = timer*1000;
+        t_out = setTimeout("submit_answer()", time);
     });
 
-    function get_correct() {
+    function submit_answer() {
         var e = document.getElementById("question_id").innerHTML;
+        clearTimeout(tout);
         $.ajax({
             type: 'POST',
             url: '/ajax/get_correct/',
