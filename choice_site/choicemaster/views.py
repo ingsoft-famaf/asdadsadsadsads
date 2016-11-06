@@ -155,7 +155,7 @@ def resolve_exam(request, exam_id=''):
     afterwards. Also, keep track of remaining time and use it to pass to the
     next question in case it is over.
     """
-    
+
     if request.method != 'POST':
         exam = models.Exam.objects.get(pk=exam_id)
         subject = exam.subject
@@ -187,6 +187,7 @@ def resolve_exam(request, exam_id=''):
         context['form'] = form
         context['question'] = question
         context['exam_id'] = exam_id
+        context['timer'] = timer
 
         return render(request, 'choicemaster/exam/resolve_exam.html', context)
 
@@ -195,7 +196,7 @@ def resolve_exam(request, exam_id=''):
         answer_id = request.POST.get('answer')
         exam_id = request.POST.get('exam_id')
         exam = models.Exam.objects.get(pk=exam_id)
-
+        timer = exam.exam_timer
         answer = Answer.objects.get(pk=answer_id)
         
         question = answer.question
@@ -233,7 +234,7 @@ def resolve_exam(request, exam_id=''):
             context = dict()
             context['question'] = question
             context['form'] = form
-
+            context['timer'] = timer
             context['questions_used'] = exam.questions_used.all()
             context['subject'] = models.Subject.objects.get(pk=exam.subject.id)
             context['question'] = question

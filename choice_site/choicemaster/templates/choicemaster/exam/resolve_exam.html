@@ -67,6 +67,7 @@
     var t_out;
     $(document).ready(function() {
         $('label[for="id_answer_0"]').parent().hide();
+        console.log("Hid the mofo")
         var timer = {{ timer }};
         var time = timer*1000;
         t_out = setTimeout("submit_answer()", time);
@@ -74,7 +75,7 @@
 
     function submit_answer() {
         var e = document.getElementById("question_id").innerHTML;
-        clearTimeout(tout);
+        clearTimeout(t_out);
         $.ajax({
             type: 'POST',
             url: '/ajax/get_correct/',
