@@ -50,7 +50,6 @@ def get_correct(request):
 
 @csrf_exempt
 def autoreport(request):
-    print >> sys.stderr, '---------------------------------------- step 1'
     if request.method == 'POST' and request.is_ajax:
         txt = Question.objects.get(id=request.POST.get('id1')).question_text
         deq = "Esta pregunta esta duplicada con la pregunta con \"" + txt + "\""

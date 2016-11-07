@@ -23,10 +23,9 @@
     <ul style="display:none" id="IDR">
         {% for quest in questions_used %}
             {% if not forloop.last %}
-                 <input type="checkbox" id="C{{quest.id}}">{{quest.question_text}}<p></p>
+                 <input onclick="send_r({{ quest.id }}, {{ question.id}})" type="checkbox" id="C{{quest.id}}">{{quest.question_text}}<p></p>
             {% endif %}
         {% endfor %}
-        <button onclick="send_r({{questions.id}})"> Send </button>
     </ul>
     <p></p>
     <button onclick="open_report2()"> Report questions</button>
@@ -39,24 +38,15 @@
 
 
     <script type="text/javascript">
-        function send_r(idq){
-            var i = 0;
-            while(true){
-                var x = document.getElementById("C" + i.toString());
-                if(x.checked == true){
-                    $.ajax({
-                        type: "POST",
-                        url: "/ajax/edit/autoreport/",
-                        dataType: "json",
-                        data: {'id1': i,
-                               'id2': idq
-                        }
-                     });
-                    break;
+        function send_r(id1, id2){
+            $.ajax({
+                type: "POST",
+                url: "/ajax/edit/autoreport/",
+                dataType: "json",
+                data: {'id1':id1,
+                       'id2': id2
                 }
-                i = i+1;
-            }
-            window.alert("chau");
+             });
             location.reload(false);
         }
 
