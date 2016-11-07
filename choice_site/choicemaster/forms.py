@@ -55,13 +55,6 @@ class ConfigForm(forms.Form):
             [MaxValueValidator(max_quantity)]
 
 
-class UploadFileForm(Form):
-    docfile = FileField(
-        label='Select a file',
-        help_text='max. 42 megabytes'
-    )
-
-
 class ExamForm(ModelForm):
     
     answer = forms.ModelChoiceField(required=True, widget=forms.RadioSelect, queryset=Answer.objects.all())
@@ -94,7 +87,3 @@ class UploadQuestionForm(forms.Form):
 # class TopicsForm(forms.Form):
 #    topic_field = forms.ChoiceField(choices=TOPICS, widget=forms.Select(
 #        attrs={'onchange': "this.form.submit();"}))
-
-
-class UploadQuestionFileForm(forms.Form):
-    docfile = forms.FileField(label='Select a file')
