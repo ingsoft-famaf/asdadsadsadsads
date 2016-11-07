@@ -3,7 +3,7 @@
 {% block content %}
     <h2>Evaluation on {{ subject.subject_title }}</h2>
     <h3> Question: {{ question.question_text }}</h3>
-    <form action="{% url 'resolve_exam' %}" method="post">
+    <form id="form" action="{% url 'resolve_exam' %}" method="post">
         {% csrf_token %}
         {{ form.answer }}
         <p id="correct_answer_p" style="display: none">
@@ -67,13 +67,26 @@
     var t_out;
     $(document).ready(function() {
         $('label[for="id_answer_0"]').parent().hide();
-        console.log("Hid the mofo")
         var timer = {{ timer }};
         var time = timer*1000;
         t_out = setTimeout("submit_answer()", time);
+
+        // Reset display for blocks
+        $("#correct_answer_p").hide();
+        $("#chosen_answer_p").hide();
+        $("#id_answer").show();
+        $("#submit").show();
+        $("#nextq").hide();
     });
 
     function submit_answer() {
+        var val = $('input[name="answer"]:checked').val();
+        if (val.length == 0) {
+            $("#chosen_answer").text("No answer chosen");
+            $("#chosen_answer_p").show()
+            return;
+        }
+        console.log("val:", val);
         var e = document.getElementById("question_id").innerHTML;
         clearTimeout(t_out);
         $.ajax({

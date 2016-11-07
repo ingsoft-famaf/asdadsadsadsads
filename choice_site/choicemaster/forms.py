@@ -43,8 +43,8 @@ ALGORITHMS = (('0', 'Based on errors'), ('1', 'Random'))
 
 class ConfigForm(forms.Form):
     quantity = forms.IntegerField()
-    timer = forms.IntegerField(validators=[MinValueValidator(1),
-                                       MaxValueValidator(5)])
+    timer = forms.IntegerField(validators=[MinValueValidator(5),
+                                       MaxValueValidator(120)])
     algorithm = forms.ChoiceField(choices=ALGORITHMS)
 
     def __init__(self, max_quantity, *args, **kwargs):
