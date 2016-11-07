@@ -79,8 +79,8 @@ def configure_exam1(request):
             return redirect('configure_exam2', exam_id=exam.id)
     else:
         form = SubjectForm()
-    return render(request, 'choicemaster/exam/configure_exam1.html',
-                  {'form': form})
+        return render(request, 'choicemaster/exam/configure_exam1.html',
+                        {'form': form})
 
 
 @login_required
@@ -92,6 +92,9 @@ def configure_exam2(request, exam_id):
     """
     e = models.Exam.objects.get(pk=exam_id)
     ids = models.Subject.objects.get(pk=e.subject.id).id
+    context = dict()
+    context['subject_text'] = e.subject.subject_title
+    context['exam_id'] = exam_id
     if request.method == 'POST':
         form = MultipleTopicForm(ids, request.POST)
         if form.is_valid():
@@ -102,10 +105,10 @@ def configure_exam2(request, exam_id):
             e.save()
             return redirect('configure_exam3', exam_id=exam_id)
     else:
-        # ipdb.set_trace()
         form = MultipleTopicForm(e.subject.id)
-    return render(request, 'choicemaster/exam/configure_exam2.html',
-                  {'form': form, 'exam_id': exam_id})
+    
+    context['form'] = form
+    return render(request, 'choicemaster/exam/configure_exam2.html', context)
 
 
 @login_required
@@ -118,6 +121,11 @@ def configure_exam3(request, exam_id):
     """
     e = models.Exam.objects.get(pk=exam_id)
     max_quantity = 0
+    context = dict()
+    context['subject_text'] = e.subject.subject_title
+    context['exam_id'] = exam_id
+    context['topics'] = e.topic.all()
+    
     for t in e.topic.all():
         questions = models.Question.objects.filter(topic=t.id)
         max_quantity += len(questions)
@@ -136,8 +144,9 @@ def configure_exam3(request, exam_id):
             return redirect('resolve_exam', exam_id=exam_id)
     else:
         form = ConfigForm(max_quantity)
-    return render(request, 'choicemaster/exam/configure_exam3.html',
-                  {'form': form, 'exam_id': exam_id})
+
+    context['form'] = form
+    return render(request, 'choicemaster/exam/configure_exam3.html', context)
 
 
 def resolve_exam(request, exam_id=''):
@@ -188,6 +197,7 @@ def resolve_exam(request, exam_id=''):
         context['question'] = question
         context['exam_id'] = exam_id
         context['timer'] = timer
+        context['questions_used'] = exam.questions_used.all()
 
         return render(request, 'choicemaster/exam/resolve_exam.html', context)
 

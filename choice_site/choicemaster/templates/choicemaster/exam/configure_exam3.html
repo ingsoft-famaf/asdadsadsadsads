@@ -4,10 +4,20 @@
     <h1>Configure exam</h1>
     <br>
     <h3><b>SUBJECT:</b> {{ subject_text }}</h3>
-    <h3><b>TOPICS:</b> ...</h3>
+    <h3><b>TOPICS:</b> 
+        {% for item in topics %}
+                <td>{{ item.topic_title }}</td>
+        {% endfor %}
+    </h3>
     <form id="form" action="{% url 'configure_exam3' exam_id %}" method="post">
         {% csrf_token %}
-        {{ form }}
+        <p>{{ form.quantity.label }}</p>
+        <p> {{ form.errors.quantity}} </p>
+        <p>{{ form.quantity }}</p>
+        <p>{{ form.timer.label }}</p>
+        <p> {{ form.errors.timer}} </p>
+        <p>{{ form.timer }} {{ form.timer.help_text }}</p>
+        <P>{{ form.algorithm.label }} {{ form.algorithm }}</P>
         <br>
         <input type="submit" value="Submit">
     </form>

@@ -42,10 +42,12 @@ ALGORITHMS = (('0', 'Based on errors'), ('1', 'Random'))
 
 
 class ConfigForm(forms.Form):
-    quantity = forms.IntegerField()
+    quantity = forms.IntegerField(label="Quantity of questions to solve:")
     timer = forms.IntegerField(validators=[MinValueValidator(5),
-                                       MaxValueValidator(120)])
-    algorithm = forms.ChoiceField(choices=ALGORITHMS)
+                                       MaxValueValidator(120)],
+                                help_text="Input in seconds",
+                                label="Write the amount of time per question required:")
+    algorithm = forms.ChoiceField(choices=ALGORITHMS, label="Choose an algorithm:")
 
     def __init__(self, max_quantity, *args, **kwargs):
         super(ConfigForm, self).__init__(*args, **kwargs)
