@@ -1,3 +1,4 @@
+import sys
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Report, Question, Answer
@@ -8,6 +9,19 @@ from django.views.decorators.csrf import csrf_exempt
 from models import Topic, Answer, Question, Report
 import json
 
+
+@csrf_exempt
+def add_report(request):
+    if request.method == 'POST' and request.is_ajax:
+        deq = request.POST.get('description')
+        idq = request.POST.get('idq')
+        quest = Question.objects.get(id=idq)
+        report = Report(report_description=deq)
+        report.question = quest
+        report.save()
+        return HttpResponse("OK")
+    else:
+        return HttpResponse("Something went wrong")
 
 @csrf_exempt
 def ajax_view(request):
@@ -36,13 +50,18 @@ def get_correct(request):
 
 @csrf_exempt
 def autoreport(request):
+    print >> sys.stderr, '---------------------------------------- step 1'
     if request.method == 'POST' and request.is_ajax:
-        question = Question.objects.get(id=request.POST.get('id2'))
-        id = request.POST.get('id1')
-        Report.objects.create(question=question,
-                              report_description="Esta pregunta esta "
-                                                 "duplicada con la pregunta "
-                                                 + str(id))
+        txt = Question.objects.get(id=request.POST.get('id1')).question_text
+        deq = "Esta pregunta esta duplicada con la pregunta con \"" + txt + "\""
+        idq = request.POST.get('id2')
+        quest = Question.objects.get(id=idq)
+        report = Report(report_description=deq)
+        report.question = quest
+        report.save()
+        return HttpResponse("OK")
+    else:
+        return HttpResponse("Something went wrong")
 
 @csrf_exempt
 def delete_report(request):
