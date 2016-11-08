@@ -209,7 +209,6 @@ def resolve_exam(request, exam_id=''):
 
     else:
         form = ExamForm(request.POST)
-        answer_id = request.POST.get('answer')
         exam_id = request.POST.get('exam_id')
         exam = models.Exam.objects.get(pk=exam_id)
         timer = exam.exam_timer
@@ -217,11 +216,14 @@ def resolve_exam(request, exam_id=''):
         question = Question.objects.get(pk=question_id)
         answers = Answer.objects.filter(question=question.id)
         correct_answer = answers.filter(correct=True)[0]
-        #make up a fake answer which is not the correct one
-        answer = get_first(answers.filter(correct=False))
-        # get the actual answer from the front-end if there is one
-        if answer_id is not None:
-            answer = Answer.objects.get(pk=answer.id)
+        
+        answer_id = request.POST.get('answer')
+        if answer_id == '':
+            #make up a fake answer which is not the correct one
+            answer = get_first(answers.filter(correct=False))
+        else:   
+            # get the actual answer from the front-end if there is one
+            answer = Answer.objects.get(pk=answer_id)
 
         topic_id = question.topic.id
         value = (correct_answer.id == answer.id)
