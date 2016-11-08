@@ -219,7 +219,7 @@ def resolve_exam(request, exam_id=''):
         correct_answer = answers.filter(correct=True)[0]
         answer = get_first(answers.filter(correct=False))
         if answer_id is not None:
-            answer = Answer.objects.get(pk=answer_id)
+            answer = Answer.objects.get(pk=answer.id)
         
         topic_id = question.topic.id
 
