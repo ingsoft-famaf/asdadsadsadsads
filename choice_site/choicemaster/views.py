@@ -10,6 +10,7 @@ from .models import Report
 import json
 
 
+
 @login_required
 def index(request, message=''):
     """
@@ -148,6 +149,12 @@ def configure_exam3(request, exam_id):
     context['form'] = form
     return render(request, 'choicemaster/exam/configure_exam3.html', context)
 
+def get_first(iterable, default=None):
+    if iterable:
+        for item in iterable:
+            return item
+    return default
+
 
 def resolve_exam(request, exam_id=''):
     """
@@ -203,17 +210,23 @@ def resolve_exam(request, exam_id=''):
 
     else:
         form = ExamForm(request.POST)
-        answer_id = request.POST.get('answer')
         exam_id = request.POST.get('exam_id')
         exam = models.Exam.objects.get(pk=exam_id)
         timer = exam.exam_timer
-        answer = Answer.objects.get(pk=answer_id)
-        
-        question = answer.question
-        topic_id = question.topic.id
+        question_id = request.POST.get('question_id')
+        question = Question.objects.get(pk=question_id)
         answers = Answer.objects.filter(question=question.id)
         correct_answer = answers.filter(correct=True)[0]
+        
+        answer_id = request.POST.get('answer')
+        if answer_id == '':
+            #make up a fake answer which is not the correct one
+            answer = get_first(answers.filter(correct=False))
+        else:   
+            # get the actual answer from the front-end if there is one
+            answer = Answer.objects.get(pk=answer_id)
 
+        topic_id = question.topic.id
         value = (correct_answer.id == answer.id)
         # Generate the snapshot of the answer
         snap = QuestionSnapshot.objects.create(exam=exam,
@@ -226,7 +239,7 @@ def resolve_exam(request, exam_id=''):
 
         exam.remaining -= 1
         mistakes = get_mistakes(exam_id)
-        if not answer.correct:
+        if not value:
             mistakes[str(topic_id)] += 1
         else:
             exam.amount_correct += 1
