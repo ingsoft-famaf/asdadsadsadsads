@@ -3,7 +3,7 @@
 {% block content %}
     <h2>Evaluation on {{ subject.subject_title }}</h2>
     <h3> Question: {{ question.question_text }}</h3>
-    <form id="form" action="{% url 'resolve_exam' %}" method="post">
+    <form action="{% url 'resolve_exam' %}" method="post">
         {% csrf_token %}
         {{ form.answer }}
         <p id="correct_answer_p" style="display: none">
@@ -18,41 +18,64 @@
     </form>
     <div id="question_id" style="display:none">{{ question.id }}</div>
 
-   <button onclick="open_report()"> Repeated question</button>
+    <button onclick="open_report()"> Same questions?</button>
     <p></p>
     <ul style="display:none" id="IDR">
         {% for quest in questions_used %}
-            <input type="checkbox" id="C{{ quest.id|slugify }}">{{quest.question_text}}
-            <p></p>
+            {% if not forloop.last %}
+                 <input onclick="send_r({{ quest.id }}, {{ question.id}})" type="checkbox" id="C{{quest.id}}">{{quest.question_text}}<p></p>
+            {% endif %}
         {% endfor %}
-        <button onclick="reporting({{ questions_used }},{{ question.id  }} )">
-            Reporting</button>
     </ul>
+    <p></p>
+    <button onclick="open_report2()"> Report questions</button>
+        <ul style="display:none" id="ID2">
+            <p></p>
+            Decription <input id="ID3" type="text"name="Edit">
+            <button onclick="send_report({{ question.id }})"> Send </button>
+        </ul>
+
+
 
     <script type="text/javascript">
-    var id;
-        function reporting(questions, idq){
-            for (quest in questions){
-                var x = document.getElementById("C"+quest.id);
-                if(x.checked == true){
-                    id = quest.id;
-                    break;
-                }
-            }
-        $.ajax({
+        function send_r(id1, id2){
+            $.ajax({
                 type: "POST",
                 url: "/ajax/edit/autoreport/",
                 dataType: "json",
-                data: {'id1':id ,
-                        'id2': idq
+                data: {'id1':id1,
+                       'id2': id2
+                }
+             });
+            location.reload(false);
+        }
+
+       function send_report(idq){
+           $.ajax({
+                type: "POST",
+                url: "/ajax/edit/reporting/",
+                dataType: "json",
+                data: {'idq':idq ,
+                        'description':document.getElementById("ID3").value
                 }
             });
-        }
+           location.reload(false);
+       }
     </script>
 
     <script type="text/javascript">
         function open_report(){
         var a = document.getElementById("IDR");
+        if(a.style.display == "none"){
+            a.style.display = "inline";
+        }
+        else{
+            a.style.display = "none";
+        }
+    }
+
+    function open_report2(){
+        var a = document.getElementById("ID2");
         if(a.style.display == "none"){
             a.style.display = "inline";
         }
@@ -67,26 +90,13 @@
     var t_out;
     $(document).ready(function() {
         $('label[for="id_answer_0"]').parent().hide();
+        console.log("Hid the mofo")
         var timer = {{ timer }};
         var time = timer*1000;
         t_out = setTimeout("submit_answer()", time);
-
-        // Reset display for blocks
-        $("#correct_answer_p").hide();
-        $("#chosen_answer_p").hide();
-        $("#id_answer").show();
-        $("#submit").show();
-        $("#nextq").hide();
     });
 
     function submit_answer() {
-        var val = $('input[name="answer"]:checked').val();
-        if (val.length == 0) {
-            $("#chosen_answer").text("No answer chosen");
-            $("#chosen_answer_p").show();
-            return;
-        }
-        console.log("val:", val);
         var e = document.getElementById("question_id").innerHTML;
         clearTimeout(t_out);
         $.ajax({
@@ -95,17 +105,15 @@
             dataType: 'json',
             data: {'idq': e},
             success: function(data) {
-                // Show correct answer and chosen answer
-                $("#correct_answer").text(data['answer']);
+                // Show correct answer
                 $("#correct_answer_p").show();
-                var chosen = $('input[name="answer"]:checked').parent().text();
-                $("#chosen_answer").text(chosen);
-                $("#chosen_answer_p").show();
+                $("#correct_answer").text(data['answer']);
                 //  Hide answers and show final submit button
                 $("#id_answer").hide();
                 $("#submit").hide();
                 $("#nextq").show();
-                console.log("success in processing question!");
+                console.log("test:", data.answer);
+                console.log("success!");
             }
         });
     }

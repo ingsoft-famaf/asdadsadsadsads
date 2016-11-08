@@ -7,7 +7,7 @@ from django.views import View
 from .upload import parse_xml_question
 from .exam_functions import get_question, get_mistakes
 from .models import Report
-import json, ipdb
+import json
 
 
 @login_required
