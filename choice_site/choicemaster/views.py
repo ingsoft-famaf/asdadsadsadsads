@@ -217,12 +217,13 @@ def resolve_exam(request, exam_id=''):
         question = Question.objects.get(pk=question_id)
         answers = Answer.objects.filter(question=question.id)
         correct_answer = answers.filter(correct=True)[0]
+        #make up a fake answer which is not the correct one
         answer = get_first(answers.filter(correct=False))
+        # get the actual answer from the front-end if there is one
         if answer_id is not None:
             answer = Answer.objects.get(pk=answer.id)
-        
-        topic_id = question.topic.id
 
+        topic_id = question.topic.id
         value = (correct_answer.id == answer.id)
         # Generate the snapshot of the answer
         snap = QuestionSnapshot.objects.create(exam=exam,
@@ -235,7 +236,7 @@ def resolve_exam(request, exam_id=''):
 
         exam.remaining -= 1
         mistakes = get_mistakes(exam_id)
-        if not answer.correct:
+        if not value:
             mistakes[str(topic_id)] += 1
         else:
             exam.amount_correct += 1
