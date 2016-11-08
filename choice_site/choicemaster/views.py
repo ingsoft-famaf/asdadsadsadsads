@@ -7,7 +7,7 @@ from django.views import View
 from .upload import parse_xml_question
 from .exam_functions import get_question, get_mistakes
 from .models import Report
-import json, ipdb
+import json#, ipdb
 
 
 @login_required
@@ -148,6 +148,12 @@ def configure_exam3(request, exam_id):
     context['form'] = form
     return render(request, 'choicemaster/exam/configure_exam3.html', context)
 
+def get_first(iterable, default=None):
+    if iterable:
+        for item in iterable:
+            return item
+    return default
+
 
 def resolve_exam(request, exam_id=''):
     """
@@ -207,12 +213,15 @@ def resolve_exam(request, exam_id=''):
         exam_id = request.POST.get('exam_id')
         exam = models.Exam.objects.get(pk=exam_id)
         timer = exam.exam_timer
-        answer = Answer.objects.get(pk=answer_id)
-        
-        question = answer.question
-        topic_id = question.topic.id
+        question_id = request.POST.get('question_id')
+        question = Question.objects.get(pk=question_id)
         answers = Answer.objects.filter(question=question.id)
         correct_answer = answers.filter(correct=True)[0]
+        answer = get_first(answers.filter(correct=False))
+        if answer_id is not None:
+            answer = Answer.objects.get(pk=answer_id)
+        
+        topic_id = question.topic.id
 
         value = (correct_answer.id == answer.id)
         # Generate the snapshot of the answer

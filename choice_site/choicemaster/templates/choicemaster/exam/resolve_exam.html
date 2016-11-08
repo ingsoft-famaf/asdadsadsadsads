@@ -15,6 +15,7 @@
         <p id="submit"><button type="button" onclick="submit_answer();">Submit</button></p>
         <p id="nextq" style="display: none;"><input type="submit" value="Next"/></p>
         <input type="hidden" name="exam_id" value="{{ exam_id }}">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
     </form>
     <div id="question_id" style="display:none">{{ question.id }}</div>
 
@@ -70,7 +71,6 @@
         var timer = {{ timer }};
         var time = timer*1000;
         t_out = setTimeout("submit_answer()", time);
-
         // Reset display for blocks
         $("#correct_answer_p").hide();
         $("#chosen_answer_p").hide();
@@ -78,7 +78,6 @@
         $("#submit").show();
         $("#nextq").hide();
     });
-
     function submit_answer() {
         var val = $('input[name="answer"]:checked').val();
         if (val.length == 0) {
