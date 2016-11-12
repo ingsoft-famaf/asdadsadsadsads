@@ -36,7 +36,8 @@
             <button onclick="send_report({{ question.id }})"> Send </button>
         </ul>
 
-
+    <p></p>
+    <div id="timer_div"></div>
 
     <script type="text/javascript">
         function send_r(id1, id2){
@@ -62,9 +63,7 @@
             });
            location.reload(false);
        }
-    </script>
 
-    <script type="text/javascript">
         function open_report(){
         var a = document.getElementById("IDR");
         if(a.style.display == "none"){
@@ -84,17 +83,21 @@
             a.style.display = "none";
         }
     }
-    </script>
 
-
-    <script type="text/javascript">
     var t_out;
     $(document).ready(function() {
         $('label[for="id_answer_0"]').parent().hide();
-        console.log("Hid the mofo")
         var timer = {{ timer }};
+        var seconds_left = timer;
         var time = timer*1000;
-        t_out = setTimeout("submit_answer()", time);
+        t_out = setInterval(function() {
+                    document.getElementById('timer_div').innerHTML = --seconds_left;
+                    if (t_out <= 0) {
+                        submit_answer();
+                        clearInterval(t_out);
+                    }
+                }, 1000);
+
         // Reset display for blocks
         $("#correct_answer_p").hide();
         $("#chosen_answer_p").hide();
@@ -103,6 +106,7 @@
         $("#nextq").hide();
     });
     function submit_answer() {
+        document.getElementById('time').innerHTML = t_out;
         var val = $('input[name="answer"]:checked').val();
         if (val.length == 0) {
             $("#chosen_answer").text("No answer chosen");
