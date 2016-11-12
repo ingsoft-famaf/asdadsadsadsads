@@ -72,12 +72,11 @@ def configure_exam1(request):
     if request.method == 'POST':
         user = None
         if request.user.is_authenticated():
-            username = request.user
+            user = request.user
         form = SubjectForm(request.POST)
         if form.is_valid():
             subject_id = request.POST.get('subject')
             exam = models.Exam(user=user)
-            # ipdb.set_trace()
             exam.subject = models.Subject.objects.get(pk=subject_id)
             exam.save()
             return redirect('configure_exam2', exam_id=exam.id)
@@ -269,7 +268,7 @@ def resolve_exam(request, exam_id=''):
             return render(request, 'choicemaster/exam/resolve_exam.html', context)
         else:
             # End of the exam
-            exam.result = exam.amount_correct / exam.exam_quantity_questions
+            exam.exam_result = exam.amount_correct / float(exam.exam_quantity_questions)
             exam.save()
 
             # Return to the index page with the amount of correct answers on
@@ -280,27 +279,25 @@ def resolve_exam(request, exam_id=''):
 
 
 @login_required
-def subject_statistics(request):
+def subjects_statistics(request):
     user = request.user
-    user_exams = Exam.objects.filter(user=user)
+    user_exams = models.Exam.objects.filter(user=user)
     subjects = Subject.objects.all()
     evaluated = dict()
-
     for s in subjects:
         s_exams = user_exams.filter(subject=s)
         total = s_exams.count()
-        if(total > 0):
+        if total > 0:
             # There are exams of the subject s.
-            evaluated['s.id'] = s
-
+            partial = 0
             for exam in s_exams:
-                results['s.id'] += exam.exam_result
+                partial += exam.exam_result*10
             # Calculate the final result of the subject s
-            results['s.id'] = results['s.id'] / total
+            result = partial / total
+            evaluated[s.id] = (s, result)
 
     context = dict()
     context['evaluated'] = evaluated
-    context['results'] = results
     return render(request, 'choicemaster/statistics/subjects.html', context)
         
 

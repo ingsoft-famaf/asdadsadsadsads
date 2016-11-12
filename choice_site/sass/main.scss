@@ -96,3 +96,24 @@
     color: lighten(black, 15%)
   }
 }
+
+/**
+ * Statistics
+ */
+.sub {
+  border-radius: 3px;
+  box-shadow: 2px 2px 2px #d2d2d2;
+  padding: 7px;
+}
+
+.green {
+  background-color: #5FBA7D;
+}
+
+.yellow {
+  background-color: #E0B72F;
+}
+
+.red {
+  background-color: #DD5F68;
+}

@@ -4,7 +4,8 @@
     {% if request.user.get_username %}
         <h2>Hello {{ request.user.get_username }}!</h2>
         Welcome. What do you want to exercise today?<br>
-        <td><a class="light medium-text" href="/configure1">Take an exam</a></td>
+        <p><td><a class="light medium-text" href="/configure1">Take an exam</a></td></p>
+        <p><td><a class="light medium-text" href="/statistics/subjects">Check your results</a></td></p>
     {% else %}
         <h2>Hello friend!</h2>
         <br>
