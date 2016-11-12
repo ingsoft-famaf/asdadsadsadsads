@@ -118,8 +118,11 @@
             data: {'idq': e},
             success: function(data) {
                 // Show correct answer
-                $("#correct_answer_p").show();
                 $("#correct_answer").text(data['answer']);
+                $("#correct_answer_p").show();
+                var chosen = $('input[name="answer"]:checked').parent().text();
+                $("#chosen_answer").text(chosen);
+                $("#chosen_answer_p").show();
                 //  Hide answers and show final submit button
                 $("#id_answer").hide();
                 $("#submit").hide();
