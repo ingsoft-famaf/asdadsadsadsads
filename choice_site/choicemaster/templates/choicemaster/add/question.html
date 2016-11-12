@@ -29,14 +29,8 @@
             data: {'ids': ids},
             success: function(data) {
                 var topics = data.topics;
-                var idt = document.getElementById("id_topic");
-                for (i = 0; i < topics.length; i++) {
-                    topic = topics[i];
-                    idt.options[i+1].value = topic[0];
-                    idt.options[i+1].text = topic[1];
-                    console.log("In position", i, "\nvalue =", topic[0],
-                        "\ntext =", topic[1])
-                }
+                console.log("topics:", topics);
+                $('#id_topic').html(topics);
                 console.log("success!");
             }
         });
