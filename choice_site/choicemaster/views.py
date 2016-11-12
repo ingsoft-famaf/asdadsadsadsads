@@ -70,10 +70,13 @@ def configure_exam1(request):
     chooses the topics he wants to include in the exam
     """
     if request.method == 'POST':
+        user = None
+        if request.user.is_authenticated():
+            username = request.user
         form = SubjectForm(request.POST)
         if form.is_valid():
             subject_id = request.POST.get('subject')
-            exam = models.Exam(user=models.User.objects.get(pk=1))
+            exam = models.Exam(user=user)
             # ipdb.set_trace()
             exam.subject = models.Subject.objects.get(pk=subject_id)
             exam.save()
@@ -274,3 +277,33 @@ def resolve_exam(request, exam_id=''):
             message = "Of " + str(exam.exam_quantity_questions) +\
                 " questions, correct: " + str(exam.amount_correct)
             return render(request, 'choicemaster/index.html', {'message': message})
+
+
+@login_required
+def subject_statistics(request):
+    user = request.user
+    user_exams = Exam.objects.filter(user=user)
+    subjects = Subject.objects.all()
+    evaluated = dict()
+
+    for s in subjects:
+        s_exams = user_exams.filter(subject=s)
+        total = s_exams.count()
+        if(total > 0):
+            # There are exams of the subject s.
+            evaluated['s.id'] = s
+
+            for exam in s_exams:
+                results['s.id'] += exam.exam_result
+            # Calculate the final result of the subject s
+            results['s.id'] = results['s.id'] / total
+
+    context = dict()
+    context['evaluated'] = evaluated
+    context['results'] = results
+    return render(request, 'choicemaster/statistics/subjects.html', context)
+        
+
+
+
+
