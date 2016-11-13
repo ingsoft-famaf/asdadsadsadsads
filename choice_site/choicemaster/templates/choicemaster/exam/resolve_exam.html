@@ -80,27 +80,34 @@
             a.style.display = "none";
         }
     }
-    var t_out;
+
+    //var t_out;
+
     $(document).ready(function() {
         $('label[for="id_answer_0"]').parent().hide();
         var timer = {{ timer }};
         var seconds_left = timer;
         var time = timer*1000;
-        t_out = setTimeout(function1(seconds_left), time);
+        var intervalTimerID = null;
+        var iterations = 0;
 
-        function function1() {
-            setInterval(function() {
+        intervalTimerID = setInterval(WillYouFuckingWork, 1000);
+
+        function WillYouFuckingWork() {
+                ++iterations;
                 document.getElementById('timer_div').innerHTML = "You have " + --seconds_left + " seconds left to answer this question.";
-                if (seconds_left <= 0) {
+                if (iterations > 3*seconds_left) {
                     document.getElementById('timer_div').innerHTML = "Wohah!"
-                    triggerStopTimer();
-                    window.clearInterval(t_out);
+                    clearInterval(intervalTimerID);
+                    intervalTimerID = null;
+                    submit_answer();
                     }
-            }, 1000);
-         }
+            }
 
          function triggerStopTimer() {
-            document.getElementById('timer_div').innerHTML = "Something is meant to happen here..."
+            document.getElementById('timer_div').innerHTML = "Something is meant to happen here...";
+            clearInterval(intervalTimerID);
+            intervalTimerID = null;
             submit_answer();
          }
 
@@ -119,7 +126,7 @@
         }
         console.log("val:", val);
         var e = document.getElementById("question_id").innerHTML;
-        clearTimeout(t_out);
+        //clearTimeout(t_out);
         $.ajax({
             type: 'POST',
             url: '/ajax/get_correct/',
