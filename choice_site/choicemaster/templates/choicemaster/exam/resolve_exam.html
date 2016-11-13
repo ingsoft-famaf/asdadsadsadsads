@@ -86,13 +86,24 @@
         var timer = {{ timer }};
         var seconds_left = timer;
         var time = timer*1000;
-        t_out = setInterval(function() {
-                    document.getElementById('timer_div').innerHTML = --seconds_left;
-                    if (t_out <= 0) {
-                        submit_answer();
-                        clearInterval(t_out);
+        t_out = setTimeout(function1(seconds_left), time);
+
+        function function1() {
+            setInterval(function() {
+                document.getElementById('timer_div').innerHTML = "You have " + --seconds_left + " seconds left to answer this question.";
+                if (seconds_left <= 0) {
+                    document.getElementById('timer_div').innerHTML = "Wohah!"
+                    triggerStopTimer();
+                    window.clearInterval(t_out);
                     }
-                }, 1000);
+            }, 1000);
+         }
+
+         function triggerStopTimer() {
+            document.getElementById('timer_div').innerHTML = "Something is meant to happen here..."
+            submit_answer();
+         }
+
         // Reset display for blocks
         $("#correct_answer_p").hide();
         $("#chosen_answer_p").hide();
@@ -101,7 +112,6 @@
         $("#nextq").hide();
     });
     function submit_answer() {
-        document.getElementById('time').innerHTML = t_out;
         var val = $('input[name="answer"]:checked').val();
         if (val.length == 0) {
             $("#chosen_answer").text("No answer chosen");
