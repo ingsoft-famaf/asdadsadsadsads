@@ -51,7 +51,6 @@
              });
             location.reload(false);
         }
-
        function send_report(idq){
            $.ajax({
                 type: "POST",
@@ -63,7 +62,6 @@
             });
            location.reload(false);
        }
-
         function open_report(){
         var a = document.getElementById("IDR");
         if(a.style.display == "none"){
@@ -73,7 +71,6 @@
             a.style.display = "none";
         }
     }
-
     function open_report2(){
         var a = document.getElementById("ID2");
         if(a.style.display == "none"){
@@ -83,7 +80,6 @@
             a.style.display = "none";
         }
     }
-
     var t_out;
     $(document).ready(function() {
         $('label[for="id_answer_0"]').parent().hide();
@@ -97,7 +93,6 @@
                         clearInterval(t_out);
                     }
                 }, 1000);
-
         // Reset display for blocks
         $("#correct_answer_p").hide();
         $("#chosen_answer_p").hide();

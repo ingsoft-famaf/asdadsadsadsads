@@ -97,9 +97,6 @@ def delete_answer(request):
         Elimina una respuesta.
     """
     if request.is_ajax() and request.POST:
-        report = Report.objects.get(id=request.POST.get('idR'))
-        report.report_state = Report.EVALUATED
-        report.save()
 
         Answer.objects.get(id=request.POST.get('idA')).delete()
         return HttpResponse("Delted")
@@ -119,12 +116,26 @@ def edit_question(request):
         question.question_text = new_value
         question.save()
 
-        report = Report.objects.get(id=request.POST.get('idR'))
-        report.report_state = Report.EVALUATED
-        report.save()
         return HttpResponse("Delted")
     else:
         return HttpResponse("No deleted")
+
+@csrf_exempt
+def edit_correct(request):
+
+    if request.is_ajax() and request.POST:
+        question = Question.objects.get(id=request.POST.get('idQ'))
+        answers = Answer.objects.filter(question=question.id)
+        answers = answers.filter(correct=True)
+        correct_answer = answers[0]
+        correct_answer.correct = False
+        correct_answer.save()
+        answer = Answer.objects.get(id=request.POST.get('idA'))
+        answer.correct = True
+        answer.save()
+        return HttpResponse("Changed")
+    else:
+        return HttpResponse("No Changed")
 
 
 @csrf_exempt
@@ -137,10 +148,6 @@ def edit_ans(request):
         new_value = request.POST.get('newValue')
         ans.answer_text = new_value
         ans.save()
-
-        report = Report.objects.get(id=request.POST.get('idR'))
-        report.report_state = Report.EVALUATED
-        report.save()
         return HttpResponse("Delted")
     else:
         return HttpResponse("No deleted")
