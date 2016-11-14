@@ -7,6 +7,8 @@ from django.http.response import HttpResponse
 from .upload import parse_xml_question
 from .exam_functions import get_question, get_mistakes
 from .models import Report
+from graphos.sources.simple import SimpleDataSource
+from graphos.renderers.gchart import LineChart
 import json
 
 
@@ -313,20 +315,28 @@ def subject_detail(request, subject_id):
     taken = 0
     questions = 0
     correct = 0
-
+    data = [
+            ['Time', 'Result'],
+            ]
     for e in user_exams:
         taken += 1
         exams[e.id] = "Exam " + str(taken)
         avg += e.exam_result
+        data.append([taken, e.exam_result*10])
         questions += e.exam_quantity_questions
         correct += e.amount_correct
 
     exams_general = (avg*10, taken, questions, correct, questions-correct)
 
+    data_source = SimpleDataSource(data=data)
+    chart = LineChart(data_source)
+
     context = dict()
     context['subject_title'] = subject_title
     context['exams_general'] = exams_general
     context['exams'] = exams
+    context['chart'] = chart
+
     return render(request, 'choicemaster/statistics/subject_detail.html',
                   context)
 

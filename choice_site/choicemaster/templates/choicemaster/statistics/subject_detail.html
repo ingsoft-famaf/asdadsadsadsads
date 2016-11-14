@@ -9,10 +9,19 @@
     <p>Questions answered: {{ exams_general.2 }}</p>
     <p>Questions answered correctly: {{ exams_general.3 }}</p>
     <p>Questions answered incorrectly: {{ exams_general.4 }}</p>
-    <div id="graph">Graph</div>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load("visualization", "1", {packages:["corechart"]});
+    </script>
+    <div id="graph">
+    
+        {{ chart.as_html }}
+
+    </div>
 
     <h2>Exams history</h2>
     {% for k, v in exams.items %}
         <p><a href="/statistics/exam/{{ k }}/"></a>{{ v }}</p>
     {% endfor %}
+
 {% endblock %}
