@@ -12,7 +12,7 @@
     <div id="graph">Graph</div>
 
     <h2>Exams history</h2>
-    {% for k, v in exams %}
+    {% for k, v in exams.items %}
         <p><a href="/statistics/exam/{{ k }}/"></a>{{ v }}</p>
     {% endfor %}
 {% endblock %}

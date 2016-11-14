@@ -4,11 +4,11 @@
     <h1>Statistics</h1>
     {% for k, v in evaluated.items %}
         {% if v.1 >= 7%}
-            <h3 class="sub green">{{ v.0.subject_title }}</h3>
+            <h3 class="sub green"><a href="/statistics/subject/{{ k }}/">{{ v.0.subject_title }}</a></h3>
         {% elif v.1 >= 4 %}
-            <h3 class="sub yellow">{{ v.0.subject_title }}</h3>
+            <h3 class="sub yellow"><a href="/statistics/subject/{{ k }}/">{{ v.0.subject_title }}</a></h3>
         {% else %}
-            <h3 class="sub red">{{ v.0.subject_title }}</h3>
+            <h3 class="sub red"><a href="/statistics/subject/{{ k }}/">{{ v.0.subject_title }}</a></h3>
         {% endif %}
     {% endfor %}
 {% endblock %}

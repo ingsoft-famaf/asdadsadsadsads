@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from choicemaster import models
 from .forms import *
-from django.views import View
+from django.http.response import HttpResponse
 from .upload import parse_xml_question
 from .exam_functions import get_question, get_mistakes
 from .models import Report
@@ -329,3 +329,7 @@ def subject_detail(request, subject_id):
     context['exams'] = exams
     return render(request, 'choicemaster/statistics/subject_detail.html',
                   context)
+
+@login_required
+def exam_detail(request, exam_id):
+    return HttpResponse("It's High Noon somewhere in the world.")
