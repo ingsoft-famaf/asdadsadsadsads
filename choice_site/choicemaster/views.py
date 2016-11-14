@@ -299,8 +299,33 @@ def subjects_statistics(request):
     context = dict()
     context['evaluated'] = evaluated
     return render(request, 'choicemaster/statistics/subjects.html', context)
-        
 
+@login_required
+def subject_detail(request, subject_id):
+    user = request.user
+    subject = models.Subject.objects.get(id=subject_id)
+    user_exams = models.Exam.objects.filter(user=user, subject=subject)
 
+    subject_title = subject.subject_title
+    exams = dict()
 
+    avg = 0
+    taken = 0
+    questions = 0
+    correct = 0
 
+    for e in user_exams:
+        taken += 1
+        exams[e.id] = "Exam " + str(taken)
+        avg += e.exam_result
+        questions += e.exam_quantity_questions
+        correct += e.amount_correct
+
+    exams_general = (avg*10, taken, questions, correct, questions-correct)
+
+    context = dict()
+    context['subject_title'] = subject_title
+    context['exams_general'] = exams_general
+    context['exams'] = exams
+    return render(request, 'choicemaster/statistics/subject_detail.html',
+                  context)

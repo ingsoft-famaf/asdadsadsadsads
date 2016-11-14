@@ -1,0 +1,18 @@
+{% extends 'choicemaster/base.html' %}
+
+{% block content %}
+    <h1>{{ subject_title }}</h1>
+
+    <h2>General Statistics</h2>
+    <p>Average grade: {{ exams_general.0 }}</p> <!--tiene que estar multiplicado por 10-->
+    <p>Exams completed: {{ exams_general.1 }}</p>
+    <p>Questions answered: {{ exams_general.2 }}</p>
+    <p>Questions answered correctly: {{ exams_general.3 }}</p>
+    <p>Questions answered incorrectly: {{ exams_general.4 }}</p>
+    <div id="graph">Graph</div>
+
+    <h2>Exams history</h2>
+    {% for k, v in exams %}
+        <p><a href="/statistics/exam/{{ k }}/"></a>{{ v }}</p>
+    {% endfor %}
+{% endblock %}
