@@ -97,7 +97,6 @@
                 ++iterations;
                 document.getElementById('timer_div').innerHTML = "You have " + Math.abs(seconds_left-iterations) + " seconds left to answer this question.";
                 if (iterations >= seconds_left) {
-                    document.getElementById('timer_div').innerHTML = "Wohah!"
                     clearInterval(intervalTimerID);
                     intervalTimerID = null;
                     submit_answer();
