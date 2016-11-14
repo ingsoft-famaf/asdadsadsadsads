@@ -1,0 +1,29 @@
+{% extends 'choicemaster/base.html' %}
+
+{% block content %}
+    <h1>{{ subject_title }}</h1>
+
+    <h2>Exam Statistics</h2>
+    <p>Grade: {{ result }}</p> <!--tiene que estar multiplicado por 10-->
+    <p>Questions answered: {{ exam.exam_quantity_questions }}</p>
+    <p>Questions answered correctly: {{ exam.amount_correct }}</p>
+    <p>Questions answered incorrectly: {{ amount_incorrect }}</p>
+    <h2>Configuration</h2>
+    <p>Exam subject: {{ exam.subject.subject_title }}</p>
+    <p>Exam topics:</p>
+    <div align="left" id="topics">
+        <ul>
+        {% for item in topics %}
+            <li>{{ item.topic_title }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    <p>Time per question: {{ exam.exam_timer }} seconds</p>
+    {% if exam.algorithm == 0 %}
+        <p>Algorithm: Random</p>
+    {% elif exam.algorithm == 1 %}
+        <p>Algorithm: Based on errors</p>
+    {% endif %}
+
+
+{% endblock %}

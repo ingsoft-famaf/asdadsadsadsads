@@ -326,7 +326,7 @@ def subject_detail(request, subject_id):
         questions += e.exam_quantity_questions
         correct += e.amount_correct
 
-    exams_general = (avg*10, taken, questions, correct, questions-correct)
+    exams_general = ((avg/taken)*10, taken, questions, correct, questions-correct)
 
     data_source = SimpleDataSource(data=data)
     chart = LineChart(data_source)
@@ -340,6 +340,18 @@ def subject_detail(request, subject_id):
     return render(request, 'choicemaster/statistics/subject_detail.html',
                   context)
 
+
 @login_required
 def exam_detail(request, exam_id):
-    return HttpResponse("It's High Noon somewhere in the world.")
+    user = request.user
+    e = models.Exam.objects.get(pk=exam_id)
+
+    context = dict()
+    context['topics'] = e.topic.all()
+    context['result'] = e.exam_result*10
+    context['amount_incorrect'] = e.exam_quantity_questions - e.amount_correct
+    context['exam'] = e
+
+
+    return render(request, 'choicemaster/statistics/exam_detail.html',
+                    context)
