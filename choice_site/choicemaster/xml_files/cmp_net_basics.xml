@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<quiz>
+    <question>When collection of various computers seems a single coherent system to its client, then it is called
+        <correct>distributed system</correct>
+        <incorrect>computer network</incorrect>
+        <incorrect>both (a) and (b)</incorrect>
+        <incorrect>none of the mentioned</incorrect>
+    </question>
+
+    <question>Two devices are in network if
+        <correct>a process in one device is able to exchange information with a process in another device</correct>
+        <incorrect>a process is running on both devices</incorrect>
+        <incorrect>PIDs of the processes running of different devices are same</incorrect>
+        <incorrect>none of the mentioned</incorrect>
+    </question>
+
+    <question>Which one of the following computer network is built on the top of another network?
+        <correct>overlay network</correct>
+        <incorrect>chief network</incorrect>
+        <incorrect>prime network</incorrect>
+        <incorrect>prior network</incorrect>
+    </question>
+
+    <question>In computer network nodes are
+        <correct>all of the mentioned</correct>
+        <incorrect>the computer that terminates the data</incorrect>
+        <incorrect>the computer that routes the data</incorrect>
+        <incorrect>the computer that originates the data</incorrect>
+    </question>
+
+    <question>Communication channel is shared by all the machines on the network in
+        <correct>broadcast network</correct>
+        <incorrect>unicast network</incorrect>
+        <incorrect>multicast network</incorrect>
+        <incorrect>none of the mentioned    </incorrect>
+    </question>
+
+    <question>Bluetooth is an example of
+        <correct>personal area network</correct>
+        <incorrect>local area network</incorrect>
+        <incorrect>virtual private network</incorrect>
+        <incorrect>none of the mentioned</incorrect>
+    </question>
+
+    <question>A _____ is a device that forwards packets between networks by processing the routing information included in the packet.
+        <correct>router</correct>
+        <incorrect>bridge</incorrect>
+        <incorrect>firewall</incorrect>
+        <incorrect>all of the mentioned</incorrect>
+    </question>
+
+    <question>A list of protocols used by a system, one protocol per layer, is called
+        <correct>protocol stack</correct>
+        <incorrect>protocol architecture</incorrect>
+        <incorrect>protocol suit</incorrect>
+        <incorrect>none of the mentioned</incorrect>
+    </question>
+
+    <question>Network congestion occurs
+        <correct>in case of traffic overloading</correct>
+        <incorrect>when a system terminates</incorrect>
+        <incorrect>when connection between two nodes terminates</incorrect>
+        <incorrect>none of the mentioned</incorrect>
+    </question>
+
+    <question>Which one of the following extends a private network across public networks?
+        <correct>local area network</correct>
+        <incorrect>virtual private network</incorrect>
+        <incorrect>enterprise private network</incorrect>
+        <incorrect>storage area network</incorrect>
+    </question>
+
+</quiz>

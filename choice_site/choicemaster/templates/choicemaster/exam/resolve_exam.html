@@ -91,9 +91,9 @@
         var intervalTimerID = null;
         var iterations = 0;
 
-        intervalTimerID = setInterval(WillYouFuckingWork, 1000);
+        intervalTimerID = setInterval(DisplayTimer, 1000);
 
-        function WillYouFuckingWork() {
+        function DisplayTimer() {
                 ++iterations;
                 document.getElementById('timer_div').innerHTML = "You have " + Math.abs(seconds_left-iterations) + " seconds left to answer this question.";
                 if (iterations >= seconds_left) {
