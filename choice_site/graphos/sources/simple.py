@@ -2,6 +2,7 @@ from .base import BaseDataSource
 
 
 class SimpleDataSource(BaseDataSource):
+
     def __init__(self, data):
         """
         : param data: :type list of lists

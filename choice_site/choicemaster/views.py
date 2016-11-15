@@ -274,7 +274,7 @@ def resolve_exam(request, exam_id=''):
         else:
             # End of the exam
             exam.exam_result = exam.amount_correct /\
-                               float(exam.exam_quantity_questions)
+                float(exam.exam_quantity_questions)
             exam.save()
 
             # Return to the index page with the amount of correct answers on
@@ -305,7 +305,7 @@ def subjects_statistics(request):
             # There are exams of the subject s.
             partial = 0
             for exam in s_exams:
-                partial += exam.exam_result*10
+                partial += exam.exam_result * 10
             # Calculate the final result of the subject s
             result = partial / total
             evaluated[s.id] = (s, result)
@@ -340,12 +340,12 @@ def subject_detail(request, subject_id):
         taken += 1
         exams[e.id] = "Exam " + str(taken)
         avg += e.exam_result
-        data.append([taken, e.exam_result*10])
+        data.append([taken, e.exam_result * 10])
         questions += e.exam_quantity_questions
         correct += e.amount_correct
 
-    exams_general = ((avg/taken)*10, taken, questions, correct,
-                     questions-correct)
+    exams_general = ((avg / taken) * 10, taken, questions, correct,
+                     questions - correct)
 
     data_source = SimpleDataSource(data=data)
     chart = LineChart(data_source)
@@ -373,7 +373,7 @@ def exam_detail(request, exam_id):
 
     context = dict()
     context['topics'] = e.topic.all()
-    context['result'] = e.exam_result*10
+    context['result'] = e.exam_result * 10
     context['amount_incorrect'] = e.exam_quantity_questions - e.amount_correct
     context['exam'] = e
 

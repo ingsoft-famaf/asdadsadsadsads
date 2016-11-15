@@ -10,8 +10,7 @@ def get_subjects():
     for s in subjects:
         choices[str(s.id)] = s.subject_title
     choices['0'] = 'None'
-    choices = choices.items()
-    choices.sort()
+    choices = sorted(choices.items())
     return choices
 
 
@@ -20,8 +19,7 @@ def get_topics(ids):
     choices = dict()
     for t in topics:
         choices[str(t.id)] = t.topic_title
-    choices = choices.items()
-    choices.sort()
+    choices = sorted(choices.items())
     return choices
 
 
@@ -74,8 +72,8 @@ class ExamForm(ModelForm):
             question_id = kwargs.pop('question')
         super(ExamForm, self).__init__(*args, **kwargs)
         if question_id:
-            self.fields['answer'].queryset = Answer.objects.filter(question=
-                                                                   question_id)
+            self.fields['answer'].queryset = Answer.objects.filter(
+                question=question_id)
         else:
             self.fields['answer'].queryset = Answer.objects.filter(question=0)
 

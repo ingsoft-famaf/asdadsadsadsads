@@ -48,8 +48,10 @@ class JSONEncoderForHTML(json.JSONEncoder):
     with the usual entities (e.g. &amp;) because they are not expanded
     within <script> tags.
     """
+
     def default(self, obj):
-        # Taken from https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/utils/encoders.py
+        # Taken from https://github.com/tomchristie/django-rest-framework/blob
+        # /master/rest_framework/utils/encoders.py
         # For Date Time string spec, see ECMA 262
         # http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
         if isinstance(obj, Promise):
@@ -89,7 +91,6 @@ class JSONEncoderForHTML(json.JSONEncoder):
         elif hasattr(obj, '__iter__'):
             return tuple(item for item in obj)
         return super(JSONEncoderForHTML, self).default(obj)
-
 
     def encode(self, o):
         # Override JSONEncoder.encode because it has hacks for

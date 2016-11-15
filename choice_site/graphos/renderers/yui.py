@@ -2,6 +2,7 @@ from .base import BaseChart
 
 
 class BaseYuiChart(BaseChart):
+
     def get_data(self):
         data = super(BaseYuiChart, self).get_data()
         header = self.header
@@ -19,6 +20,7 @@ class BaseYuiChart(BaseChart):
 
 
 class LineChart(BaseYuiChart):
+
     def get_js_template(self):
         return "graphos/yui/line_chart.html"
 
@@ -27,6 +29,7 @@ class LineChart(BaseYuiChart):
 
 
 class SplineChart(BaseYuiChart):
+
     def get_js_template(self):
         return "graphos/yui/spline_chart.html"
 
@@ -35,6 +38,7 @@ class SplineChart(BaseYuiChart):
 
 
 class BarChart(BaseYuiChart):
+
     def get_js_template(self):
         return "graphos/yui/bar_chart.html"
 
@@ -43,6 +47,7 @@ class BarChart(BaseYuiChart):
 
 
 class ColumnChart(BaseYuiChart):
+
     def get_js_template(self):
         return "graphos/yui/column_chart.html"
 
@@ -51,12 +56,13 @@ class ColumnChart(BaseYuiChart):
 
 
 class PieChart(BaseYuiChart):
+
     def get_js_template(self):
         return "graphos/yui/pie_chart.html"
 
     def get_chart_type(self):
         return "pie"
-    
+
     def get_data(self):
         # FIXME
         data = self.data_source.get_data()
@@ -71,6 +77,7 @@ class PieChart(BaseYuiChart):
 
 
 class AreaChart(BaseYuiChart):
+
     def get_js_template(self):
         return "graphos/yui/area_chart.html"
 
@@ -79,6 +86,7 @@ class AreaChart(BaseYuiChart):
 
 
 class AreaSplineChart(BaseYuiChart):
+
     def get_js_template(self):
         return "graphos/yui/area_spline_chart.html"
 
@@ -87,6 +95,7 @@ class AreaSplineChart(BaseYuiChart):
 
 
 class ComboChart(BaseYuiChart):
+
     def get_js_template(self):
         return "graphos/yui/combo.html"
 
@@ -95,6 +104,7 @@ class ComboChart(BaseYuiChart):
 
 
 class ComboSplineChart(BaseYuiChart):
+
     def get_js_template(self):
         return "graphos/yui/combo_spline.html"
 
@@ -103,6 +113,7 @@ class ComboSplineChart(BaseYuiChart):
 
 
 class MarkerSeriesChart(BaseYuiChart):
+
     def get_js_template(self):
         return "graphos/yui/marker_series.html"
 

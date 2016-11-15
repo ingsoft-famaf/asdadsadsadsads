@@ -16,16 +16,24 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='exam',
             name='exam_algorithm',
-            field=models.CharField(default=0, max_length=200),
+            field=models.CharField(
+                default=0,
+                max_length=200),
         ),
         migrations.AddField(
             model_name='exam',
             name='exam_subject',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='choicemaster.Subject'),
+            field=models.ForeignKey(
+                default=0,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='choicemaster.Subject'),
         ),
         migrations.AddField(
             model_name='questionsnapshot',
             name='question',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='choicemaster.Question'),
+            field=models.ForeignKey(
+                default=0,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='choicemaster.Question'),
         ),
     ]

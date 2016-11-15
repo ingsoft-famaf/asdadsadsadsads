@@ -21,6 +21,7 @@ current_path = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestSources(TestCase):
+
     def test_base_data_source(self):
         data_source = BaseDataSource()
         self.assertTrue(hasattr(data_source, "get_data"))
@@ -70,7 +71,7 @@ class TestSources(TestCase):
             [u'2006', 660, 1120],
             [u'2007', 1030, 540]
         ]
-        #Create some rows
+        # Create some rows
         Account.objects.create(year="2004", sales=1000,
                                expenses=400, ceo="Welch")
         Account.objects.create(year="2005", sales=1170,
@@ -291,6 +292,7 @@ class TestFlotRenderer(TestCase):
 
 
 class TestGchartRenderer(TestCase):
+
     def setUp(self):
         data = [
             ['Year', 'Sales', 'Expenses'],
@@ -329,6 +331,7 @@ class TestGchartRenderer(TestCase):
 
 
 class TestYUIRenderer(TestCase):
+
     def setUp(self):
         data = [
             ['Year', 'Sales', 'Expenses'],
@@ -347,6 +350,7 @@ class TestYUIRenderer(TestCase):
 
 
 class TestMatplotlibRenderer(TestCase):
+
     def setUp(self):
         data = [['Year', 'Sales', 'Expenses', 'Items Sold', 'Net Profit'],
                 ['2004', 1000, 400, 100, 600],

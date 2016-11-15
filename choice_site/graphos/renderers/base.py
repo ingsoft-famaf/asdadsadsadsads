@@ -75,6 +75,6 @@ class BaseChart(object):
 
     def zip_list(self, *args):
         rv = zip(*args)
-        if sys.version_info < (3,0):
+        if sys.version_info < (3, 0):
             return rv
         return list(rv)

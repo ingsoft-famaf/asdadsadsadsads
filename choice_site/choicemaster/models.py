@@ -11,6 +11,7 @@ class Subject(models.Model):
     """
     Method to show the correct object name in the admin interface.
     """
+
     def __unicode__(self):
         return self.subject_title
 
@@ -23,6 +24,7 @@ class Topic(models.Model):
     """
     Method to show the correct object name in the admin interface.
     """
+
     def __unicode__(self):
         return self.topic_title
 
@@ -34,6 +36,7 @@ class Question(models.Model):
     """
     Method to show the correct object name in the admin interface.
     """
+
     def __unicode__(self):
         return self.question_text
 
@@ -65,6 +68,7 @@ class Answer(models.Model):
     """
     Method to show the correct object name in the admin interface.
     """
+
     def __unicode__(self):
         return self.answer_text
 
@@ -96,5 +100,6 @@ class Report(models.Model):
     """
     Method to show the correct object name in the admin interface.
     """
+
     def __unicode__(self):
         return self.question.question_text

@@ -3,6 +3,7 @@ import json
 
 from ..utils import JSONEncoderForHTML
 
+
 class BaseMorrisChart(BaseChart):
 
     def get_data(self):
@@ -31,16 +32,19 @@ class BaseMorrisChart(BaseChart):
 
 
 class LineChart(BaseMorrisChart):
+
     def chart_type(self):
         return "Line"
 
 
 class BarChart(BaseMorrisChart):
+
     def chart_type(self):
         return "Bar"
 
 
 class DonutChart(BaseMorrisChart):
+
     def get_data(self):
         data = super(BaseMorrisChart, self).get_data()
         data_only = data[1:]
@@ -54,5 +58,6 @@ class DonutChart(BaseMorrisChart):
 
 
 class AreaChart(BaseMorrisChart):
+
     def chart_type(self):
         return "Area"

@@ -5,6 +5,7 @@ import os
 
 
 class UserTestCase(TestCase):
+
     def setUp(self):
         """
         Create a new user and verify that the login function works properly
@@ -172,6 +173,7 @@ class UserTestCase(TestCase):
 
 
 class LoadQuestionsTestCase(TestCase):
+
     def setUp(self):
         """
         Create a new admin user, and test subject and topic in which to test
@@ -195,11 +197,12 @@ class LoadQuestionsTestCase(TestCase):
                                           topic_description='Test topic '
                                                             'description')
         self.c = Client()
-        self.response = self.c.post('/accounts/login/', {'username': self.user_staff.username,
-                                                         'password': self.user_staff.password})
+        self.response = self.c.post('/accounts/login/',
+                                    {'username': self.user_staff.username,
+                                     'password': self.user_staff.password})
 
-        self.response = self.c.get('/add/question/' + str(self.subj1.id) + '/'
-                                   + str(self.topc1.id) + '/')
+        self.response = self.c.get('/add/question/' + str(self.subj1.id) +
+                                   '/' + str(self.topc1.id) + '/')
 
     def test_question_file_wrong_format(self):
         c = Client()
@@ -208,8 +211,8 @@ class LoadQuestionsTestCase(TestCase):
         rel_path = "xml_files/wrong_format.xml"
         abs_file_path = os.path.join(script_dir, rel_path)
 
-        response = c.post('add/question/' + str(self.subj1.id) + '/'
-                          + str(self.topc1.id) + '/',
+        response = c.post('add/question/' + str(self.subj1.id) + '/' +
+                          str(self.topc1.id) + '/',
                           files={'wrong_format.xml':
                                  open(abs_file_path, 'rb')})
         self.assertEquals(response.status_code, 200)
@@ -265,20 +268,21 @@ class LoadQuestionsTestCase(TestCase):
                         'not contain any duplicate questions.'
                         in response.content)
 
-
-class ExamSubject(TestCase):
-    def setUp(self):
-
-    def test_subject(self):
-
-    def test_topic(self):
-
-class TestExam(TestCase):
-    def SetUp(self):
-
-    def test_exam_url(self):
-
-    def test_exam_settings(self):
-
-    def test_exam_(self):
-
+# class ExamSubject(TestCase):
+#
+#    def setUp(self):
+#
+#    def test_subject(self):
+#
+#    def test_topic(self):
+#
+#
+# class TestExam(TestCase):
+#
+#    def SetUp(self):
+#
+#    def test_exam_url(self):
+#
+#    def test_exam_settings(self):
+#
+#    def test_exam_(self):

@@ -1,4 +1,4 @@
-#Named such to not clash with matplotlib
+# Named such to not clash with matplotlib
 from .base import BaseChart
 
 import matplotlib

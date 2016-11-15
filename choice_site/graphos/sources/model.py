@@ -14,6 +14,7 @@ class ModelDataSource(SimpleDataSource):
     """
     Normalizes data contained in a queryset to format usable by renderers
     """
+
     def __init__(self, queryset, fields=None):
         """
         : param queryset: :type Django ORM queryset

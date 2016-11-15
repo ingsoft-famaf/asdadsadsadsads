@@ -4,6 +4,7 @@ from ..exceptions import GraphosException
 
 
 class BaseDataSource(object):
+
     def __init__(*args, **kwargs):
         pass
 
