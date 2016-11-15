@@ -135,7 +135,6 @@ class UserTestCase(TestCase):
         self.assertTrue("Add topic" in response.content)
         self.assertTrue("Add questions" in response.content)
 
-
     def test_report(self):
         """
         Check existing reports. Creates a report in case there is none in the
@@ -179,24 +178,28 @@ class LoadQuestionsTestCase(TestCase):
         different questions files
         """
 
-        self.user_staff = User.objects.create_superuser(username='teststaff', \
-                          email='adminstaff@staff.com', password='123456789a')
+        self.user_staff = User.objects.create_superuser(username='teststaff',
+                                                        email='adminstaff@sta'
+                                                              'ff.com',
+                                                        password='123456789a')
         self.user_staff.save()
 
-        self.subj1 = Subject.objects.create(
-                                subject_title='Test Subject',
-                                subject_description='Test subject description',
-                                subject_department='Test Department')
+        self.subj1 = Subject.objects.create(subject_title='Test Subject',
+                                            subject_description='Test subject '
+                                                                'description',
+                                            subject_department='Test '
+                                                                'Department')
 
         self.topc1 = Topic.objects.create(subject=self.subj1,
-                                    topic_title='Test topic',
-                                    topic_description='Test topic description')
+                                          topic_title='Test topic',
+                                          topic_description='Test topic '
+                                                            'description')
         self.c = Client()
-        self.response = self.c.post('/accounts/login/', {'username': self. \
-            user_staff.username, 'password': self.user_staff.password})
+        self.response = self.c.post('/accounts/login/', {'username': self.user_staff.username,
+                                                         'password': self.user_staff.password})
 
-        self.response = self.c.get('/add/question/' + str(self.subj1.id) +'/' 
-            + str(self.topc1.id) + '/')
+        self.response = self.c.get('/add/question/' + str(self.subj1.id) + '/'
+                                   + str(self.topc1.id) + '/')
 
     def test_question_file_wrong_format(self):
         c = Client()
@@ -205,13 +208,14 @@ class LoadQuestionsTestCase(TestCase):
         rel_path = "xml_files/wrong_format.xml"
         abs_file_path = os.path.join(script_dir, rel_path)
 
-        response = c.post('add/question/'+ str(self.subj1.id) +'/'
-            + str(self.topc1.id) + '/', files={'wrong_format.xml': 
-            open(abs_file_path, 'rb')})
+        response = c.post('add/question/' + str(self.subj1.id) + '/'
+                          + str(self.topc1.id) + '/',
+                          files={'wrong_format.xml':
+                                 open(abs_file_path, 'rb')})
         self.assertEquals(response.status_code, 200)
-        self.assertTrue('Wrong format in uploaded file. Please, check that ' \
-                        'the file you are trying to upload has the right ' \
-                        'question format and does not contain any duplicate ' \
+        self.assertTrue('Wrong format in uploaded file. Please, check that '
+                        'the file you are trying to upload has the right '
+                        'question format and does not contain any duplicate '
                         'questions.'
                         in response.content)
 
@@ -222,22 +226,24 @@ class LoadQuestionsTestCase(TestCase):
         rel_path = "xml_files/simple_question.xml"
         abs_file_path = os.path.join(script_dir, rel_path)
 
-        response = c.post('/add/question/'+ str(self.subj1.id) +'/'
-            + str(self.topc1.id) + '/', files={'simple_question.xml': 
-            open(abs_file_path, 'rb')})
+        response = c.post('/add/question/' + str(self.subj1.id) + '/' +
+                          str(self.topc1.id) + '/',
+                          files={'simple_question.xml':
+                                 open(abs_file_path, 'rb')})
 
         self.assertEquals(response.status_code, 200)
         self.assertTrue("Questions succesfully uploaded."
                         in response.content)
 
-        response = c.post('/add/question/'+ str(self.subj1.id) +'/'
-            + str(self.topc1.id) + '/', files={'simple_question.xml':
-            open(abs_file_path, 'rb')})
+        response = c.post('/add/question/' + str(self.subj1.id) + '/' +
+                          str(self.topc1.id) + '/',
+                          files={'simple_question.xml':
+                                 open(abs_file_path, 'rb')})
 
         self.assertEquals(response.status_code, 200)
-        self.assertTrue('Similar question already present in database, please'\
-                        ' check that the file you are trying to upload has '\
-                        'the correct question format and does not contain any'\
+        self.assertTrue('Similar question already present in database, please'
+                        ' check that the file you are trying to upload has '
+                        'the correct question format and does not contain any'
                         'any duplicate questions.'
                         in response.content)
 
@@ -248,13 +254,14 @@ class LoadQuestionsTestCase(TestCase):
         rel_path = "xml_files/duplicate_with_qf.xml"
         abs_file_path = os.path.join(script_dir, rel_path)
 
-        response = c.post('/add/question/'+ str(self.subj1.id) +'/'
-            + str(self.topc1.id) + '/', files={'/xml_files/duplicate\
-            _with_qf.xml': open(abs_file_path, 'rb')})
+        response = c.post('/add/question/' + str(self.subj1.id) + '/' +
+                          str(self.topc1.id) + '/',
+                          files={'/xml_files/duplicate_with_qf.xml':
+                                 open(abs_file_path, 'rb')})
         self.assertEquals(response.status_code, 200)
-        self.assertTrue('Duplicate questions have been found in the uploaded '\
-                        'xml file, please check that the file you are trying '\
-                        'to upload has the correct question format and does ' \
+        self.assertTrue('Duplicate questions have been found in the uploaded '
+                        'xml file, please check that the file you are trying '
+                        'to upload has the correct question format and does '
                         'not contain any duplicate questions.'
                         in response.content)
 
@@ -274,3 +281,4 @@ class TestExam(TestCase):
     def test_exam_settings(self):
 
     def test_exam_(self):
+

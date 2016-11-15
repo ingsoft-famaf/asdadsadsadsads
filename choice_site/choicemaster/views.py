@@ -12,7 +12,6 @@ from graphos.renderers.gchart import LineChart
 import json
 
 
-
 @login_required
 def index(request, message=''):
     """
@@ -85,7 +84,7 @@ def configure_exam1(request):
     else:
         form = SubjectForm()
         return render(request, 'choicemaster/exam/configure_exam1.html',
-                        {'form': form})
+                      {'form': form})
 
 
 @login_required
@@ -111,7 +110,7 @@ def configure_exam2(request, exam_id):
             return redirect('configure_exam3', exam_id=exam_id)
     else:
         form = MultipleTopicForm(e.subject.id)
-    
+
     context['form'] = form
     return render(request, 'choicemaster/exam/configure_exam2.html', context)
 
@@ -130,7 +129,7 @@ def configure_exam3(request, exam_id):
     context['subject_text'] = e.subject.subject_title
     context['exam_id'] = exam_id
     context['topics'] = e.topic.all()
-    
+
     for t in e.topic.all():
         questions = models.Question.objects.filter(topic=t.id)
         max_quantity += len(questions)
@@ -152,6 +151,7 @@ def configure_exam3(request, exam_id):
 
     context['form'] = form
     return render(request, 'choicemaster/exam/configure_exam3.html', context)
+
 
 def get_first(iterable, default=None):
     if iterable:
@@ -183,7 +183,7 @@ def resolve_exam(request, exam_id=''):
         algorithm = exam.exam_algorithm
         # exam_tmp = ExamView(subject.id, timer, quantity, algorithm, exam.id)
 
-        topic_ids = exam.topic.all() # TODO
+        topic_ids = exam.topic.all()  # TODO
         mistakes = {}
         # We store all the questions of the selected topics
         for item in topic_ids:
@@ -194,13 +194,13 @@ def resolve_exam(request, exam_id=''):
 
         exam.mistakes = json.dumps(mistakes)
         exam.save()
-        
+
         # Select a random question for the first one.
         question = get_question(exam_id)
 
         # Generate the form
         form = ExamForm(question=question.id)
-        
+
         context = dict()
         context['subject'] = subject
         context['topic'] = question.topic
@@ -221,12 +221,12 @@ def resolve_exam(request, exam_id=''):
         question = Question.objects.get(pk=question_id)
         answers = Answer.objects.filter(question=question.id)
         correct_answer = answers.filter(correct=True)[0]
-        
+
         answer_id = request.POST.get('answer')
         if answer_id == '':
             #make up a fake answer which is not the correct one
             answer = get_first(answers.filter(correct=False))
-        else:   
+        else:
             # get the actual answer from the front-end if there is one
             answer = Answer.objects.get(pk=answer_id)
 
@@ -235,9 +235,10 @@ def resolve_exam(request, exam_id=''):
         # Generate the snapshot of the answer
         snap = QuestionSnapshot.objects.create(exam=exam,
                                                question=question,
-                                               chosen_answer=answer
-                                               .answer_text,
-                                               correct_answer=correct_answer.answer_text,
+                                               chosen_answer=
+                                               answer.answer_text,
+                                               correct_answer=
+                                               correct_answer.answer_text,
                                                choice_correct=value)
         snap.save()
 
@@ -256,7 +257,7 @@ def resolve_exam(request, exam_id=''):
             question = get_question(exam_id)
             # Generate the form
             form = ExamForm(question=question.id)
-            
+
             # Build the context for the next iteration
             context = dict()
             context['question'] = question
@@ -267,7 +268,8 @@ def resolve_exam(request, exam_id=''):
             context['question'] = question
             context['exam_id'] = exam_id
 
-            return render(request, 'choicemaster/exam/resolve_exam.html', context)
+            return render(request, 'choicemaster/exam/resolve_exam.html',
+                          context)
         else:
             # End of the exam
             exam.exam_result = exam.amount_correct / float(exam.exam_quantity_questions)
@@ -310,6 +312,7 @@ def subjects_statistics(request):
     context['evaluated'] = evaluated
     return render(request, 'choicemaster/statistics/subjects.html', context)
 
+
 @login_required
 def subject_detail(request, subject_id):
     """
@@ -330,9 +333,7 @@ def subject_detail(request, subject_id):
     taken = 0
     questions = 0
     correct = 0
-    data = [
-            ['Time', 'Result'],
-            ]
+    data = [['Time', 'Result'], ]
     for e in user_exams:
         taken += 1
         exams[e.id] = "Exam " + str(taken)
@@ -341,7 +342,8 @@ def subject_detail(request, subject_id):
         questions += e.exam_quantity_questions
         correct += e.amount_correct
 
-    exams_general = ((avg/taken)*10, taken, questions, correct, questions-correct)
+    exams_general = ((avg/taken)*10, taken, questions, correct,
+                     questions-correct)
 
     data_source = SimpleDataSource(data=data)
     chart = LineChart(data_source)

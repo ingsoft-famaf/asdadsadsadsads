@@ -18,6 +18,7 @@ def add_report(request):
     else:
         return HttpResponse("Something went wrong")
 
+
 @csrf_exempt
 def ajax_view(request):
     if request.method == 'POST' and request.is_ajax:
@@ -48,6 +49,7 @@ def get_correct(request):
     else:
         return HttpResponse("Something went wrong")
 
+
 @csrf_exempt
 def autoreport(request):
     if request.method == 'POST' and request.is_ajax:
@@ -62,6 +64,7 @@ def autoreport(request):
         return HttpResponse("OK")
     else:
         return HttpResponse("Something went wrong")
+
 
 @csrf_exempt
 def delete_report(request):
@@ -121,6 +124,7 @@ def edit_question(request):
         return HttpResponse("Delted")
     else:
         return HttpResponse("No deleted")
+
 
 @csrf_exempt
 def edit_correct(request):

@@ -26,12 +26,14 @@ def get_topics(ids):
 
 
 class SubjectForm(forms.Form):
-    subject = forms.ChoiceField(choices=get_subjects(), widget=forms.Select(attrs={'onchange': 'form.submit();'}))
+    subject = forms.ChoiceField(choices=get_subjects(),
+                                widget=forms.Select(attrs={'onchange':
+                                                           'form.submit();'}))
 
 
 class MultipleTopicForm(forms.Form):
     topic = forms.MultipleChoiceField(choices=get_subjects(),
-                                        widget=forms.CheckboxSelectMultiple)
+                                      widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, ids, *args, **kwargs):
         super(MultipleTopicForm, self).__init__(*args, **kwargs)
@@ -44,10 +46,12 @@ ALGORITHMS = (('0', 'Based on errors'), ('1', 'Random'))
 class ConfigForm(forms.Form):
     quantity = forms.IntegerField(label="Quantity of questions to solve:")
     timer = forms.IntegerField(validators=[MinValueValidator(5),
-                                       MaxValueValidator(120)],
-                                help_text="Input in seconds",
-                                label="Write the amount of time per question required:")
-    algorithm = forms.ChoiceField(choices=ALGORITHMS, label="Choose an algorithm:")
+                                           MaxValueValidator(120)],
+                               help_text="Input in seconds",
+                               label="Write the amount of time per question "
+                                     "required:")
+    algorithm = forms.ChoiceField(choices=ALGORITHMS, label="Choose an "
+                                                            "algorithm:")
 
     def __init__(self, max_quantity, *args, **kwargs):
         super(ConfigForm, self).__init__(*args, **kwargs)
@@ -56,20 +60,22 @@ class ConfigForm(forms.Form):
 
 
 class ExamForm(ModelForm):
-    
-    answer = forms.ModelChoiceField(required=True, widget=forms.RadioSelect, queryset=Answer.objects.all())
+
+    answer = forms.ModelChoiceField(required=True, widget=forms.RadioSelect,
+                                    queryset=Answer.objects.all())
 
     class Meta:
         model = Answer
         exclude = ['question', 'correct']
 
-    def __init__ (self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         question_id = None
         if kwargs:
             question_id = kwargs.pop('question')
         super(ExamForm, self).__init__(*args, **kwargs)
         if question_id:
-            self.fields['answer'].queryset = Answer.objects.filter(question=question_id)
+            self.fields['answer'].queryset = Answer.objects.filter(question=
+                                                                   question_id)
         else:
             self.fields['answer'].queryset = Answer.objects.filter(question=0)
 
@@ -78,8 +84,11 @@ TOPICS = (('0', 'Select Topic'), ('1', '---'))
 
 
 class UploadQuestionForm(forms.Form):
-    subject = forms.ModelChoiceField(required=True, widget=forms.Select(attrs={'onchange': 'get_topics();'}),
-                                        queryset=Subject.objects.all())
+    subject = forms.ModelChoiceField(required=True,
+                                     widget=forms.Select(attrs={'onchange':
+                                                                'get_topics('
+                                                                ');'}),
+                                     queryset=Subject.objects.all())
     topic = forms.ChoiceField(choices=TOPICS)
     xmlfile = forms.FileField(label='Choose XML file')
 

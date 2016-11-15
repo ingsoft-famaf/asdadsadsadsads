@@ -2,6 +2,7 @@ from choicemaster import models
 import json
 import random
 
+
 def get_question(exam_id):
     """
     Get a question from the list of questions of the given topics. Consider the
@@ -39,8 +40,9 @@ def get_question(exam_id):
         question = questions_dict[index_t]
         exam.questions_used.add(question)
         exam.questions.remove(question)
-        
+
     return question
+
 
 def get_mistakes(exam_id):
     exam = models.Exam.objects.get(pk=exam_id)

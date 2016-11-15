@@ -36,5 +36,3 @@ urlpatterns = [
     url(r'^statistics/exam/(?P<exam_id>[0-9]+)/$', views.exam_detail,
         name='exam_detail'),
 ]
-
-
