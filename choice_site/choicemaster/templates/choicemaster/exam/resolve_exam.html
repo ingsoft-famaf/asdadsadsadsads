@@ -136,6 +136,16 @@
                 $("#id_answer").hide();
                 $("#submit").hide();
                 $("#nextq").show();
+                alert("-"+data['answer'] + "-   -" + chosen+"-");
+                if(String(data['answer']) == String(chosen)){
+                    document.getElementById("correct_answer_p").style.color = "30FF20";
+                    document.getElementById("chosen_answer_p").style.color = "30FF20";
+                }
+                else  {
+                    document.getElementById("correct_answer_p").style.color = "FF0000";
+                    document.getElementById("chosen_answer_p").style.color = "FF0000";
+                }
+
                 console.log("test:", data.answer);
                 console.log("success!");
             }
