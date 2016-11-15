@@ -271,7 +271,7 @@ def resolve_exam(request, exam_id=''):
 
             # Return to the index page with the amount of correct answers on
             # the message board
-            answer = "Subject: \"" + exam.subject.subject_description + "\". Of "\
+            answer = "Subject: \"" + exam.subject.subject_title + "\". Of "\
                      + str(exam.exam_quantity_questions) +\
                      " questions, correct: " + str(exam.amount_correct)
             return render(request, 'choicemaster/index.html',

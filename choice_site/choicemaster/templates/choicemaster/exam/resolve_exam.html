@@ -118,12 +118,14 @@
         }
         console.log("val:", val);
         var e = document.getElementById("question_id").innerHTML;
+        var chosenn = $('input[name="answer"]:checked').parent().text();
         //clearTimeout(t_out);
         $.ajax({
             type: 'POST',
             url: '/ajax/get_correct/',
             dataType: 'json',
-            data: {'idq': e},
+            data: {'idq': e,
+                    'chosen': chosenn},
             success: function(data) {
                 // Show correct answer
                 $("#correct_answer").text(data['answer']);
@@ -136,14 +138,13 @@
                 $("#id_answer").hide();
                 $("#submit").hide();
                 $("#nextq").show();
-                alert("-"+data['answer'] + "-   -" + chosen+"-");
-                if(String(data['answer']) == String(chosen)){
-                    document.getElementById("correct_answer_p").style.color = "30FF20";
-                    document.getElementById("chosen_answer_p").style.color = "30FF20";
+                if(data['equal']){
+                    document.getElementById("correct_answer_p").style.color = "5FBA7D";
+                    document.getElementById("chosen_answer_p").style.color = "5FBA7D";
                 }
                 else  {
-                    document.getElementById("correct_answer_p").style.color = "FF0000";
-                    document.getElementById("chosen_answer_p").style.color = "FF0000";
+                    document.getElementById("correct_answer_p").style.color = "DD5F68";
+                    document.getElementById("chosen_answer_p").style.color = "DD5F68";
                 }
 
                 console.log("test:", data.answer);

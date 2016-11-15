@@ -35,10 +35,12 @@ def ajax_view(request):
 def get_correct(request):
     if request.method == 'POST' and request.is_ajax:
         question_id = request.POST.get('idq')
+        chosen = request.POST.get('chosen')
         question = Question.objects.get(pk=question_id)
         answers = Answer.objects.filter(question=question.id)
         correct_answer = answers.filter(correct=True)
-        data = {'answer': correct_answer[0].answer_text}
+        data = {'answer': correct_answer[0].answer_text,
+                'equal': correct_answer[0].answer_text == chosen[1:]}
         return HttpResponse(json.dumps(data), content_type='application/json')
     else:
         return HttpResponse("Something went wrong")
