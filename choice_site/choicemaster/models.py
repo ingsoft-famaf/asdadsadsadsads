@@ -8,11 +8,10 @@ class Subject(models.Model):
     subject_description = models.CharField(max_length=200)
     subject_department = models.CharField(max_length=50)
 
-    """
-    Method to show the correct object name in the admin interface.
-    """
-
     def __unicode__(self):
+        """
+        Method to show the correct object name in the admin interface.
+        """
         return self.subject_title
 
 
@@ -21,11 +20,10 @@ class Topic(models.Model):
     topic_title = models.CharField(max_length=40)
     topic_description = models.CharField(max_length=200)
 
-    """
-    Method to show the correct object name in the admin interface.
-    """
-
     def __unicode__(self):
+        """
+        Method to show the correct object name in the admin interface.
+        """
         return self.topic_title
 
 
@@ -33,11 +31,10 @@ class Question(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)
 
-    """
-    Method to show the correct object name in the admin interface.
-    """
-
     def __unicode__(self):
+        """
+        Method to show the correct object name in the admin interface.
+        """
         return self.question_text
 
 
@@ -57,6 +54,9 @@ class Exam(models.Model):
     amount_correct = models.IntegerField(default=0)
 
     def __unicode__(self):
+        """
+        Method to show the correct object name in the admin interface.
+        """
         return self.user.username + ' - ' + self.subject.subject_title
 
 
@@ -65,11 +65,10 @@ class Answer(models.Model):
     answer_text = models.CharField(max_length=200)
     correct = models.BooleanField(default=False)
 
-    """
-    Method to show the correct object name in the admin interface.
-    """
-
     def __unicode__(self):
+        """
+        Method to show the correct object name in the admin interface.
+        """
         return self.answer_text
 
 
@@ -97,9 +96,8 @@ class Report(models.Model):
                                     default=NOT_EVALUATED)
     report_description = models.CharField(max_length=200)
 
-    """
-    Method to show the correct object name in the admin interface.
-    """
-
     def __unicode__(self):
+        """
+        Method to show the correct object name in the admin interface.
+        """
         return self.question.question_text

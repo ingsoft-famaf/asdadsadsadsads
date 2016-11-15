@@ -175,7 +175,6 @@ def resolve_exam(request, exam_id=''):
     afterwards. Also, keep track of remaining time and use it to pass to the
     next question in case it is over.
     """
-
     if request.method != 'POST':
         exam = models.Exam.objects.get(pk=exam_id)
         subject = exam.subject
@@ -211,7 +210,6 @@ def resolve_exam(request, exam_id=''):
         context['exam_id'] = exam_id
         context['timer'] = timer
         context['questions_used'] = exam.questions_used.all()
-
         return render(request, 'choicemaster/exam/resolve_exam.html', context)
 
     else:
@@ -251,6 +249,8 @@ def resolve_exam(request, exam_id=''):
             exam.amount_correct += 1
 
         exam.mistakes = json.dumps(mistakes)
+        exam.exam_result = exam.amount_correct / \
+                           float(exam.exam_quantity_questions)
         exam.save()
 
         if exam.remaining:
@@ -295,6 +295,10 @@ def subjects_statistics(request):
     :return: View
     """
     user = request.user
+    user_exams_deleteable = models.Exam.objects\
+        .filter(user=user,
+                exam_quantity_questions=0)
+    user_exams_deleteable.delete()
     user_exams = models.Exam.objects.filter(user=user)
     subjects = Subject.objects.all()
     evaluated = dict()
