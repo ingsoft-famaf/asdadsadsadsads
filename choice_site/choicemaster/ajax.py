@@ -22,10 +22,13 @@ def add_report(request):
 def ajax_view(request):
     if request.method == 'POST' and request.is_ajax:
         topics = Topic.objects.all().filter(subject_id=request.POST.get('ids'))
-        lt = []
+        innerHTML = ''
+        template = '<option value='
         for t in topics:
-            lt.append((str(t.id), t.topic_title))
-        data = {'topics': lt}
+            id = str(t.id)
+            title = t.topic_title
+            innerHTML += template + '"' + id + '">' + title + '</option>\n'
+        data = {'topics': innerHTML}
         return HttpResponse(json.dumps(data), content_type='application/json')
     else:
         return HttpResponse("Something went wrong")

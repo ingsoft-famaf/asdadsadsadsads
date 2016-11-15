@@ -3,10 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from choicemaster import models
 from .forms import *
-from django.views import View
+from django.http.response import HttpResponse
 from .upload import parse_xml_question
 from .exam_functions import get_question, get_mistakes
 from .models import Report
+from graphos.sources.simple import SimpleDataSource
+from graphos.renderers.gchart import LineChart
 import json
 
 
@@ -70,11 +72,13 @@ def configure_exam1(request):
     chooses the topics he wants to include in the exam
     """
     if request.method == 'POST':
+        user = None
+        if request.user.is_authenticated():
+            user = request.user
         form = SubjectForm(request.POST)
         if form.is_valid():
             subject_id = request.POST.get('subject')
-            exam = models.Exam(user=models.User.objects.get(pk=1))
-            # ipdb.set_trace()
+            exam = models.Exam(user=user)
             exam.subject = models.Subject.objects.get(pk=subject_id)
             exam.save()
             return redirect('configure_exam2', exam_id=exam.id)
@@ -266,7 +270,7 @@ def resolve_exam(request, exam_id=''):
             return render(request, 'choicemaster/exam/resolve_exam.html', context)
         else:
             # End of the exam
-            exam.result = exam.amount_correct / exam.exam_quantity_questions
+            exam.exam_result = exam.amount_correct / float(exam.exam_quantity_questions)
             exam.save()
 
             # Return to the index page with the amount of correct answers on
@@ -276,3 +280,98 @@ def resolve_exam(request, exam_id=''):
                      " questions, correct: " + str(exam.amount_correct)
             return render(request, 'choicemaster/index.html',
                           {'answer': answer})
+
+
+@login_required
+def subjects_statistics(request):
+    """
+    Get all subjects that the user has been evaluated in, differentiating the
+    average grade in that subject, and then display it
+    :param request: Request object
+    :return: View
+    """
+    user = request.user
+    user_exams = models.Exam.objects.filter(user=user)
+    subjects = Subject.objects.all()
+    evaluated = dict()
+    for s in subjects:
+        s_exams = user_exams.filter(subject=s)
+        total = s_exams.count()
+        if total > 0:
+            # There are exams of the subject s.
+            partial = 0
+            for exam in s_exams:
+                partial += exam.exam_result*10
+            # Calculate the final result of the subject s
+            result = partial / total
+            evaluated[s.id] = (s, result)
+
+    context = dict()
+    context['evaluated'] = evaluated
+    return render(request, 'choicemaster/statistics/subjects.html', context)
+
+@login_required
+def subject_detail(request, subject_id):
+    """
+    Get general statistics for a determined subject, displaying average grade,
+    total questions answered, etc.
+    :param request: Request
+    :param subject_id: int
+    :return: View
+    """
+    user = request.user
+    subject = models.Subject.objects.get(id=subject_id)
+    user_exams = models.Exam.objects.filter(user=user, subject=subject)
+
+    subject_title = subject.subject_title
+    exams = dict()
+
+    avg = 0
+    taken = 0
+    questions = 0
+    correct = 0
+    data = [
+            ['Time', 'Result'],
+            ]
+    for e in user_exams:
+        taken += 1
+        exams[e.id] = "Exam " + str(taken)
+        avg += e.exam_result
+        data.append([taken, e.exam_result*10])
+        questions += e.exam_quantity_questions
+        correct += e.amount_correct
+
+    exams_general = ((avg/taken)*10, taken, questions, correct, questions-correct)
+
+    data_source = SimpleDataSource(data=data)
+    chart = LineChart(data_source)
+
+    context = dict()
+    context['subject_title'] = subject_title
+    context['exams_general'] = exams_general
+    context['exams'] = exams
+    context['chart'] = chart
+
+    return render(request, 'choicemaster/statistics/subject_detail.html',
+                  context)
+
+
+@login_required
+def exam_detail(request, exam_id):
+    """
+    Show data for a determined exam, displaying grade, questions and mistakes
+    :param request: Request
+    :param exam_id: int
+    :return: View
+    """
+    user = request.user
+    e = models.Exam.objects.get(pk=exam_id)
+
+    context = dict()
+    context['topics'] = e.topic.all()
+    context['result'] = e.exam_result*10
+    context['amount_incorrect'] = e.exam_quantity_questions - e.amount_correct
+    context['exam'] = e
+
+    return render(request, 'choicemaster/statistics/exam_detail.html',
+                  context)

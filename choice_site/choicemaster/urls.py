@@ -25,9 +25,16 @@ urlpatterns = [
     url(r'^configure3/(?P<exam_id>[0-9]+)/$', views.configure_exam3,
         name='configure_exam3'),
 
-    # url(r'^test/$', views.test_exam, name='test'),
     url(r'^resolve_exam/$', views.resolve_exam, name='resolve_exam'),
-    url(r'^resolve_exam/(?P<exam_id>[0-9]+)/$', views.resolve_exam, name='resolve_exam'),
+    url(r'^resolve_exam/(?P<exam_id>[0-9]+)/$', views.resolve_exam,
+        name='resolve_exam'),
+
+    url(r'^statistics/subjects/$', views.subjects_statistics,
+        name='subject_statistics'),
+    url(r'^statistics/subject/(?P<subject_id>[0-9]+)/$', views.subject_detail,
+        name='exam_detail'),
+    url(r'^statistics/exam/(?P<exam_id>[0-9]+)/$', views.exam_detail,
+        name='exam_detail'),
 ]
 
 

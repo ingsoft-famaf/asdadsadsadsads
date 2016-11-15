@@ -40,6 +40,7 @@ AUTHENTICATION_BACKENDS = (
 
 INSTALLED_APPS = [
     'choicemaster',
+    'graphos',
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
