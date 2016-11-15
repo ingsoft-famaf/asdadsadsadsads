@@ -187,7 +187,9 @@ def resolve_exam(request, exam_id=''):
         mistakes = {}
         # We store all the questions of the selected topics
         for item in topic_ids:
-            questions_tmp = models.Question.objects.filter(topic=models.Topic.objects.get(pk=item.id))
+            questions_tmp = models.Question.objects.filter(topic=models.Topic
+                                                           .objects
+                                                           .get(pk=item.id))
             mistakes[str(item.id)] = 0
             for q in questions_tmp:
                 exam.questions.add(q)
@@ -224,7 +226,7 @@ def resolve_exam(request, exam_id=''):
 
         answer_id = request.POST.get('answer')
         if answer_id == '':
-            #make up a fake answer which is not the correct one
+            # make up a fake answer which is not the correct one
             answer = get_first(answers.filter(correct=False))
         else:
             # get the actual answer from the front-end if there is one
@@ -233,13 +235,12 @@ def resolve_exam(request, exam_id=''):
         topic_id = question.topic.id
         value = (correct_answer.id == answer.id)
         # Generate the snapshot of the answer
-        snap = QuestionSnapshot.objects.create(exam=exam,
-                                               question=question,
-                                               chosen_answer=
-                                               answer.answer_text,
-                                               correct_answer=
-                                               correct_answer.answer_text,
-                                               choice_correct=value)
+        snap = QuestionSnapshot.objects\
+            .create(exam=exam,
+                    question=question,
+                    chosen_answer=answer.answer_text,
+                    correct_answer=correct_answer.answer_text,
+                    choice_correct=value)
         snap.save()
 
         exam.remaining -= 1
@@ -272,7 +273,8 @@ def resolve_exam(request, exam_id=''):
                           context)
         else:
             # End of the exam
-            exam.exam_result = exam.amount_correct / float(exam.exam_quantity_questions)
+            exam.exam_result = exam.amount_correct /\
+                               float(exam.exam_quantity_questions)
             exam.save()
 
             # Return to the index page with the amount of correct answers on
