@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^ajax/get_correct/$', ajax.get_correct, name='get_correct'),
     url(r'^ajax/edit/autoreport/$', ajax.autoreport, name='AutoReport'),
     url(r'^ajax/edit/reporting/$', ajax.add_report, name='Add Report'),
+    url(r'^ajax/edit/correct/$', ajax.edit_correct, name='Edit Correct'),
 
     url(r'^configure1/$', views.configure_exam1, name='configure_exam1'),
     url(r'^configure2/(?P<exam_id>[0-9]+)/$', views.configure_exam2,

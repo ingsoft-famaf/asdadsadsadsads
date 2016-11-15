@@ -257,3 +257,20 @@ class LoadQuestionsTestCase(TestCase):
                         'to upload has the correct question format and does ' \
                         'not contain any duplicate questions.'
                         in response.content)
+
+
+class ExamSubject(TestCase):
+    def setUp(self):
+
+    def test_subject(self):
+
+    def test_topic(self):
+
+class TestExam(TestCase):
+    def SetUp(self):
+
+    def test_exam_url(self):
+
+    def test_exam_settings(self):
+
+    def test_exam_(self):

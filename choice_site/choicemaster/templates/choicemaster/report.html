@@ -99,6 +99,22 @@
         }
     </script>
 
+    <script>
+        function edit_correct(idQ, idA){
+            $.ajax({
+                type: "POST",
+                url: "/ajax/edit/correct/",
+                dataType: "json",
+                data: {'idA':idA ,
+                       'idQ': idQ
+                }
+            });
+            location.reload(false);
+        }
+    </script>
+
+
+
     {% load static %}
     <h1> Pending reports </h1>
     {% if reports %}
@@ -120,11 +136,14 @@
                             <ul>
                                 {% for answer in report.question.answer_set.all %}
                                     <li> {{answer.answer_text}}
-                                        {% if answer.correct == True %}
-                                            <img src="{% static 'tick.png' %}" height="20" width="20">
-                                        {% endif %}
                                         <Img src="{% static 'delete.png' %}" height="20" width="20" onclick="delete_answer({{report.id}}, {{answer.id}})">
                                         <img src="{% static 'edit.png' %}" height="20" width="20" onclick="edit_ans({{ answer.id }})">
+                                        {% if answer.correct == True %}
+
+                                           <label><input type="radio" value="1" name="{{ report.question.id }}" checked="true" onclick="edit_correct({{report.question.id}},{{ answer.id }})"></label>
+                                        {% else %}
+                                           <label> <input type="radio" name="{{ report.question.id }}" value="1" onclick="edit_correct({{report.question.id}},{{ answer.id }})" > </label>
+                                        {% endif %}
                                     </li>
                                         <input style="display:none" id="T{{ answer.id }}" type="text"name="Edit" Value="{{answer.answer_text}}">
                                         <img style="display:none" id="A{{ answer.id }}" src="{% static 'send.png'%}"height="20" width="20" onclick="send_ans({{answer.id}},{{ report.id }})">

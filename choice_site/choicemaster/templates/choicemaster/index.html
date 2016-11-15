@@ -1,5 +1,7 @@
 {% extends 'choicemaster/base.html' %}
 
+
+
 {% block content %}
     {% if request.user.get_username %}
         <h2>Hello {{ request.user.get_username }}!</h2>
@@ -10,5 +12,12 @@
         <h2>Hello friend!</h2>
         <br>
         Welcome. You should think about logging in.
+    {% endif %}
+    <p></p>
+    {% if answer %}
+        <div>
+        Term examination <p></p>
+        {{answer}}
+        </div>
     {% endif %}
 {% endblock %}

@@ -36,7 +36,8 @@
             <button onclick="send_report({{ question.id }})"> Send </button>
         </ul>
 
-
+    <p></p>
+    <div id="timer_div"></div>
 
     <script type="text/javascript">
         function send_r(id1, id2){
@@ -50,7 +51,6 @@
              });
             location.reload(false);
         }
-
        function send_report(idq){
            $.ajax({
                 type: "POST",
@@ -62,9 +62,6 @@
             });
            location.reload(false);
        }
-    </script>
-
-    <script type="text/javascript">
         function open_report(){
         var a = document.getElementById("IDR");
         if(a.style.display == "none"){
@@ -74,7 +71,6 @@
             a.style.display = "none";
         }
     }
-
     function open_report2(){
         var a = document.getElementById("ID2");
         if(a.style.display == "none"){
@@ -84,17 +80,29 @@
             a.style.display = "none";
         }
     }
-    </script>
 
+    //var t_out;
 
-    <script type="text/javascript">
-    var t_out;
     $(document).ready(function() {
         $('label[for="id_answer_0"]').parent().hide();
-        console.log("Hid the mofo")
         var timer = {{ timer }};
+        var seconds_left = timer;
         var time = timer*1000;
-        t_out = setTimeout("submit_answer()", time);
+        var intervalTimerID = null;
+        var iterations = 0;
+
+        intervalTimerID = setInterval(DisplayTimer, 1000);
+
+        function DisplayTimer() {
+                ++iterations;
+                document.getElementById('timer_div').innerHTML = "You have " + Math.abs(seconds_left-iterations) + " seconds left to answer this question.";
+                if (iterations >= seconds_left) {
+                    clearInterval(intervalTimerID);
+                    intervalTimerID = null;
+                    submit_answer();
+                    }
+            }
+
         // Reset display for blocks
         $("#correct_answer_p").hide();
         $("#chosen_answer_p").hide();
@@ -110,12 +118,14 @@
         }
         console.log("val:", val);
         var e = document.getElementById("question_id").innerHTML;
-        clearTimeout(t_out);
+        var chosenn = $('input[name="answer"]:checked').parent().text();
+        //clearTimeout(t_out);
         $.ajax({
             type: 'POST',
             url: '/ajax/get_correct/',
             dataType: 'json',
-            data: {'idq': e},
+            data: {'idq': e,
+                    'chosen': chosenn},
             success: function(data) {
                 // Show correct answer
                 $("#correct_answer").text(data['answer']);
@@ -124,9 +134,19 @@
                 $("#chosen_answer").text(chosen);
                 $("#chosen_answer_p").show();
                 //  Hide answers and show final submit button
+                $("#timer_div").hide();
                 $("#id_answer").hide();
                 $("#submit").hide();
                 $("#nextq").show();
+                if(data['equal']){
+                    document.getElementById("correct_answer_p").style.color = "5FBA7D";
+                    document.getElementById("chosen_answer_p").style.color = "5FBA7D";
+                }
+                else  {
+                    document.getElementById("correct_answer_p").style.color = "DD5F68";
+                    document.getElementById("chosen_answer_p").style.color = "DD5F68";
+                }
+
                 console.log("test:", data.answer);
                 console.log("success!");
             }
