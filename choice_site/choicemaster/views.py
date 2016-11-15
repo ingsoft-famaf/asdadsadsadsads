@@ -282,6 +282,12 @@ def resolve_exam(request, exam_id=''):
 
 @login_required
 def subjects_statistics(request):
+    """
+    Get all subjects that the user has been evaluated in, differentiating the
+    average grade in that subject, and then display it
+    :param request: Request object
+    :return: View
+    """
     user = request.user
     user_exams = models.Exam.objects.filter(user=user)
     subjects = Subject.objects.all()
@@ -304,6 +310,13 @@ def subjects_statistics(request):
 
 @login_required
 def subject_detail(request, subject_id):
+    """
+    Get general statistics for a determined subject, displaying average grade,
+    total questions answered, etc.
+    :param request: Request
+    :param subject_id: int
+    :return: View
+    """
     user = request.user
     subject = models.Subject.objects.get(id=subject_id)
     user_exams = models.Exam.objects.filter(user=user, subject=subject)
@@ -343,6 +356,12 @@ def subject_detail(request, subject_id):
 
 @login_required
 def exam_detail(request, exam_id):
+    """
+    Show data for a determined exam, displaying grade, questions and mistakes
+    :param request: Request
+    :param exam_id: int
+    :return: View
+    """
     user = request.user
     e = models.Exam.objects.get(pk=exam_id)
 
@@ -352,6 +371,5 @@ def exam_detail(request, exam_id):
     context['amount_incorrect'] = e.exam_quantity_questions - e.amount_correct
     context['exam'] = e
 
-
     return render(request, 'choicemaster/statistics/exam_detail.html',
-                    context)
+                  context)
