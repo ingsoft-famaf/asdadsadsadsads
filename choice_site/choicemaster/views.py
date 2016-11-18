@@ -46,6 +46,8 @@ def add_question(request):
                 return redirect('index')
             else:
                 form = UploadQuestionForm()
+                context['form'] = form
+                context['message'] = result['message']
     else:
         form = UploadQuestionForm()
         context['form'] = form
