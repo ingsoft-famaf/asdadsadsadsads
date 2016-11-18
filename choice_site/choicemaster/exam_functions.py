@@ -24,7 +24,8 @@ def get_question(exam_id):
 
         mistakes = get_mistakes(exam_id)
         topic_id = max(mistakes, key=mistakes.get)
-        questions_topic = models.Question.objects.filter(topic=topic_id)
+        questions_topic = models.Question.objects.filter(topic=topic_id,
+                                                         available=True)
 
         try:
             question = questions_dict[random.choice(questions_dict.keys())]
