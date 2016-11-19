@@ -1,0 +1,50 @@
+
+<script>
+    var i = 0;
+function add_ans() {
+    if(i<10) {
+        i += 1;
+        document.getElementById("bool").innerHTML += '<span style="padding-right: 5px;">Add answer</span>';
+        var x = document.createElement("INPUT");
+        x.setAttribute("type", "text");
+        x.setAttribute("display", "inline");
+        x.setAttribute("margin-left", "40px");
+        x.setAttribute("margin-right", "40px");
+        document.getElementById("bool").appendChild(x);
+        document.getElementById("bool").innerHTML += '<span style="padding-right: 5px; style="padding-left: 5px;">  Correct?</span>';
+        var y = document.createElement("INPUT");
+        y.setAttribute("type", "radio");
+        y.setAttribute("name", "add");
+        y.setAttribute("display", "inline");
+        document.getElementById("bool").appendChild(y);
+        document.getElementById("bool").innerHTML += '<br> </br>';
+    }
+}
+
+</script>
+
+{% extends 'choicemaster/base.html' %}
+{% block content %}
+    {% load static %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Suggestion</title>
+    </head>
+    <body>
+        <h1>Suggest question</h1>
+        <br> </br>
+         Question   <input type="text" required>
+        <br> </br>
+        <span style="padding-right: 50px;"> Answers </span>
+        Add <Img src="{% static 'add.png' %}" onclick="add_ans()" height="22"  width="22">
+        <br> </br>
+        <div id="bool" display = "inline"> </div>
+        <span style="padding-left: 20px;"> Send <Img src="{% static 'send.png' %}" height="30" width="30"> </span>
+
+
+
+    </body>
+</html>
+
+{% endblock %}
