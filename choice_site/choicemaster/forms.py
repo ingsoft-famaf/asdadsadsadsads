@@ -1,6 +1,6 @@
 from django.forms import Form, ModelForm, FileField, DecimalField
 from django import forms
-from .models import Subject, Topic, Question, Answer, QuestionSnapshot
+from .models import Subject, Topic, Question, Answer
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 

@@ -232,15 +232,6 @@ def resolve_exam(request, exam_id=''):
 
         topic_id = question.topic.id
         value = (correct_answer.id == answer.id)
-        # Generate the snapshot of the answer
-        snap = QuestionSnapshot.objects\
-            .create(exam=exam,
-                    question=question,
-                    chosen_answer=answer.answer_text,
-                    correct_answer=correct_answer.answer_text,
-                    choice_correct=value)
-        snap.save()
-
         exam.remaining -= 1
         mistakes = get_mistakes(exam_id)
         if not value:

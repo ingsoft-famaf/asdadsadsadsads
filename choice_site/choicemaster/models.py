@@ -72,15 +72,6 @@ class Answer(models.Model):
         return self.answer_text
 
 
-class QuestionSnapshot(models.Model):
-    exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, default=0)
-    question_text = models.CharField(max_length=200)
-    chosen_answer = models.CharField(max_length=200)
-    correct_answer = models.CharField(max_length=200)
-    choice_correct = models.BooleanField(default=True)
-
-
 class Report(models.Model):
     NOT_EVALUATED = 'NE'
     IN_EVALUATION = 'IE'
