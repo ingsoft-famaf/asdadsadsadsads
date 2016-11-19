@@ -22,9 +22,6 @@
                 <table>
                     {% if request.user.get_username %}
                         <td><a class="light medium-text" href="/accounts/logout">Sign out</a></td>
-                    {% else %}
-                        <td><a class="center" href="/accounts/login">Sign in</a></td>
-                        <td><a class="center" href="/accounts/signup">Sign up</a></td>
                     {% endif %}
                 </table>
             </div>
