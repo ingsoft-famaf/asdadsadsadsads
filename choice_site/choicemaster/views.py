@@ -33,24 +33,21 @@ def add_question(request):
     Get the list of available subjects from request and return them rendered
     as a response with the corresponding template
     """
-    user = request.user
-    if user.is_staff:
-        context = dict()
-        if request.method == 'POST':
-            form = UploadQuestionForm(request.POST, request.FILES)
-            # if form.is_valid():
-            topic = request.POST.get('topic')
-            file = request.FILES['xmlfile']
-            if topic > 0:
-                result = parse_xml_question(file, topic)
-                if result['status']:
-                    return redirect('index')
-                else:
-                    form = UploadQuestionForm()
-        else:
-            form = UploadQuestionForm()
-            context['form'] = form
-        return render(request, 'choicemaster/add/question.html', context)
+    
+    context = dict()
+    if request.method == 'POST':
+        form = UploadQuestionForm(request.POST, request.FILES)
+        # if form.is_valid():
+        topic = request.POST.get('topic')
+        file = request.FILES['xmlfile']
+        if topic > 0:
+            result = parse_xml_question(file, topic)
+            if result['status']:
+                return redirect('index')
+            else:
+                form = UploadQuestionForm()
+                context['form'] = form
+                context['message'] = result['message']
     else:
         return render(request, 'choicemaster/add/suggestion.html')
 

@@ -29,8 +29,8 @@ def questions_already_exist(questions_xml, topic_id):
         if q_text in questions_db_texts:
             result['in_db'] = True
             result['status'] = True
-            result['question_id'] = questions_db.get(
-                question_text=q.text)
+            qr = questions_db.get(question_text=q_text)
+            result['question'] = qr
             return result
         elif q.text in questions_xml_texts:
             result['in_db'] = False
@@ -99,10 +99,10 @@ def parse_xml_question(xmlfile, topic_id):
     if qae['status']:
         result['status'] = False
         if qae['in_db']:
-            result['message'] = 'Similar question already present in' \
+            result['message'] = 'Similar question already present in ' \
                                 'database.'
             result['topic_id'] = qae['topic_id']
-            result['question_id'] = qae['question_id']
+            result['question_id'] = qae['question'].id
         else:
             result['message'] = 'Similar question already being added in ' \
                                 'xml file'
