@@ -275,13 +275,20 @@ def resolve_exam(request, exam_id=''):
             # End of the exam
             exam.exam_result = exam.amount_correct /\
                 float(exam.exam_quantity_questions)
+
+            #answer = "You did not pass the exam."
+            if exam.exam_result >= exam.passing_score:
+                exam.passed = True
+                #answer = "You passed the exam!"
+
             exam.save()
 
             # Return to the index page with the amount of correct answers on
             # the message board
-            answer = "Subject: \"" + exam.subject.subject_title + "\". Of "\
-                     + str(exam.exam_quantity_questions) +\
-                     " questions, correct: " + str(exam.amount_correct)
+            answer = "Out of " + str(exam.exam_quantity_questions) + \
+                     " questions, you answered " + str(exam.amount_correct) + \
+                     " correctly, for a final grade of " + "{0:.2f}".format(exam.
+                        exam_result*100) + "%."
             return render(request, 'choicemaster/index.html',
                           {'answer': answer})
 

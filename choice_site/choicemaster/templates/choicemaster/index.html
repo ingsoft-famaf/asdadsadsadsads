@@ -3,21 +3,23 @@
 
 
 {% block content %}
+    <p></p>
     {% if request.user.get_username %}
-        <h2>Hello {{ request.user.get_username }}!</h2>
-        Welcome. What do you want to exercise today?<br>
+        {% if answer %}
+            <div id="conclusion">
+            Congrats. You're done. When you're done viewing this page, don't click the signout button. <a href="/"><strong>Click here</strong></a> instead to head back to the homepage. <p></p>
+            </div>
+
+            <div>
+            <br clear="right"><h1>Results Report</h1>
+            {{answer}}
+            </div>
+        {% endif %}
         <p><td><a class="light medium-text" href="/configure1">Take an exam</a></td></p>
         <p><td><a class="light medium-text" href="/statistics/subjects">Check your results</a></td></p>
     {% else %}
         <h2>Hello friend!</h2>
         <br>
         Welcome. You should think about logging in.
-    {% endif %}
-    <p></p>
-    {% if answer %}
-        <div>
-        Term examination <p></p>
-        {{answer}}
-        </div>
     {% endif %}
 {% endblock %}
