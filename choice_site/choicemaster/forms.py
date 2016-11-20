@@ -4,16 +4,6 @@ from .models import Subject, Topic, Question, Answer
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
-def get_subjects():
-    subjects = Subject.objects.all()
-    choices = dict()
-    for s in subjects:
-        choices[str(s.id)] = s.subject_title
-    choices['0'] = 'None'
-    choices = sorted(choices.items())
-    return choices
-
-
 def get_topics(ids):
     topics = Topic.objects.filter(subject_id=ids)
     choices = dict()
@@ -23,19 +13,26 @@ def get_topics(ids):
     return choices
 
 
-class SubjectForm(forms.Form):
-    subject = forms.ChoiceField(choices=get_subjects(),
+class SubjectForm(ModelForm):
+    subject = forms.ModelChoiceField(queryset=Subject.objects.all(),
                                 widget=forms.Select(attrs={'onchange':
                                                            'form.submit();'}))
+    class Meta:
+        model = Subject
+        exclude = ['subject_title', 'subject_description', 'subject_department']
 
 
-class MultipleTopicForm(forms.Form):
-    topic = forms.MultipleChoiceField(choices=get_subjects(),
+class MultipleTopicForm(ModelForm):
+    topic = forms.ModelMultipleChoiceField(queryset=Topic.objects.all(),
                                       widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, ids, *args, **kwargs):
         super(MultipleTopicForm, self).__init__(*args, **kwargs)
-        self.fields['topic'].choices = get_topics(ids)
+        self.fields['topic'].queryset = Topic.objects.filter(subject_id=ids)
+
+    class Meta:
+        model = Topic
+        exclude = ['subject', 'topic_title', 'topic_description']
 
 
 ALGORITHMS = (('0', 'Based on errors'), ('1', 'Random'))
