@@ -76,9 +76,9 @@ def delete_report(request):
         report = Report.objects.get(id=request.POST.get('id'))
         report.report_state = Report.EVALUATED
         report.save()
-        return HttpResponse("Delted")
+        return HttpResponse("Deleted")
     else:
-        return HttpResponse("No deleted")
+        return HttpResponse("Not deleted")
 
 
 @csrf_exempt
@@ -104,9 +104,9 @@ def delete_answer(request):
     if request.is_ajax() and request.POST:
 
         Answer.objects.get(id=request.POST.get('idA')).delete()
-        return HttpResponse("Delted")
+        return HttpResponse("Deleted")
     else:
-        return HttpResponse("No deleted")
+        return HttpResponse("Not deleted")
 
 
 @csrf_exempt
@@ -121,9 +121,9 @@ def edit_question(request):
         question.question_text = new_value
         question.save()
 
-        return HttpResponse("Delted")
+        return HttpResponse("Deleted")
     else:
-        return HttpResponse("No deleted")
+        return HttpResponse("Not deleted")
 
 
 @csrf_exempt
@@ -146,7 +146,7 @@ def edit_correct(request):
         answer.save()
         return HttpResponse("Changed")
     else:
-        return HttpResponse("No Changed")
+        return HttpResponse("Not Changed")
 
 
 @csrf_exempt
@@ -159,6 +159,20 @@ def edit_ans(request):
         new_value = request.POST.get('newValue')
         ans.answer_text = new_value
         ans.save()
-        return HttpResponse("Delted")
+        return HttpResponse("Deleted")
     else:
         return HttpResponse("No deleted")
+
+
+@csrf_exempt
+def delete_suggestion(request):
+    """
+       Elimina una seugerencia de pregunta.
+    """
+    if request.is_ajax() and request.POST:
+        question = Question.objects.get(id=request.POST.get('id'))
+        question.delete()
+        report.save()
+        return HttpResponse("Deleted")
+    else:
+        return HttpResponse("Not deleted")

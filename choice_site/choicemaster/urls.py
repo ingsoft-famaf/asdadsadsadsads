@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^add/question/$', views.add_question, name='add_question'),
 
     url(r'^report/$', views.report, name='report'),
+    url(r'^suggestions/$', views.suggestions, name='suggestions'),
 
     url(r'ajax_view/$', ajax.ajax_view, name='ajax_view'),
     url(r'^ajax/delete/report$', ajax.delete_report, name="delete_report"),
@@ -18,6 +19,7 @@ urlpatterns = [
     url(r'^ajax/edit/autoreport/$', ajax.autoreport, name='AutoReport'),
     url(r'^ajax/edit/reporting/$', ajax.add_report, name='Add Report'),
     url(r'^ajax/edit/correct/$', ajax.edit_correct, name='Edit Correct'),
+    url(r'^ajax/delete/suggestion/$', ajax.delete_suggestion, name='Delete Suggestion'),
 
     url(r'^configure1/$', views.configure_exam1, name='configure_exam1'),
     url(r'^configure2/(?P<exam_id>[0-9]+)/$', views.configure_exam2,

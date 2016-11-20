@@ -61,6 +61,15 @@ def report(request):
     return render(request, 'choicemaster/report.html', context)
 
 
+def suggestions(request):
+    """
+    Pass on to the suggested questions template, the number of questions suggested so far
+    """
+    context = dict()
+    context['questions'] = Question.objects.filter(available=False)
+    return render(request, 'choicemaster/suggestions.html', context)
+
+
 # Nuevos configure
 @login_required
 def configure_exam1(request):

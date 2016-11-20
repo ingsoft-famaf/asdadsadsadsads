@@ -53,8 +53,9 @@
                                 <a class="section-a" href="/admin/choicemaster/topic/add">Add topic.</a>
                                 <br>
                                 <a class="section-a" href="{% url 'add_question' %}">Add questions.</a>
-                            
-                                <h4><a class="sauvage-a" href="{% url 'report' %}">Reports</a></h4>
+                                <br>
+                                <a class="section-a" href="{% url 'suggestions' %}">Suggested questions.</a>
+                                <h4><a class="sauvage-a" href="{% url 'report' %}">Reports.</a></h4>
                                 {% if reported > 0 %}
                                     Reported questions({{reported}}).
                                 {% else %}
