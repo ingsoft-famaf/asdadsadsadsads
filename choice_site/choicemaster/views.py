@@ -95,25 +95,29 @@ def configure_exam2(request, exam_id):
     configuration template
     """
     e = models.Exam.objects.get(pk=exam_id)
-    ids = e.subject.id
-    context = dict()
-    context['subject_text'] = e.subject.subject_title
-    context['exam_id'] = exam_id
-    if request.method == 'POST':
-        form = MultipleTopicForm(ids, request.POST)
-        if form.is_valid():
-            topic_ids = request.POST.getlist('topic')
-            for idt in topic_ids:
-                t = models.Topic.objects.get(pk=idt)
-                e.topic.add(t)
-            e.save()
-            return redirect('configure_exam3', exam_id=exam_id)
+    if not e.closed:
+        ids = e.subject.id
+        context = dict()
+        context['subject_text'] = e.subject.subject_title
+        context['exam_id'] = exam_id
+        if request.method == 'POST':
+            form = MultipleTopicForm(ids, request.POST)
+            if form.is_valid():
+                topic_ids = request.POST.getlist('topic')
+                for idt in topic_ids:
+                    t = models.Topic.objects.get(pk=idt)
+                    e.topic.add(t)
+                e.save()
+                return redirect('configure_exam3', exam_id=exam_id)
+        else:
+            form = MultipleTopicForm(e.subject.id)
+
+        context['form'] = form
+        return render(request, 'choicemaster/exam/configure_exam2.html', context)
     else:
-        form = MultipleTopicForm(e.subject.id)
-
-    context['form'] = form
-    return render(request, 'choicemaster/exam/configure_exam2.html', context)
-
+        message = "You have already taken that exam." \
+            + "Please create a new one from the 'Take an exam' section"
+        return render(request, 'choicemaster/index.html', {'message': message})
 
 @login_required
 def configure_exam3(request, exam_id):
@@ -124,33 +128,39 @@ def configure_exam3(request, exam_id):
     subject
     """
     e = models.Exam.objects.get(pk=exam_id)
-    max_quantity = 0
-    context = dict()
-    context['subject_text'] = e.subject.subject_title
-    context['exam_id'] = exam_id
-    context['topics'] = e.topic.all()
+    if not e.closed:
+        max_quantity = 0
+        context = dict()
+        context['subject_text'] = e.subject.subject_title
+        context['exam_id'] = exam_id
+        context['topics'] = e.topic.all()
 
-    for t in e.topic.all():
-        questions = models.Question.objects.filter(topic=t.id)
-        max_quantity += len(questions)
-    if request.method == 'POST':
-        form = ConfigForm(max_quantity, request.POST)
-        if form.is_valid():
-            quantity = request.POST.get('quantity')
-            timer = request.POST.get('timer')
-            algorithm = request.POST.get('algorithm')
-            e = models.Exam.objects.get(pk=exam_id)
-            e.exam_quantity_questions = quantity
-            e.remaining = quantity
-            e.exam_timer = timer
-            e.exam_algorithm = algorithm
-            e.save()
-            return redirect('resolve_exam', exam_id=exam_id)
+        for t in e.topic.all():
+            questions = models.Question.objects.filter(topic=t.id)
+            max_quantity += len(questions)
+        if request.method == 'POST':
+            form = ConfigForm(max_quantity, request.POST)
+            if form.is_valid():
+                quantity = request.POST.get('quantity')
+                timer = request.POST.get('timer')
+                algorithm = request.POST.get('algorithm')
+                e = models.Exam.objects.get(pk=exam_id)
+                e.exam_quantity_questions = quantity
+                e.remaining = quantity
+                e.exam_timer = timer
+                e.exam_algorithm = algorithm
+                e.save()
+                return redirect('resolve_exam', exam_id=exam_id)
+        else:
+            form = ConfigForm(max_quantity)
+
+        context['form'] = form
+        return render(request, 'choicemaster/exam/configure_exam3.html', context)
+
     else:
-        form = ConfigForm(max_quantity)
-
-    context['form'] = form
-    return render(request, 'choicemaster/exam/configure_exam3.html', context)
+        message = "You have already taken that exam." \
+            + " Please create a new one from the 'Take an exam' section"
+        return render(request, 'choicemaster/index.html', {'message': message})
 
 
 def get_first(iterable, default=None):
@@ -177,104 +187,116 @@ def resolve_exam(request, exam_id=''):
     """
     if request.method != 'POST':
         exam = models.Exam.objects.get(pk=exam_id)
-        subject = exam.subject
-        timer = exam.exam_timer
-        algorithm = exam.exam_algorithm
-        # exam_tmp = ExamView(subject.id, timer, quantity, algorithm, exam.id)
+        if not exam.closed:
+            subject = exam.subject
+            timer = exam.exam_timer
+            algorithm = exam.exam_algorithm
+            # exam_tmp = ExamView(subject.id, timer, quantity, algorithm, exam.id)
 
-        topic_ids = exam.topic.all()  # TODO
-        mistakes = {}
-        # We store all the questions of the selected topics
-        for item in topic_ids:
-            questions_tmp = models.Question.objects.filter(topic=models.Topic
-                                                           .objects
-                                                           .get(pk=item.id))
-            mistakes[str(item.id)] = 0
-            for q in questions_tmp:
-                exam.questions.add(q)
+            topic_ids = exam.topic.all()  # TODO
+            mistakes = {}
+            # We store all the questions of the selected topics
+            for item in topic_ids:
+                questions_tmp = models.Question.objects.filter(topic=models.Topic
+                                                               .objects
+                                                               .get(pk=item.id))
+                mistakes[str(item.id)] = 0
+                for q in questions_tmp:
+                    exam.questions.add(q)
 
-        exam.mistakes = json.dumps(mistakes)
-        exam.save()
+            exam.mistakes = json.dumps(mistakes)
+            exam.save()
 
-        # Select a random question for the first one.
-        question = get_question(exam_id)
+            # Select a random question for the first one.
+            question = get_question(exam_id)
 
-        # Generate the form
-        form = ExamForm(question=question.id)
+            # Generate the form
+            form = ExamForm(question=question.id)
 
-        context = dict()
-        context['subject'] = subject
-        context['topic'] = question.topic
-        context['form'] = form
-        context['question'] = question
-        context['exam_id'] = exam_id
-        context['timer'] = timer
-        context['questions_used'] = exam.questions_used.all()
-        return render(request, 'choicemaster/exam/resolve_exam.html', context)
+            context = dict()
+            context['subject'] = subject
+            context['topic'] = question.topic
+            context['form'] = form
+            context['question'] = question
+            context['exam_id'] = exam_id
+            context['timer'] = timer
+            context['questions_used'] = exam.questions_used.all()
+            return render(request, 'choicemaster/exam/resolve_exam.html', context)
+        else:
+            message = "You have already taken that exam." \
+            + " Please create a new one from the 'Take an exam' section"
+            return render(request, 'choicemaster/index.html', {'message': message})
 
     else:
         form = ExamForm(request.POST)
         exam_id = request.POST.get('exam_id')
         exam = models.Exam.objects.get(pk=exam_id)
-        timer = exam.exam_timer
-        question_id = request.POST.get('question_id')
-        question = Question.objects.get(pk=question_id)
-        answers = Answer.objects.filter(question=question.id)
-        correct_answer = answers.filter(correct=True)[0]
+        if not exam.closed:
+        # Check if the exam is not closed
+            timer = exam.exam_timer
+            question_id = request.POST.get('question_id')
+            question = Question.objects.get(pk=question_id)
+            answers = Answer.objects.filter(question=question.id)
+            correct_answer = answers.filter(correct=True)[0]
 
-        answer_id = request.POST.get('answer')
-        if answer_id == '':
-            # make up a fake answer which is not the correct one
-            answer = get_first(answers.filter(correct=False))
-        else:
-            # get the actual answer from the front-end if there is one
-            answer = Answer.objects.get(pk=answer_id)
+            answer_id = request.POST.get('answer')
+            if answer_id == '':
+                # make up a fake answer which is not the correct one
+                answer = get_first(answers.filter(correct=False))
+            else:
+                # get the actual answer from the front-end if there is one
+                answer = Answer.objects.get(pk=answer_id)
 
-        topic_id = question.topic.id
-        value = (correct_answer.id == answer.id)
-        exam.remaining -= 1
-        mistakes = get_mistakes(exam_id)
-        if not value:
-            mistakes[str(topic_id)] += 1
-        else:
-            exam.amount_correct += 1
+            topic_id = question.topic.id
+            value = (correct_answer.id == answer.id)
+            exam.remaining -= 1
+            mistakes = get_mistakes(exam_id)
+            if not value:
+                mistakes[str(topic_id)] += 1
+            else:
+                exam.amount_correct += 1
 
-        exam.mistakes = json.dumps(mistakes)
-        exam.exam_result = exam.amount_correct / \
-                           float(exam.exam_quantity_questions)
-        exam.save()
-
-        if exam.remaining:
-            # Get the next question
-            question = get_question(exam_id)
-            # Generate the form
-            form = ExamForm(question=question.id)
-
-            # Build the context for the next iteration
-            context = dict()
-            context['question'] = question
-            context['form'] = form
-            context['timer'] = timer
-            context['questions_used'] = exam.questions_used.all()
-            context['subject'] = models.Subject.objects.get(pk=exam.subject.id)
-            context['question'] = question
-            context['exam_id'] = exam_id
-
-            return render(request, 'choicemaster/exam/resolve_exam.html',
-                          context)
-        else:
-            # End of the exam
-            exam.exam_result = exam.amount_correct /\
-                float(exam.exam_quantity_questions)
+            exam.mistakes = json.dumps(mistakes)
+            exam.exam_result = exam.amount_correct / \
+                               float(exam.exam_quantity_questions)
             exam.save()
 
-            # Return to the index page with the amount of correct answers on
-            # the message board
-            answer = "Subject: \"" + exam.subject.subject_title + "\". Of "\
-                     + str(exam.exam_quantity_questions) +\
-                     " questions, correct: " + str(exam.amount_correct)
-            return render(request, 'choicemaster/index.html',
-                          {'answer': answer})
+            if exam.remaining:
+                # Get the next question
+                question = get_question(exam_id)
+                # Generate the form
+                form = ExamForm(question=question.id)
+
+                # Build the context for the next iteration
+                context = dict()
+                context['question'] = question
+                context['form'] = form
+                context['timer'] = timer
+                context['questions_used'] = exam.questions_used.all()
+                context['subject'] = models.Subject.objects.get(pk=exam.subject.id)
+                context['question'] = question
+                context['exam_id'] = exam_id
+
+                return render(request, 'choicemaster/exam/resolve_exam.html',
+                              context)
+            else:
+                # End of the exam
+                exam.exam_result = exam.amount_correct /\
+                    float(exam.exam_quantity_questions)
+                exam.closed = True
+                exam.save()
+
+                # Return to the index page with the amount of correct answers on
+                # the message board
+                answer = "Subject: \"" + exam.subject.subject_title + "\". Of "\
+                         + str(exam.exam_quantity_questions) +\
+                         " questions, correct: " + str(exam.amount_correct)
+                return render(request, 'choicemaster/index.html',
+                              {'answer': answer})
+        else:
+            message = "You have already taken that exam." \
+            + " Please create a new one from the 'Take an exam' section"
+            return render(request, 'choicemaster/index.html', {'message': message})
 
 
 @login_required
