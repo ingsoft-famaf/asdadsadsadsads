@@ -30,6 +30,7 @@ class Topic(models.Model):
 class Question(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)
+    available = models.BooleanField(default=False)
 
     def __unicode__(self):
         """

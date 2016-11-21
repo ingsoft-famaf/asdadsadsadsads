@@ -1,0 +1,138 @@
+{% extends 'choicemaster/base.html' %}
+
+{% block content %}
+    <script>
+        function delete_question(idQ) {
+            console.log("Deleting question");
+            $.ajax({
+                type: "POST",
+                url: "/ajax/delete/question/",
+                dataType: "json",
+                data: {'idQ':idQ}
+            });
+            location.reload(false);
+        }
+
+        function delete_answer(idA) {
+            console.log("Deleting Answer");
+            $.ajax({
+                type: "POST",
+                url: "/ajax/delete/answer/",
+                dataType: "json",
+                data: {'idA':idA}
+            });
+            location.reload(false);
+        }
+
+        function edit_answer(id) {
+            var a = document.getElementById("T"+id);
+            var b = document.getElementById("A"+id);
+            if(a.style.display == "none"){
+                a.style.display = "inline";
+                b.style.display = "inline";
+            }
+            else{
+                a.style.display = "none";
+                b.style.display = "none";
+            }
+        }
+
+        function edit_question(id) {
+            var a = document.getElementById("QT"+id);
+            var b = document.getElementById("QA"+id);
+            if(a.style.display == "none"){
+                a.style.display = "inline";
+                b.style.display = "inline";
+            }
+            else{
+                a.style.display = "none";
+                b.style.display = "none";
+            }
+        }
+
+        function send_question(id){
+            $.ajax({
+                type: "POST",
+                url: "/ajax/edit/question/",
+                dataType: "json",
+                data: {'id':id ,
+                    'newValue': document.getElementById("QT"+id).value
+                }
+            });
+            location.reload(false);
+        }
+
+        function send_answer(id){
+            $.ajax({
+                type: "POST",
+                url: "/ajax/edit/answer/",
+                dataType: "json",
+                data: {'id':id ,
+                    'newValue': document.getElementById("T"+id).value
+                }
+            });
+            location.reload(false);
+        }
+
+        function edit_correct(idQ, idA){
+            $.ajax({
+                type: "POST",
+                url: "/ajax/edit/correct/",
+                dataType: "json",
+                data: {'idA':idA ,
+                       'idQ': idQ
+                }
+            });
+            location.reload(false);
+        }
+
+        function accept_suggestion(idQ) {
+            console.log("Accepting suggestion");
+            $.ajax({
+                type: "POST",
+                url: "/ajax/accept/suggestion/",
+                dataType: "json",
+                data: {'idQ':idQ}
+            });
+            location.reload(false);
+        }
+    </script>
+
+    {% load static %}
+    <h1> Suggested questions </h1>
+    {% if questions %}
+        <ul>
+            {% for question in questions %}
+                <!-- Create Sass class to simplify img tags -->
+                <br>
+                <span style="font-size: 18px"><b>{{question.question_text}}</b></span>
+                <img src="{% static 'delete.png' %}" height="20" width="20" onclick="delete_question({{question.id}})">
+                <img src="{% static 'edit.png' %}" height="20" width="20" onclick="edit_question({{question.id}})">
+                <img src="{% static 'tick.png' %}" height="20" width="20" onclick="accept_suggestion({{question.id}})">
+                <br>
+                <input style="display:none" id="QT{{ question.id }}" type="text" name="Edit" Value="{{answer.answer_text}}">
+                <img style="display:none" id="QA{{ question.id }}" src="{% static 'send.png'%}" height="20" width="20" onclick="send_question({{ question.id }})">
+
+                <div style="padding-left: 30px; padding-top: 10px">
+                    <ul>
+                        {% for answer in question.answer_set.all %}
+                            <li> {{answer.answer_text}}
+                                <Img src="{% static 'delete.png' %}" height="20" width="20" onclick="delete_answer({{answer.id}})">
+                                <img src="{% static 'edit.png' %}" height="20" width="20" onclick="edit_answer({{ answer.id }})">
+                                {% if answer.correct == True %}
+                                   <label><input type="radio" value="1" name="{{ report.question.id }}" checked="true" onclick="edit_correct({{question.id}},{{ answer.id }})"></label>
+                                {% else %}
+                                   <label><input type="radio" name="{{ report.question.id }}" value="1" onclick="edit_correct({{question.id}},{{ answer.id }})"></label>
+                                {% endif %}
+                            </li>
+                                <input style="display:none" id="T{{ answer.id }}" type="text" name="Edit" Value="{{answer.answer_text}}">
+                                <img style="display:none" id="A{{ answer.id }}" src="{% static 'send.png'%}" height="20" width="20" onclick="send_answer({{answer.id}})">
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No suggestions pending!</p>
+    {% endif %}
+{% endblock %}

@@ -55,10 +55,24 @@ def add_question(request):
 def report(request):
     """
     Pass on to the reports template, the number of reports not evaluated so far
+    :param request: Request
+    :return: View
     """
     context = dict()
     context['reports'] = Report.objects.exclude(report_state="E")
     return render(request, 'choicemaster/report.html', context)
+
+
+def suggestions(request):
+    """
+    Pass on to the suggested questions template, the number of questions
+    suggested so far
+    :param request: Request
+    :return: View
+    """
+    context = dict()
+    context['questions'] = models.Question.objects.filter(available=False)
+    return render(request, 'choicemaster/suggestions.html', context)
 
 
 # Nuevos configure
@@ -131,7 +145,7 @@ def configure_exam3(request, exam_id):
     context['topics'] = e.topic.all()
 
     for t in e.topic.all():
-        questions = models.Question.objects.filter(topic=t.id)
+        questions = models.Question.objects.filter(topic=t.id, available=True)
         max_quantity += len(questions)
     if request.method == 'POST':
         form = ConfigForm(max_quantity, request.POST)
@@ -182,13 +196,14 @@ def resolve_exam(request, exam_id=''):
         algorithm = exam.exam_algorithm
         # exam_tmp = ExamView(subject.id, timer, quantity, algorithm, exam.id)
 
-        topic_ids = exam.topic.all()  # TODO
+        topic_ids = exam.topic.all()
         mistakes = {}
         # We store all the questions of the selected topics
         for item in topic_ids:
             questions_tmp = models.Question.objects.filter(topic=models.Topic
                                                            .objects
-                                                           .get(pk=item.id))
+                                                           .get(pk=item.id),
+                                                           available=True)
             mistakes[str(item.id)] = 0
             for q in questions_tmp:
                 exam.questions.add(q)
@@ -273,14 +288,14 @@ def resolve_exam(request, exam_id=''):
                           context)
         else:
             # End of the exam
-            exam.exam_result = exam.amount_correct /\
-                float(exam.exam_quantity_questions)
+            exam.exam_result = exam.amount_correct / \
+                               float(exam.exam_quantity_questions)
             exam.save()
 
             # Return to the index page with the amount of correct answers on
             # the message board
-            answer = "Subject: \"" + exam.subject.subject_title + "\". Of "\
-                     + str(exam.exam_quantity_questions) +\
+            answer = "Subject: \"" + exam.subject.subject_title + "\". Of " \
+                     + str(exam.exam_quantity_questions) + \
                      " questions, correct: " + str(exam.amount_correct)
             return render(request, 'choicemaster/index.html',
                           {'answer': answer})
@@ -295,7 +310,7 @@ def subjects_statistics(request):
     :return: View
     """
     user = request.user
-    user_exams_deleteable = models.Exam.objects\
+    user_exams_deleteable = models.Exam.objects \
         .filter(user=user,
                 exam_quantity_questions=0)
     user_exams_deleteable.delete()
