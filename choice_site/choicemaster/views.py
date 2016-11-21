@@ -95,7 +95,7 @@ def configure_exam2(request, exam_id):
     configuration template
     """
     e = models.Exam.objects.get(pk=exam_id)
-    ids = models.Subject.objects.get(pk=e.subject.id).id
+    ids = e.subject.id
     context = dict()
     context['subject_text'] = e.subject.subject_title
     context['exam_id'] = exam_id
