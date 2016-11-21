@@ -268,21 +268,132 @@ class LoadQuestionsTestCase(TestCase):
                         'not contain any duplicate questions.'
                         in response.content)
 
-# class ExamSubject(TestCase):
-#
-#    def setUp(self):
-#
-#    def test_subject(self):
-#
-#    def test_topic(self):
-#
-#
-# class TestExam(TestCase):
-#
-#    def SetUp(self):
-#
-#    def test_exam_url(self):
-#
-#    def test_exam_settings(self):
-#
-#    def test_exam_(self):
+
+class TestExam(TestCase):
+    def SetUp(self):
+        self.user = User.objects.create(username='testuser')
+        self.user.set_password('dga-245vl,')
+        self.user.email = 'testmail@test.com'
+        self.user.save()
+        self.c = Client()
+        self.logged_in = self.c.login(username='testuser', password='dga-245vl,')
+
+        self.subj = Subject.objects.create(
+                                subject_title='Subject X',
+                                subject_description='Subject X description',
+                                subject_department='Tests Department')
+
+        self.topc = Topic.objects.create(subject=self.subj,
+                                topic_title='Topic X',
+                                topic_description='Topic X description')
+
+
+        self.q1 = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q1?')
+
+        self.q1a1 = Answer.objects.create(question= self.q1,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q1a2 = Answer.objects.create(question= self.q1,
+                                          answer_text= 'Correct answer.',
+                                          correct=True)
+
+        self.q1a3 = Answer.objects.create(question= self.q1,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+
+        self.q2 = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q2?')
+
+        self.q2a1 = Answer.objects.create(question= self.q2,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q2a2 = Answer.objects.create(question= self.q2,
+                                          answer_text= 'Correct answer.',
+                                          correct=True)
+
+        self.q2a3 = Answer.objects.create(question= self.q2,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q3 = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q3?')
+
+        self.q3a1 = Answer.objects.create(question= self.q3,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q3a2 = Answer.objects.create(question= self.q3,
+                                          answer_text= 'Correct answer.',
+                                          correct=True)
+
+        self.q3a3 = Answer.objects.create(question= self.q3,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+
+        self.q4 = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q4?')
+
+        self.q4a1 = Answer.objects.create(question= self.q4,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q4a2 = Answer.objects.create(question= self.q4,
+                                          answer_text= 'Correct answer.',
+                                          correct=True)
+
+        self.q4a3 = Answer.objects.create(question= self.q4,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+
+        self.q5 = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q5?')
+
+        self.q5a1 = Answer.objects.create(question= self.q5,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q5a2 = Answer.objects.create(question= self.q5,
+                                          answer_text= 'Correct answer.',
+                                          correct=True)
+
+        self.q5a3 = Answer.objects.create(question= self.q5,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.exam1 = Exam.objects.create(user = self.user,
+                                subject = self.subj,
+                                exam_quantity_questions = 5,
+                                exam_timer = 10,
+                                exam_algorithm = 1,
+                                exam_result = 0,
+                                topic = self.topc,
+                                questions = [self.q1, self.q2, self.q3,
+                                             self.q4, self.q5],
+                                questions_used = )
+
+        self.exam2 = Exam.objects.create(user = self.user,
+                                subject = self.subj,
+                                exam_quantity_questions = 5,
+                                exam_timer = 10,
+                                exam_algorithm = 1,
+                                exam_result = 0,
+                                topic = self.topc,
+                                questions = ADKSADASDASD,
+                                questions_used = ADSASDASD)
+
+    def test_exam_(self):
+
+
+    def test_exam_(self):
+
