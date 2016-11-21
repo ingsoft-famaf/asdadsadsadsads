@@ -102,12 +102,21 @@ body {
   padding: 7px; }
 
 .green {
-  background-color: #5FBA7D; }
+  background-color: rgba(108, 207, 139, 0.79); }
 
 .yellow {
-  background-color: #E0B72F; }
+  background-color: rgba(240, 198, 48, 0.74); }
 
 .red {
-  background-color: #DD5F68; }
+  background-color: rgba(225, 97, 106, 0.69); }
+
+.green-text {
+  color: rgba(108, 207, 139, 0.79); }
+
+.yellow-text {
+  color: rgba(240, 198, 48, 0.74); }
+
+.red-text {
+  color: rgba(225, 97, 106, 0.69); }
 
 /*# sourceMappingURL=main.css.map */

@@ -1,27 +1,32 @@
 {% extends 'choicemaster/base.html' %}
 
-
-
 {% block content %}
     {% if request.user.get_username %}
+        <h3>What do you want to do?</h3>
+        <table style="width: 50%">
+            <tr>
+                <td><a class="light medium-text" href="/configure1">Take an exam</a></td>
+                <td><a class="light medium-text" href="/statistics/subjects">Check your results</a></td>
+            </tr>
+        </table>
         {% if exam_finished %}
+            <br>
+            <h3>Results Report</h3>
             <div id="conclusion">
-            <br>Congrats. You're done!</br>
-            When you're done viewing this page, don't click the signout button. <a href="/"><strong>Click here</strong></a> instead to head back to the homepage. <p></p>
-            </div>
-
-            <div>
-            <br clear="right"><h1>Results Report</h1>
-            {% if passed %}
-                <br>You passed the exam!</br>
-            {% else %}
-                <br>You did not pass the exam.</br>
-            {% endif %}
-            Out of {{no_questions}} questions, you answered {{no_correct_answers}} correctly, for a final grade of {{result}}%.
+                <span class="light medium-text">Congrats. You're done!</span>
+                <br>
+                <br>
+                <span><a href="{% url 'exam_detail' exam_id %}"><b>Click here</b></a> to go to the exam detail.</span>
+                <br>
+                {% if passed %}
+                    <span class="green-text">You passed the exam!</span>
+                {% else %}
+                    <span class="red-text">You did not pass the exam. :(</span>
+                {% endif %}
+                <br>
+                <span>Out of {{no_questions}} questions, you answered {{no_correct_answers}} correctly, for a final grade of {{result}}%.</span>
             </div>
         {% endif %}
-        <p><td><a class="light medium-text" href="/configure1">Take an exam</a></td></p>
-        <p><td><a class="light medium-text" href="/statistics/subjects">Check your results</a></td></p>
     {% else %}
         <h2>Hello friend!</h2>
         <br>

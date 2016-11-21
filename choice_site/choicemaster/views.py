@@ -277,6 +277,7 @@ def resolve_exam(request, exam_id=''):
 
             # Build the context for the next iteration
             context = dict()
+            context['exam_id'] = exam_id
             context['exam_finished'] = True
             context['passed'] = False
             context['no_questions'] = exam.exam_quantity_questions
