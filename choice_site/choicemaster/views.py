@@ -71,7 +71,7 @@ def suggestions(request):
     :return: View
     """
     context = dict()
-    context['questions'] = Question.objects.filter(available=False)
+    context['questions'] = models.Question.objects.filter(available=False)
     return render(request, 'choicemaster/suggestions.html', context)
 
 
@@ -109,7 +109,7 @@ def configure_exam2(request, exam_id):
     configuration template
     """
     e = models.Exam.objects.get(pk=exam_id)
-    ids = models.Subject.objects.get(pk=e.subject.id).id
+    ids = e.subject.id
     context = dict()
     context['subject_text'] = e.subject.subject_title
     context['exam_id'] = exam_id
@@ -233,7 +233,7 @@ def resolve_exam(request, exam_id=''):
         exam = models.Exam.objects.get(pk=exam_id)
         timer = exam.exam_timer
         question_id = request.POST.get('question_id')
-        question = Question.objects.get(pk=question_id)
+        question = models.Question.objects.get(pk=question_id)
         answers = Answer.objects.filter(question=question.id)
         correct_answer = answers.filter(correct=True)[0]
 
@@ -248,7 +248,7 @@ def resolve_exam(request, exam_id=''):
         topic_id = question.topic.id
         value = (correct_answer.id == answer.id)
         # Generate the snapshot of the answer
-        snap = QuestionSnapshot.objects \
+        snap = models.QuestionSnapshot.objects\
             .create(exam=exam,
                     question=question,
                     chosen_answer=answer.answer_text,
