@@ -279,22 +279,16 @@ def resolve_exam(request, exam_id=''):
             context = dict()
             context['exam_finished'] = True
             context['passed'] = False
-            context['no_questions'] = str(exam.exam_quantity_questions)
+            context['no_questions'] = exam.exam_quantity_questions
             context['no_correct_answers'] = exam.amount_correct
             context['result'] = "{0:.2f}".format(exam.exam_result*100)
+            print context['result']
 
             if exam.exam_result >= exam.passing_score:
                 exam.passed = True
                 context['passed'] = True
 
             exam.save()
-
-            # Return to the index page with the amount of correct answers on
-            # the message board
-            answer = "Out of " + str(exam.exam_quantity_questions) + \
-                     " questions, you answered " + str(exam.amount_correct) + \
-                     " correctly, for a final grade of " + "{0:.2f}".format(exam.
-                        exam_result*100) + "%."
             return render(request, 'choicemaster/index.html', context)
 
 
@@ -323,7 +317,7 @@ def subjects_statistics(request):
             for exam in s_exams:
                 partial += exam.exam_result * 10
             # Calculate the final result of the subject s
-            result = partial / total
+            result = "{0:.2f}".format(partial /total)
             evaluated[s.id] = (s, result)
 
     context = dict()
@@ -360,7 +354,7 @@ def subject_detail(request, subject_id):
         questions += e.exam_quantity_questions
         correct += e.amount_correct
 
-    exams_general = ((avg / taken) * 10, taken, questions, correct,
+    exams_general = ("{0:.2f}".format((avg / taken) * 10), taken, questions, correct,
                      questions - correct)
 
     data_source = SimpleDataSource(data=data)
