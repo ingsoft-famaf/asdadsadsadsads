@@ -170,8 +170,7 @@ def resolve_exam(request, exam_id=''):
     order to display it in the resolve_exam template
     2. request method is POST, which means it has been triggered by a solution
     submitted in the front end. Check whether the answer given by the user is
-    right or wrong, and create a snapshot accordingly. Keep a record of right
-    and wrong guesses to be used in the algorithm to display questions
+    right or wrong to keep a record to be used in the algorithm to display questions
     afterwards. Also, keep track of remaining time and use it to pass to the
     next question in case it is over.
     """
@@ -232,15 +231,6 @@ def resolve_exam(request, exam_id=''):
 
         topic_id = question.topic.id
         value = (correct_answer.id == answer.id)
-        # Generate the snapshot of the answer
-        snap = models.QuestionSnapshot.objects\
-            .create(exam=exam,
-                    question=question,
-                    chosen_answer=answer.answer_text,
-                    correct_answer=correct_answer.answer_text,
-                    choice_correct=value)
-        snap.save()
-
         exam.remaining -= 1
         mistakes = get_mistakes(exam_id)
         if not value:
