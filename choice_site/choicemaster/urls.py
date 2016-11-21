@@ -35,4 +35,6 @@ urlpatterns = [
         name='exam_detail'),
     url(r'^statistics/exam/(?P<exam_id>[0-9]+)/$', views.exam_detail,
         name='exam_detail'),
+
+    url(r'^ajax/suggestion/send/$', ajax.suggestion, name='Send suggestion')
 ]
