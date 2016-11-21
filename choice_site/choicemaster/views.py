@@ -261,13 +261,12 @@ def resolve_exam(request, exam_id=''):
 
             # Build the context for the next iteration
             context = dict()
-            context['question'] = question
-            context['form'] = form
-            context['timer'] = timer
-            context['questions_used'] = exam.questions_used.all()
-            context['subject'] = models.Subject.objects.get(pk=exam.subject.id)
-            context['question'] = question
             context['exam_id'] = exam_id
+            context['form'] = form
+            context['question'] = question
+            context['questions_used'] = exam.questions_used.all()
+            context['timer'] = timer
+            context['subject'] = models.Subject.objects.get(pk=exam.subject.id)
 
             return render(request, 'choicemaster/exam/resolve_exam.html',
                           context)
@@ -276,10 +275,17 @@ def resolve_exam(request, exam_id=''):
             exam.exam_result = exam.amount_correct /\
                 float(exam.exam_quantity_questions)
 
-            #answer = "You did not pass the exam."
+            # Build the context for the next iteration
+            context = dict()
+            context['exam_finished'] = True
+            context['passed'] = False
+            context['no_questions'] = str(exam.exam_quantity_questions)
+            context['no_correct_answers'] = exam.amount_correct
+            context['result'] = "{0:.2f}".format(exam.exam_result*100)
+
             if exam.exam_result >= exam.passing_score:
                 exam.passed = True
-                #answer = "You passed the exam!"
+                context['passed'] = True
 
             exam.save()
 
@@ -289,8 +295,7 @@ def resolve_exam(request, exam_id=''):
                      " questions, you answered " + str(exam.amount_correct) + \
                      " correctly, for a final grade of " + "{0:.2f}".format(exam.
                         exam_result*100) + "%."
-            return render(request, 'choicemaster/index.html',
-                          {'answer': answer})
+            return render(request, 'choicemaster/index.html', context)
 
 
 @login_required

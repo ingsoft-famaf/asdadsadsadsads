@@ -3,16 +3,21 @@
 
 
 {% block content %}
-    <p></p>
     {% if request.user.get_username %}
-        {% if answer %}
+        {% if exam_finished %}
             <div id="conclusion">
-            Congrats. You're done. When you're done viewing this page, don't click the signout button. <a href="/"><strong>Click here</strong></a> instead to head back to the homepage. <p></p>
+            <br>Congrats. You're done!</br>
+            When you're done viewing this page, don't click the signout button. <a href="/"><strong>Click here</strong></a> instead to head back to the homepage. <p></p>
             </div>
 
             <div>
+            {% if passed %}
+                <br>You passed the exam!</br>
+            {% else %}
+                <br>You did not pass the exam.</br>
+            {% endif %}
             <br clear="right"><h1>Results Report</h1>
-            {{answer}}
+            Out of {{no_questions}} questions, you answered {{no_correct_answers}} correctly, for a final grade of {{result}}%.
             </div>
         {% endif %}
         <p><td><a class="light medium-text" href="/configure1">Take an exam</a></td></p>
