@@ -55,6 +55,8 @@ def add_question(request):
 def report(request):
     """
     Pass on to the reports template, the number of reports not evaluated so far
+    :param request: Request
+    :return: View
     """
     context = dict()
     context['reports'] = Report.objects.exclude(report_state="E")
@@ -63,7 +65,10 @@ def report(request):
 
 def suggestions(request):
     """
-    Pass on to the suggested questions template, the number of questions suggested so far
+    Pass on to the suggested questions template, the number of questions
+    suggested so far
+    :param request: Request
+    :return: View
     """
     context = dict()
     context['questions'] = Question.objects.filter(available=False)

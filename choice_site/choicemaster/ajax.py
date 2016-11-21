@@ -91,7 +91,7 @@ def delete_question(request):
     if request.is_ajax() and request.POST:
         question = Question.objects.get(id=request.POST.get('idQ'))
         question.delete()
-        return HttpResponse("Delted")
+        return HttpResponse("Deleted")
     else:
         return HttpResponse("No deleted")
 
@@ -102,7 +102,6 @@ def delete_answer(request):
         Elimina una respuesta.
     """
     if request.is_ajax() and request.POST:
-
         Answer.objects.get(id=request.POST.get('idA')).delete()
         return HttpResponse("Deleted")
     else:
@@ -120,7 +119,6 @@ def edit_question(request):
         new_value = request.POST.get('newValue')
         question.question_text = new_value
         question.save()
-
         return HttpResponse("Deleted")
     else:
         return HttpResponse("Not deleted")
@@ -132,15 +130,15 @@ def edit_correct(request):
         Cambia la opcion correcta de la pregunta.
     """
     if request.is_ajax() and request.POST:
-        """Buco la respuesta correta de la pregunta con id = idQ"""
+        # Busco la respuesta correta de la pregunta con id = idQ
         question = Question.objects.get(id=request.POST.get('idQ'))
         answers = Answer.objects.filter(question=question.id)
         answers = answers.filter(correct=True)
         correct_answer = answers[0]
         correct_answer.correct = False
-        """La marco como incorrecta"""
+        # La marco como incorrecta
         correct_answer.save()
-        """A la nueva resuesta la pongo como correcta"""
+        # A la nueva resuesta la pongo como correcta
         answer = Answer.objects.get(id=request.POST.get('idA'))
         answer.correct = True
         answer.save()
@@ -165,14 +163,16 @@ def edit_ans(request):
 
 
 @csrf_exempt
-def delete_suggestion(request):
+def accept_suggestion(request):
     """
-       Elimina una seugerencia de pregunta.
+    Aceptar una sugerencia de un usuario
+    :param request: Request
+    :return: HttpResponse
     """
     if request.is_ajax() and request.POST:
-        question = Question.objects.get(id=request.POST.get('id'))
-        question.delete()
-        report.save()
-        return HttpResponse("Deleted")
+        question = Question.objects.get(id=request.POST.get('idQ'))
+        question.available = True
+        question.save()
+        return HttpResponse("Added suggestion")
     else:
-        return HttpResponse("Not deleted")
+        return HttpResponse("Error!")
