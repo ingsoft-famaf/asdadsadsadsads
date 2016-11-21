@@ -1,8 +1,8 @@
-from django.forms import Form, ModelForm, FileField, DecimalField
 from django import forms
-from .models import Subject, Topic, Question, Answer, QuestionSnapshot
+from .models import Subject, Topic, Answer
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+import customWidget
 
 def get_subjects():
     subjects = Subject.objects.all()
@@ -31,7 +31,8 @@ class SubjectForm(forms.Form):
 
 class MultipleTopicForm(forms.Form):
     topic = forms.MultipleChoiceField(choices=get_subjects(),
-                                      widget=forms.CheckboxSelectMultiple)
+                                      required=False,
+                                      widget=customWidget.CheckboxSelectMultiple)
 
     def __init__(self, ids, *args, **kwargs):
         super(MultipleTopicForm, self).__init__(*args, **kwargs)
@@ -57,7 +58,7 @@ class ConfigForm(forms.Form):
             [MaxValueValidator(max_quantity)]
 
 
-class ExamForm(ModelForm):
+class ExamForm(forms.ModelForm):
 
     answer = forms.ModelChoiceField(required=True, widget=forms.RadioSelect,
                                     queryset=Answer.objects.all())
