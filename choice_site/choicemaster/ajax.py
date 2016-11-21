@@ -17,7 +17,8 @@ def suggestion(request):
 
         correct = request.POST.get("correct")
         question = request.POST.get("question")
-        topic = Topic.objects.get(topic_title="Grafos")
+        topic_id = request.POST.get('topic')
+        topic = Topic.objects.get(pk=topic_id)
         quest = Question.objects.create(question_text=question,topic=topic,
                                         available=False)
         for i, val in enumerate(list):

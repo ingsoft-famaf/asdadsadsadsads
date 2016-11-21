@@ -91,6 +91,10 @@ class UploadQuestionForm(forms.Form):
     xmlfile = forms.FileField(label='Choose XML file')
 
 
-# class TopicsForm(forms.Form):
-#    topic_field = forms.ChoiceField(choices=TOPICS, widget=forms.Select(
-#        attrs={'onchange': "this.form.submit();"}))
+class SuggestQuestionForm(forms.Form):
+    subject = forms.ModelChoiceField(required=True,
+                                     widget=forms.Select(attrs={'onchange':
+                                                                'get_topics('
+                                                                ');'}),
+                                     queryset=Subject.objects.all())
+    topic = forms.ChoiceField(choices=TOPICS)

@@ -35,21 +35,28 @@ def add_question(request):
     """
     
     context = dict()
-    if request.method == 'POST':
-        form = UploadQuestionForm(request.POST, request.FILES)
-        # if form.is_valid():
-        topic = request.POST.get('topic')
-        file = request.FILES['xmlfile']
-        if topic > 0:
-            result = parse_xml_question(file, topic)
-            if result['status']:
-                return redirect('index')
-            else:
-                form = UploadQuestionForm()
-                context['form'] = form
-                context['message'] = result['message']
+    if request.user.is_staff:
+        if request.method == 'POST':
+            form = UploadQuestionForm(request.POST, request.FILES)
+            # if form.is_valid():
+            topic = request.POST.get('topic')
+            file = request.FILES['xmlfile']
+            if topic > 0:
+                result = parse_xml_question(file, topic)
+                if result['status']:
+                    return redirect('index')
+                else:
+                    form = UploadQuestionForm()
+        else:
+            form = UploadQuestionForm()
+            context['form'] = form
+
+        return render(request, 'choicemaster/add/question.html', context)
+
     else:
-        return render(request, 'choicemaster/add/suggestion.html')
+        form = SuggestQuestionForm()
+        context['form'] = form
+        return render(request, 'choicemaster/add/suggestion.html', context)
 
 
 def report(request):
@@ -147,7 +154,13 @@ def configure_exam3(request, exam_id):
             e.save()
             return redirect('resolve_exam', exam_id=exam_id)
     else:
-        form = ConfigForm(max_quantity)
+        if max_quantity > 0:
+            form = ConfigForm(max_quantity)
+        else:
+            message = "Sorry there are not questions about" + \
+                          " those topics yet! We invite you to suggest some on the Suggest a question section"   
+            return render(request, 'choicemaster/index.html', {'message': message})        
+
 
     context['form'] = form
     return render(request, 'choicemaster/exam/configure_exam3.html', context)

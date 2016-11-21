@@ -35,6 +35,7 @@ function send_question() {
     var list= [];
     var correct = -1;
     var question = document.getElementById("question").value;
+    var topic = document.getElementById("id_topic").value;
     var values = document.getElementById("bool").querySelectorAll(".value");
     var x = document.getElementById("bool").querySelectorAll(".correct")
     for (j; j < i; j++){
@@ -56,12 +57,31 @@ function send_question() {
                 type: "POST",
                 url: "/ajax/suggestion/send/",
                 dataType: "json",
-                data: {'list':jsonText , 'correct':correct, 'question':question}
+                data: {'list':jsonText , 'correct':correct, 'question':question, 'topic':topic}
             });
         location.reload(false);
         alert("Question submitted correctly");
     }
 
+}
+
+function get_topics() {
+    var frm = $('#subject_form');
+    var e = document.getElementById("id_subject");
+    var ids = e.value;
+    console.log("ids =", ids);
+    $.ajax({
+        type: 'POST',
+        url: '/ajax_view/',
+        dataType: 'json',
+        data: {'ids': ids},
+        success: function(data) {
+            var topics = data.topics;
+            console.log("topics:", topics);
+            $('#id_topic').html(topics);
+            console.log("success!");
+        }
+    });
 }
 
 </script>
@@ -77,6 +97,10 @@ function send_question() {
     <body>
         <h1>Suggest question</h1>
         <br> </br>
+        <h3><p>Select the subject:</p></h3>
+        <p> {{ form.subject }} </p>
+        <h3><p>Select the topic:</p></h3>
+        <p> {{ form.topic }} </p>
          Question   <input type="text" required, id="question">
         <br> </br>
         <span style="padding-right: 50px;"> Answers </span>
