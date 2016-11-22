@@ -1,23 +1,35 @@
 {% extends 'choicemaster/base.html' %}
 
-
-
 {% block content %}
     {% if request.user.get_username %}
-        <h2>Hello {{ request.user.get_username }}!</h2>
-        Welcome. What do you want to exercise today?<br>
-        <p><td><a class="light medium-text" href="/configure1">Take an exam</a></td></p>
-        <p><td><a class="light medium-text" href="/statistics/subjects">Check your results</a></td></p>
+        <h3>What do you want to do?</h3>
+        <table style="width: 50%">
+            <tr>
+                <td><a class="light medium-text" href="/configure1">Take an exam</a></td>
+                <td><a class="light medium-text" href="/statistics/subjects">Check your results</a></td>
+            </tr>
+        </table>
+        {% if exam_finished %}
+            <br>
+            <h3>Results Report</h3>
+            <div id="conclusion">
+                <span class="light medium-text">Congrats. You're done!</span>
+                <br>
+                <br>
+                <span><a href="{% url 'exam_detail' exam_id %}"><b>Click here</b></a> to go to the exam detail.</span>
+                <br>
+                {% if passed %}
+                    <span class="green-text">You passed the exam!</span>
+                {% else %}
+                    <span class="red-text">You did not pass the exam. :(</span>
+                {% endif %}
+                <br>
+                <span>Out of {{no_questions}} questions, you answered {{no_correct_answers}} correctly, for a final grade of {{result}}%.</span>
+            </div>
+        {% endif %}
     {% else %}
         <h2>Hello friend!</h2>
         <br>
         Welcome. You should think about logging in.
-    {% endif %}
-    <p></p>
-    {% if answer %}
-        <div>
-        Term examination <p></p>
-        {{answer}}
-        </div>
     {% endif %}
 {% endblock %}

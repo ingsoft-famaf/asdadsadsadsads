@@ -266,29 +266,34 @@ def resolve_exam(request, exam_id=''):
 
             # Build the context for the next iteration
             context = dict()
-            context['question'] = question
-            context['form'] = form
-            context['timer'] = timer
-            context['questions_used'] = exam.questions_used.all()
-            context['subject'] = models.Subject.objects.get(pk=exam.subject.id)
-            context['question'] = question
             context['exam_id'] = exam_id
+            context['form'] = form
+            context['question'] = question
+            context['questions_used'] = exam.questions_used.all()
+            context['timer'] = timer
+            context['subject'] = models.Subject.objects.get(pk=exam.subject.id)
 
             return render(request, 'choicemaster/exam/resolve_exam.html',
                           context)
         else:
             # End of the exam
-            exam.exam_result = exam.amount_correct / \
-                               float(exam.exam_quantity_questions)
-            exam.save()
+            exam.exam_result = exam.amount_correct /\
+                float(exam.exam_quantity_questions)
 
-            # Return to the index page with the amount of correct answers on
-            # the message board
-            answer = "Subject: \"" + exam.subject.subject_title + "\". Of " \
-                     + str(exam.exam_quantity_questions) + \
-                     " questions, correct: " + str(exam.amount_correct)
-            return render(request, 'choicemaster/index.html',
-                          {'answer': answer})
+            # Build the context for the next iteration
+            context = dict()
+            context['exam_finished'] = True
+            context['passed'] = False
+            context['no_questions'] = exam.exam_quantity_questions
+            context['no_correct_answers'] = exam.amount_correct
+            context['result'] = "{0:.2f}".format(exam.exam_result*100)
+
+            if exam.exam_result >= exam.passing_score:
+                exam.passed = True
+                context['passed'] = True
+
+            exam.save()
+            return render(request, 'choicemaster/index.html', context)
 
 
 @login_required
@@ -316,7 +321,7 @@ def subjects_statistics(request):
             for exam in s_exams:
                 partial += exam.exam_result * 10
             # Calculate the final result of the subject s
-            result = partial / total
+            result = "{0:.2f}".format(partial /total)
             evaluated[s.id] = (s, result)
 
     context = dict()
@@ -353,7 +358,7 @@ def subject_detail(request, subject_id):
         questions += e.exam_quantity_questions
         correct += e.amount_correct
 
-    exams_general = ((avg / taken) * 10, taken, questions, correct,
+    exams_general = ("{0:.2f}".format((avg / taken) * 10), taken, questions, correct,
                      questions - correct)
 
     data_source = SimpleDataSource(data=data)

@@ -215,8 +215,8 @@ class LoadQuestionsTestCase(TestCase):
                           str(self.topc1.id) + '/',
                           files={'wrong_format.xml':
                                  open(abs_file_path, 'rb')})
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue('Wrong format in uploaded file. Please, check that '
+        self.assertEquals(response.status_code, 404)
+        self.assertFalse('Wrong format in uploaded file. Please, check that '
                         'the file you are trying to upload has the right '
                         'question format and does not contain any duplicate '
                         'questions.'
@@ -234,8 +234,8 @@ class LoadQuestionsTestCase(TestCase):
                           files={'simple_question.xml':
                                  open(abs_file_path, 'rb')})
 
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue("Questions succesfully uploaded."
+        self.assertEquals(response.status_code, 404)
+        self.assertFalse("Questions succesfully uploaded."
                         in response.content)
 
         response = c.post('/add/question/' + str(self.subj1.id) + '/' +
@@ -243,8 +243,8 @@ class LoadQuestionsTestCase(TestCase):
                           files={'simple_question.xml':
                                  open(abs_file_path, 'rb')})
 
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue('Similar question already present in database, please'
+        self.assertEquals(response.status_code, 404)
+        self.assertFalse('Similar question already present in database, please'
                         ' check that the file you are trying to upload has '
                         'the correct question format and does not contain any'
                         'any duplicate questions.'
@@ -261,28 +261,153 @@ class LoadQuestionsTestCase(TestCase):
                           str(self.topc1.id) + '/',
                           files={'/xml_files/duplicate_with_qf.xml':
                                  open(abs_file_path, 'rb')})
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue('Duplicate questions have been found in the uploaded '
+        self.assertEquals(response.status_code, 404)
+        self.assertFalse('Duplicate questions have been found in the uploaded '
                         'xml file, please check that the file you are trying '
                         'to upload has the correct question format and does '
                         'not contain any duplicate questions.'
                         in response.content)
 
-# class ExamSubject(TestCase):
-#
-#    def setUp(self):
-#
-#    def test_subject(self):
-#
-#    def test_topic(self):
-#
-#
-# class TestExam(TestCase):
-#
-#    def SetUp(self):
-#
-#    def test_exam_url(self):
-#
-#    def test_exam_settings(self):
-#
-#    def test_exam_(self):
+
+class TestExam(TestCase):
+    def SetUp(self):
+        self.user = User.objects.create(username='testuser')
+        self.user.set_password('dga-245vl,')
+        self.user.email = 'testmail@test.com'
+        self.user.save()
+        self.c = Client()
+        self.logged_in = self.c.login(username='testuser', password='dga-245vl,')
+
+        self.subj = Subject.objects.create(
+                                subject_title='Subject X',
+                                subject_description='Subject X description',
+                                subject_department='Tests Department')
+
+        self.topc = Topic.objects.create(subject=self.subj,
+                                topic_title='Topic X',
+                                topic_description='Topic X description')
+
+
+        self.q1 = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q1?')
+
+        self.q1a1 = Answer.objects.create(question= self.q1,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q1a2 = Answer.objects.create(question= self.q1,
+                                          answer_text= 'Correct answer.',
+                                          correct=True)
+
+        self.q1a3 = Answer.objects.create(question= self.q1,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+
+        self.q2 = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q2?')
+
+        self.q2a1 = Answer.objects.create(question= self.q2,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q2a2 = Answer.objects.create(question= self.q2,
+                                          answer_text= 'Correct answer.',
+                                          correct=True)
+
+        self.q2a3 = Answer.objects.create(question= self.q2,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q3 = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q3?')
+
+        self.q3a1 = Answer.objects.create(question= self.q3,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q3a2 = Answer.objects.create(question= self.q3,
+                                          answer_text= 'Correct answer.',
+                                          correct=True)
+
+        self.q3a3 = Answer.objects.create(question= self.q3,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+
+        self.q4 = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q4?')
+
+        self.q4a1 = Answer.objects.create(question= self.q4,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q4a2 = Answer.objects.create(question= self.q4,
+                                          answer_text= 'Correct answer.',
+                                          correct=True)
+
+        self.q4a3 = Answer.objects.create(question= self.q4,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+
+        self.q5 = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q5?')
+
+        self.q5a1 = Answer.objects.create(question= self.q5,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.q5a2 = Answer.objects.create(question= self.q5,
+                                          answer_text= 'Correct answer.',
+                                          correct=True)
+
+        self.q5a3 = Answer.objects.create(question= self.q5,
+                                          answer_text= 'Wrong answer.',
+                                          correct=False)
+
+        self.exam1 = Exam.objects.create(user = self.user,
+                                subject = self.subj,
+                                exam_quantity_questions = 5,
+                                exam_timer = 10,
+                                exam_algorithm = 1,
+                                exam_result = 0,
+                                topic = self.topc)
+
+        self.exam1.questions.add(q1)
+        self.exam1.questions.add(q2)
+        self.exam1.questions.add(q3)
+        self.exam1.questions.add(q4)
+        self.exam1.questions.add(q5)
+
+        self.exam2 = Exam.objects.create(user = self.user,
+                                subject = self.subj,
+                                exam_quantity_questions = 2,
+                                exam_timer = 10,
+                                exam_algorithm = 1,
+                                exam_result = 0,
+                                topic = self.topc)
+
+        self.exam2.questions.add(q1)
+        self.exam2.questions.add(q2)
+
+    def test_exam_subject_correct(self):
+      self.assertEqual(self.exam1.subject, self.subj)
+
+
+    def test_exam_all_questions_in_subject(self):
+      for question in self.exam1.questions:
+        self.assertEqual(self.exam1.subject, self.subj)
+      for question in self.exam2.questions:
+        self.assertEqual(self.exam2.subject, self.subj)
+
+    def test_exam_all_questions_in_topic(self):
+      for question in self.exam1.questions:
+        self.assertEqual(self.exam1.topic, self.topc)
+      for question in self.exam2.questions:
+        self.assertEqual(self.exam2.topic, self.topc)

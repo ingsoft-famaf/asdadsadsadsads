@@ -107,13 +107,25 @@
 }
 
 .green {
-  background-color: #5FBA7D;
+  background-color: $green;
 }
 
 .yellow {
-  background-color: #E0B72F;
+  background-color: $yellow;
 }
 
 .red {
-  background-color: #DD5F68;
+  background-color: $red;
+}
+
+.green-text {
+  color: $green;
+}
+
+.yellow-text {
+  color: $yellow;
+}
+
+.red-text {
+  color: $red;
 }

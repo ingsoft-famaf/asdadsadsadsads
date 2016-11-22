@@ -53,6 +53,8 @@ class Exam(models.Model):
     mistakes = models.TextField(null=True, default='{}')
     # JSON - serialized (text) version of the list
     amount_correct = models.IntegerField(default=0)
+    passing_score = models.FloatField(default=0.6)
+    passed = models.BooleanField(default=False)
 
     def __unicode__(self):
         """
