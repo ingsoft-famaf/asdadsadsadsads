@@ -62,7 +62,12 @@
                                     No complaints.
                                 {% endif %}
                             </div>
+                        {% else %}
+                            <h3>User</h3>
+                            <a class="section-a" href="{% url 'add_question' %}">Suggest a questions.</a>
                         {% endif %}
+
+
                         {% if message %}
                             <div class="section">
                                 <h3>Messages</h3>
