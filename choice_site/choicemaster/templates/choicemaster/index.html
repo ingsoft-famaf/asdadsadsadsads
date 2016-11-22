@@ -16,8 +16,6 @@
                 <span class="light medium-text">Congrats. You're done!</span>
                 <br>
                 <br>
-                <span><a href="/statistics/exam/{{ exam_id }}/"><b>Click here</b></a> to go to the exam detail.</span>
-                <br>
                 {% if passed %}
                     <span class="green-text">You passed the exam!</span>
                 {% else %}
@@ -25,6 +23,8 @@
                 {% endif %}
                 <br>
                 <span>Out of {{no_questions}} questions, you answered {{no_correct_answers}} correctly, for a final grade of {{result}}%.</span>
+                <span><a href="/statistics/exam/{{ exam_id }}/"><b>Click here</b></a> to go to the exam detail.</span>
+                <br>
             </div>
         {% endif %}
     {% else %}
