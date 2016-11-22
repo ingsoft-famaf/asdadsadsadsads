@@ -9,6 +9,12 @@ from . import upload
 
 @csrf_exempt
 def suggestion(request):
+    """
+    Generates a question with its associated choices from the suggestion
+    received from the user
+    :param request: Request
+    :return: HttpResponse
+    """
     if request.method == 'POST' and request.is_ajax:
         lst = json.loads(request.POST.get('lst'))
 
@@ -44,6 +50,11 @@ def suggestion(request):
 
 @csrf_exempt
 def add_report(request):
+    """
+    Adds a report filled by a user to the site's reports record
+    :param request: Request
+    :return: HttpResponse
+    """
     if request.method == 'POST' and request.is_ajax:
         deq = request.POST.get('description')
         idq = request.POST.get('idq')
@@ -58,6 +69,11 @@ def add_report(request):
 
 @csrf_exempt
 def ajax_view(request):
+    """
+    Shows the topics associated to a given subject
+    :param request: Request
+    :return: HttpResponse
+    """
     if request.method == 'POST' and request.is_ajax:
         topics = Topic.objects.all().filter(subject_id=request.POST.get('ids'))
         innerHTML = ''
@@ -74,6 +90,11 @@ def ajax_view(request):
 
 @csrf_exempt
 def get_correct(request):
+    """
+    Gets the correct answer to a given question
+    :param request: Request
+    :return: HttpResponse
+    """
     if request.method == 'POST' and request.is_ajax:
         question_id = request.POST.get('idq')
         chosen = request.POST.get('chosen')
@@ -89,6 +110,12 @@ def get_correct(request):
 
 @csrf_exempt
 def autoreport(request):
+    """
+    Generates a report automatically for a denounced question as repeated in
+    an exam
+    :param request: Request
+    :return: HttpResponse
+    """
     if request.method == 'POST' and request.is_ajax:
         txt = Question.objects.get(id=request.POST.get('id1')).question_text
         deq = "Esta pregunta esta duplicada con la pregunta con \"" + txt + \
@@ -106,8 +133,10 @@ def autoreport(request):
 @csrf_exempt
 def delete_report(request):
     """
-       Cambia el estado de un reporte a evaluado, lo elimina de los reportes
-        pendientes.
+    Changes the state of an evaluated report, removes it from the list of
+    pending reports.
+    :param request: Request
+    :return: HttpResponse
     """
     if request.is_ajax() and request.POST:
         report = Report.objects.get(id=request.POST.get('id'))
@@ -121,9 +150,11 @@ def delete_report(request):
 @csrf_exempt
 def delete_question(request):
     """
-        Elimina la pregunta y todas sus respuestas asociadas, asi tambien
-        elimina el reporte (no cambia el estado) ya que pierde la relacion
-        con question.
+    Eliminates the question and all its associated answers, just like the
+    report that denounced the question (it does not change its state) given
+    that it loses its link with the question.
+    :param request: Request
+    :return: HttpResponse
     """
     if request.is_ajax() and request.POST:
         question = Question.objects.get(id=request.POST.get('idQ'))
@@ -136,7 +167,9 @@ def delete_question(request):
 @csrf_exempt
 def delete_answer(request):
     """
-        Elimina una respuesta.
+    Removes an answer from a question.
+    :param request: Request
+    :return: HttpResponse
     """
     if request.is_ajax() and request.POST:
         Answer.objects.get(id=request.POST.get('idA')).delete()
@@ -148,8 +181,10 @@ def delete_answer(request):
 @csrf_exempt
 def edit_question(request):
     """
-        Cambia la pregunta. Se pide que ingrese la nueva pregunta y se la
-        remplaza, ademas cambia el estado del reporte por evaluated.
+    Changes the question. It asks to enter the new question and replaces it,
+    also changes the report state to 'evaluated'
+    :param request: Request
+    :return: HttpResponse
     """
     if request.is_ajax() and request.POST:
         question = Question.objects.get(id=request.POST.get('id'))
@@ -164,7 +199,9 @@ def edit_question(request):
 @csrf_exempt
 def edit_correct(request):
     """
-        Cambia la opcion correcta de la pregunta.
+    Changes the correct choice of a question to another one.
+    :param request: Request
+    :return: HttpResponse
     """
     if request.is_ajax() and request.POST:
         # Busco la respuesta correta de la pregunta con id = idQ
@@ -187,7 +224,9 @@ def edit_correct(request):
 @csrf_exempt
 def edit_ans(request):
     """
-        Cambia una repuesta y actualiza el estado del reporte.
+    Changes an answer and updates the report state.
+    :param request: Request
+    :return: HttpResponse
     """
     if request.is_ajax() and request.POST:
         ans = Answer.objects.get(id=request.POST.get('id'))
@@ -202,7 +241,7 @@ def edit_ans(request):
 @csrf_exempt
 def accept_suggestion(request):
     """
-    Aceptar una sugerencia de un usuario
+    Accepts a suggestion from a user.
     :param request: Request
     :return: HttpResponse
     """

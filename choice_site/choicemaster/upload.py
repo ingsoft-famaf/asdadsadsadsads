@@ -9,6 +9,8 @@ def questions_already_exist(questions_xml, topic_id):
     Returns a dictionary with a key 'status' that is True if exists a similar
     question, a 'question_id' from the question that would be equal and
     a 'topic_id' from the topic the questions are in.
+    :param request: list, str
+    :return: dict
     """
     result = dict()
     result['status'] = False
@@ -45,6 +47,8 @@ def parse_xml_question(xmlfile, topic_id):
     """
     Parse the xml uploaded by the admin user to create and populate questions
     with their respective answers.
+    :param request: file, str
+    :return: dict
     """
     result = dict()
     result['status'] = True

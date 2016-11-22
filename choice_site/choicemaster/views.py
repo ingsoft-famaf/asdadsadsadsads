@@ -17,6 +17,8 @@ def index(request, message=''):
     """
     Simple index view that renders a message passed by some request and
     returns it as a HTML response
+    :param request: Request, str
+    :return: View
     """
     if message:
         context = {'message': message}
@@ -32,8 +34,9 @@ def add_question(request):
     """
     Get the list of available subjects from request and return them rendered
     as a response with the corresponding template
+    :param request: Request
+    :return: View
     """
-    
     context = dict()
     if request.user.is_staff:
         if request.method == 'POST':
@@ -90,6 +93,8 @@ def configure_exam1(request):
     request. Retrieve the subject from the POST data and create an exam
     instance related to the user to redirect it to the template in which he
     chooses the topics he wants to include in the exam
+    :param request: Request
+    :return: View
     """
     if request.method == 'POST':
         user = None
@@ -114,6 +119,8 @@ def configure_exam2(request, exam_id):
     Get a list of topics from request and include them in the exam given by
     exam_id. Save it in the exam object and redirect it to the next exam
     configuration template
+    :param request: Request, str
+    :return: View
     """
     e = models.Exam.objects.get(pk=exam_id)
     if not e.closed:
@@ -147,6 +154,8 @@ def configure_exam3(request, exam_id):
     user. Raise an error message in case the required number of questions is
     greater than the number of questions available in the database for such
     subject
+    :param request: Request, str
+    :return: View
     """
     e = models.Exam.objects.get(pk=exam_id)
     if not e.closed:
@@ -203,11 +212,15 @@ def resolve_exam(request, exam_id=''):
     algorithm). Generate an ExamView for such settings, fill the exam object
     with questions and then choose the first question from the first topic in
     order to display it in the resolve_exam template
+
     2. request method is POST, which means it has been triggered by a solution
     submitted in the front end. Check whether the answer given by the user is
     right or wrong to keep a record to be used in the algorithm to display questions
     afterwards. Also, keep track of remaining time and use it to pass to the
     next question in case it is over.
+
+    :param request: Request, str
+    :return: View
     """
     if request.method != 'POST':
         exam = models.Exam.objects.get(pk=exam_id)

@@ -6,6 +6,11 @@ import customWidget
 
 
 def get_topics(ids):
+    """
+    Get sorted list of topics from the given ID
+    :param request: str
+    :return: list
+    """
     topics = Topic.objects.filter(subject_id=ids)
     choices = dict()
     for t in topics:
