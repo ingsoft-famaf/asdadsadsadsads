@@ -172,105 +172,8 @@ class UserTestCase(TestCase):
         self.assertEquals(response.status_code, 200)
 
 
-class LoadQuestionsTestCase(TestCase):
-
-    def setUp(self):
-        """
-        Create a new admin user, and test subject and topic in which to test
-        different questions files
-        """
-
-        self.user_staff = User.objects.create_superuser(username='teststaff',
-                                                        email='adminstaff@sta'
-                                                              'ff.com',
-                                                        password='123456789a')
-        self.user_staff.save()
-
-        self.subj1 = Subject.objects.create(subject_title='Test Subject',
-                                            subject_description='Test subject '
-                                                                'description',
-                                            subject_department='Test '
-                                                                'Department')
-
-        self.topc1 = Topic.objects.create(subject=self.subj1,
-                                          topic_title='Test topic',
-                                          topic_description='Test topic '
-                                                            'description')
-        self.c = Client()
-        self.response = self.c.post('/accounts/login/',
-                                    {'username': self.user_staff.username,
-                                     'password': self.user_staff.password})
-
-        self.response = self.c.get('/add/question/' + str(self.subj1.id) +
-                                   '/' + str(self.topc1.id) + '/')
-
-    def test_question_file_wrong_format(self):
-        c = Client()
-
-        script_dir = os.path.dirname(__file__)
-        rel_path = "xml_files/wrong_format.xml"
-        abs_file_path = os.path.join(script_dir, rel_path)
-
-        response = c.post('add/question/' + str(self.subj1.id) + '/' +
-                          str(self.topc1.id) + '/',
-                          files={'wrong_format.xml':
-                                 open(abs_file_path, 'rb')})
-        self.assertEquals(response.status_code, 404)
-        self.assertFalse('Wrong format in uploaded file. Please, check that '
-                        'the file you are trying to upload has the right '
-                        'question format and does not contain any duplicate '
-                        'questions.'
-                        in response.content)
-
-    def test_duplicate_question_with_db(self):
-        c = Client()
-
-        script_dir = os.path.dirname(__file__)
-        rel_path = "xml_files/simple_question.xml"
-        abs_file_path = os.path.join(script_dir, rel_path)
-
-        response = c.post('/add/question/' + str(self.subj1.id) + '/' +
-                          str(self.topc1.id) + '/',
-                          files={'simple_question.xml':
-                                 open(abs_file_path, 'rb')})
-
-        self.assertEquals(response.status_code, 404)
-        self.assertFalse("Questions succesfully uploaded."
-                        in response.content)
-
-        response = c.post('/add/question/' + str(self.subj1.id) + '/' +
-                          str(self.topc1.id) + '/',
-                          files={'simple_question.xml':
-                                 open(abs_file_path, 'rb')})
-
-        self.assertEquals(response.status_code, 404)
-        self.assertFalse('Similar question already present in database, please'
-                        ' check that the file you are trying to upload has '
-                        'the correct question format and does not contain any'
-                        'any duplicate questions.'
-                        in response.content)
-
-    def test_duplicate_question_with_question_file(self):
-        c = Client()
-
-        script_dir = os.path.dirname(__file__)
-        rel_path = "xml_files/duplicate_with_qf.xml"
-        abs_file_path = os.path.join(script_dir, rel_path)
-
-        response = c.post('/add/question/' + str(self.subj1.id) + '/' +
-                          str(self.topc1.id) + '/',
-                          files={'/xml_files/duplicate_with_qf.xml':
-                                 open(abs_file_path, 'rb')})
-        self.assertEquals(response.status_code, 404)
-        self.assertFalse('Duplicate questions have been found in the uploaded '
-                        'xml file, please check that the file you are trying '
-                        'to upload has the correct question format and does '
-                        'not contain any duplicate questions.'
-                        in response.content)
-
-
 class TestExam(TestCase):
-    def SetUp(self):
+    def setUp(self):
         self.user = User.objects.create(username='testuser')
         self.user.set_password('dga-245vl,')
         self.user.email = 'testmail@test.com'
@@ -375,39 +278,45 @@ class TestExam(TestCase):
                                 subject = self.subj,
                                 exam_quantity_questions = 5,
                                 exam_timer = 10,
-                                exam_algorithm = 1,
-                                exam_result = 0,
-                                topic = self.topc)
+                                exam_algorithm = 1)
 
-        self.exam1.questions.add(q1)
-        self.exam1.questions.add(q2)
-        self.exam1.questions.add(q3)
-        self.exam1.questions.add(q4)
-        self.exam1.questions.add(q5)
+        self.exam1.topic.add(self.topc)
+
+        self.exam1.questions.add(self.q1)
+        self.exam1.questions.add(self.q2)
+        self.exam1.questions.add(self.q3)
+        self.exam1.questions.add(self.q4)
+        self.exam1.questions.add(self.q5)
 
         self.exam2 = Exam.objects.create(user = self.user,
                                 subject = self.subj,
                                 exam_quantity_questions = 2,
                                 exam_timer = 10,
-                                exam_algorithm = 1,
-                                exam_result = 0,
-                                topic = self.topc)
+                                exam_algorithm = 1)
 
-        self.exam2.questions.add(q1)
-        self.exam2.questions.add(q2)
+        self.exam1.topic.add(self.topc)
+
+        self.exam2.questions.add(self.q1)
+        self.exam2.questions.add(self.q2)
 
     def test_exam_subject_correct(self):
       self.assertEqual(self.exam1.subject, self.subj)
 
 
     def test_exam_all_questions_in_subject(self):
-      for question in self.exam1.questions:
-        self.assertEqual(self.exam1.subject, self.subj)
-      for question in self.exam2.questions:
-        self.assertEqual(self.exam2.subject, self.subj)
+      exam1_questions = self.exam1.questions.all()
+      exam2_questions = self.exam2.questions.all()
+      for question in exam1_questions:
+        question_subject = question.topic.subject
+        self.assertEqual(question_subject, self.subj)
+      for question in exam2_questions:
+        question_subject = question.topic.subject
+        self.assertEqual(question_subject, self.subj)
 
     def test_exam_all_questions_in_topic(self):
-      for question in self.exam1.questions:
-        self.assertEqual(self.exam1.topic, self.topc)
-      for question in self.exam2.questions:
-        self.assertEqual(self.exam2.topic, self.topc)
+      exam1_questions = self.exam1.questions.all()
+      exam2_questions = self.exam2.questions.all()
+      for question in exam1_questions:
+        self.assertEqual(question.topic, self.topc)
+      for question in exam2_questions:
+        self.assertEqual(question.topic, self.topc)

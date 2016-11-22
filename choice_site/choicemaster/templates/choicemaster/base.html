@@ -23,8 +23,8 @@
                     {% if request.user.get_username %}
                         <td><a class="light medium-text" href="/accounts/logout">Sign out</a></td>
                     {% else %}
-                        <td><a class="center" href="/accounts/login">Sign in</a></td>
-                        <td><a class="center" href="/accounts/signup">Sign up</a></td>
+                        <a href="/accounts/login" title="Sign in" class="btn btn-default navbar-btn navbar-right" style="margin-right: 10px; margin-top: -30px;">Sign in</a>
+                        <a href="/accounts/signup" title="Sign up" class="btn btn-info navbar-btn navbar-right" style="margin-right: 10px; margin-top: -30px;">Sign up</a>
                     {% endif %}
                 </table>
             </div>
@@ -39,12 +39,6 @@
 
                 <div class="col-md-3">
                     {% if request.user.get_username %}
-                        {% if exams %}
-                        <div class="section">
-                            <h3>Last exams</h3>
-                            <p>Mumbo jumbo</p>
-                        </div>
-                        {% endif %}
                         {% if request.user.is_staff %}
                             <div class="section">
                                 <h3>Admin</h3>
