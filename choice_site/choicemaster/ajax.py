@@ -1,8 +1,37 @@
-
+import sys
 from django.shortcuts import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from models import Topic, Answer, Question, Report
 import json
+
+
+
+@csrf_exempt
+def suggestion(request):
+
+    if request.method == 'POST' and request.is_ajax:
+        """ Parseo la lista """
+        list = request.POST.get("list")
+        list = list[1:-1]
+        list = list.split(",")
+
+        correct = request.POST.get("correct")
+        question = request.POST.get("question")
+        topic_id = request.POST.get('topic')
+        topic = Topic.objects.get(pk=topic_id)
+        quest = Question.objects.create(question_text=question,topic=topic,
+                                        available=False)
+        for i, val in enumerate(list):
+            list[i] = list[i][1:-1]
+            if correct == i:
+                Answer.objects.create(answer_text= list[i], question=quest,
+                                      correct=True)
+            else:
+                Answer.objects.create(answer_text= list[i], question=quest,
+                                      correct=False)
+        return HttpResponse("OK")
+    else:
+        return HttpResponse("Something went wrong")
 
 
 @csrf_exempt
