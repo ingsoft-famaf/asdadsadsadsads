@@ -1,117 +1,112 @@
-
-<script>
-    var i = 0;
-function add_ans() {
-    if(i<10) {
-        i += 1;
-        document.getElementById("bool").innerHTML += '<span style="padding-right: 5px;">Add answer</span>';
-
-        var x = document.createElement("INPUT");
-        x.setAttribute("type", "text");
-        x.setAttribute("id", "value" + String(i));
-        x.setAttribute("class", "value");
-        x.setAttribute("display", "inline");
-        x.setAttribute("margin-left", "40px");
-        x.setAttribute("margin-right", "40px");
-
-        document.getElementById("bool").appendChild(x);
-        document.getElementById("bool").innerHTML += '<span style="padding-right: 5px; style="padding-left: 5px;">  Correct?</span>';
-
-        var y = document.createElement("INPUT");
-        y.setAttribute("type", "radio");
-        y.setAttribute("name", "add");
-        y.setAttribute("display", "inline");
-        y.setAttribute("class", "correct");
-        y.setAttribute("id", "correct" + String(i));
-        document.getElementById("bool").appendChild(y);
-
-        document.getElementById("bool").innerHTML += '<br> </br>';
-    }
-}
-
-function send_question() {
-    var j = 0;
-    var k = 0;
-    var list= [];
-    var correct = -1;
-    var question = document.getElementById("question").value;
-    var topic = document.getElementById("id_topic").value;
-    var values = document.getElementById("bool").querySelectorAll(".value");
-    var x = document.getElementById("bool").querySelectorAll(".correct")
-    for (j; j < i; j++){
-        var text =values[j].value;
-        if(text && text.length != 0){
-           list[k] = text;
-           k +=1;
-           if(x[j].checked){
-                correct = j;
-            }
-       }
-    }
-    if(k < 1 || correct == -1 || question.length == 0){
-        alert("Error sending question");
-    }
-    else{
-         var jsonText = JSON.stringify(list);
-        $.ajax({
-                type: "POST",
-                url: "/ajax/suggestion/send/",
-                dataType: "json",
-                data: {'list':jsonText , 'correct':correct, 'question':question, 'topic':topic}
-            });
-        location.reload(false);
-        alert("Question submitted correctly");
-    }
-
-}
-
-function get_topics() {
-    var frm = $('#subject_form');
-    var e = document.getElementById("id_subject");
-    var ids = e.value;
-    console.log("ids =", ids);
-    $.ajax({
-        type: 'POST',
-        url: '/ajax_view/',
-        dataType: 'json',
-        data: {'ids': ids},
-        success: function(data) {
-            var topics = data.topics;
-            console.log("topics:", topics);
-            $('#id_topic').html(topics);
-            console.log("success!");
-        }
-    });
-}
-
-</script>
-
 {% extends 'choicemaster/base.html' %}
+
 {% block content %}
     {% load static %}
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Suggestion</title>
-    </head>
-    <body>
-        <h1>Suggest question</h1>
-        <br> </br>
-        <h3><p>Select the subject:</p></h3>
-        <p> {{ form.subject }} </p>
-        <h3><p>Select the topic:</p></h3>
-        <p> {{ form.topic }} </p>
-         Question   <input type="text" required, id="question">
-        <br> </br>
-        <span style="padding-right: 50px;"> Answers </span>
-        Add <Img src="{% static 'add.png' %}" onclick="add_ans()" height="22"  width="22">
-        <br> </br>
-        <div id="bool" display = "inline"> </div>
-        <span style="padding-left: 20px;"> Send <Img src="{% static 'send.png' %}" height="30" width="30" onclick="send_question()"> </span>
 
+    <script>
+        var i = 0;
+        function add_ans() {
+            if(i<10) {
+                i += 1;
+                document.getElementById("bool").innerHTML += '<span style="padding-right: 5px;">Add answer</span>';
+                var x = document.createElement("INPUT");
+                x.setAttribute("type", "text");
+                x.setAttribute("id", "value" + String(i));
+                x.setAttribute("class", "value");
+                x.setAttribute("display", "inline");
+                x.setAttribute("margin-left", "40px");
+                x.setAttribute("margin-right", "40px");
+                document.getElementById("bool").appendChild(x);
+                document.getElementById("bool").innerHTML += '<span style="padding-right: 5px; style="padding-left: 5px;">  Correct?</span>';
+                var y = document.createElement("INPUT");
+                y.setAttribute("type", "radio");
+                y.setAttribute("name", "add");
+                y.setAttribute("display", "inline");
+                y.setAttribute("class", "correct");
+                y.setAttribute("id", "correct" + String(i));
+                document.getElementById("bool").appendChild(y);
+                document.getElementById("bool").innerHTML += '<br> </br>';
+            }
+        }
 
+        function send_question() {
+            var j = 0;
+            var k = 0;
+            var lst = [];
+            var correct = -1;
+            var question = document.getElementById("question").value;
+            var topic = document.getElementById("id_topic").value;
+            var values = document.getElementById("bool").querySelectorAll(".value");
+            var x = document.getElementById("bool").querySelectorAll(".correct");
+            for (j; j < i; j++) {
+                var text = values[j].value;
+                if (text && (text.length != 0)) {
+                   lst.push(text);
+                   k +=1;
+                   if(x[j].checked){
+                        correct = j;
+                    }
+               }
+            }
+            if (k < 1 || correct == -1 || question.length == 0) {
+                alert("Error sending question");
+            } else {
+                var jsonText = JSON.stringify(lst);
+                $.ajax({
+                    type: "POST",
+                    url: "/ajax/suggestion/send/",
+                    dataType: "json",
+                    data: {'lst': jsonText , 'correct': correct,
+                        'question': question, 'topic': topic},
+                    success: function(data) {
+                        console.log("Iegamos");
+                        if (data['status'] == false) {
+                            $(location).attr('href','/index/');
+                        } else {
+                            document.getElementById("messages").value =
+                                "Question already present in database"
+                        }
+                    }
+                });
+                location.reload(false);
+                alert("Question submitted correctly");
+            }
+        }
 
-    </body>
-</html>
+    function get_topics() {
+        var frm = $('#subject_form');
+        var e = document.getElementById("id_subject");
+        var ids = e.value;
+        console.log("ids =", ids);
+        $.ajax({
+            type: 'POST',
+            url: '/ajax_view/',
+            dataType: 'json',
+            data: {'ids': ids},
+            success: function(data) {
+                var topics = data.topics;
+                console.log("topics:", topics);
+                $('#id_topic').html(topics);
+                console.log("success!");
+            }
+        });
+    }
+    </script>
 
+    <h1>Suggest question</h1>
+    <br>
+    <h3>Select the subject:</h3>
+    <p>{{ form.subject }}</p>
+    <h3>Select the topic:</h3>
+    <p>{{ form.topic }}</p>
+    <br>
+    <label class="medium-text">Question<br><input style="padding-left: 10px" type="text" required="" id="question"></label>
+    <br>
+    <span class="medium-text" style="padding-right: 50px;"><b>Answers</b></span>
+    <br>
+    <span class="light" style="padding-left: 20px">Add <img src="{% static 'add.png' %}" onclick="add_ans()" height="20"  width="20"></span>
+    <br>
+    <div id="bool" style="display: inline"></div>
+    <br>
+    <span class="light medium-text" style="padding-left: 20px;">Send <img src="{% static 'send.png' %}" height="40" width="40" onclick="send_question()"></span>
 {% endblock %}

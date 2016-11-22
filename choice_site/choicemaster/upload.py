@@ -5,7 +5,7 @@ import os
 
 def questions_already_exist(questions_xml, topic_id):
     """
-    From a list of questions, checks if any of them is already in the database.
+    From a list of strings, checks if any of them is already in the database.
     Returns a dictionary with a key 'status' that is True if exists a similar
     question, a 'question_id' from the question that would be equal and
     a 'topic_id' from the topic the questions are in.
@@ -15,7 +15,7 @@ def questions_already_exist(questions_xml, topic_id):
     result['topic_id'] = topic_id
 
     questions_db_texts = []
-    questions_xml_texts = []
+    questions_xml_processed = []
 
     questions_db = models.Question.objects.filter(topic_id=topic_id)
     # Add all the questions that are already on the database
@@ -25,19 +25,18 @@ def questions_already_exist(questions_xml, topic_id):
     # Add all questions that we want to add, one by one, checking an equal
     # question.
     for q in questions_xml:
-        q_text = q.text.strip()
-        if q_text in questions_db_texts:
+        if q in questions_db_texts:
             result['in_db'] = True
             result['status'] = True
-            qr = questions_db.get(question_text=q_text)
+            qr = questions_db.get(question_text=q)
             result['question'] = qr
             return result
-        elif q.text in questions_xml_texts:
+        elif q in questions_xml_processed:
             result['in_db'] = False
             result['status'] = True
             return result
         else:
-            questions_xml_texts.append(q.text)
+            questions_xml_processed.append(q)
 
     return result
 
@@ -93,9 +92,12 @@ def parse_xml_question(xmlfile, topic_id):
 
     # Create a list with the questions in root as its elements
     questions = root.findall('question')
+    questions_text = []
+    for q in questions:
+        questions_text.append(q.text.strip())
 
     # Check if every question already exists in the DB before adding them.
-    qae = questions_already_exist(questions, topic_id)
+    qae = questions_already_exist(questions_text, topic_id)
     if qae['status']:
         result['status'] = False
         if qae['in_db']:

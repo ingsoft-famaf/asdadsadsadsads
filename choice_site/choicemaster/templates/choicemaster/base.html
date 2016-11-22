@@ -67,13 +67,12 @@
                             <a class="section-a" href="{% url 'add_question' %}">Suggest a questions.</a>
                         {% endif %}
 
-
+                        <div id="messages" class="section">
                         {% if message %}
-                            <div class="section">
-                                <h3>Messages</h3>
-                                <p>{{ message }}</p>
-                            </div>
+                            <h3>Messages</h3>
+                            <p>{{ message }}</p>
                         {% endif %}
+                        </div>
                     {% endif %}
                 </div>
             </div>

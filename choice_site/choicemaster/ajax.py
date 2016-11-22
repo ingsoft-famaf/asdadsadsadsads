@@ -1,35 +1,43 @@
 import sys
-from django.shortcuts import HttpResponse
+from django.shortcuts import HttpResponse, redirect
 from django.views.decorators.csrf import csrf_exempt
 from models import Topic, Answer, Question, Report
 import json
+from . import upload
 
 
 
 @csrf_exempt
 def suggestion(request):
-
     if request.method == 'POST' and request.is_ajax:
-        """ Parseo la lista """
-        list = request.POST.get("list")
-        list = list[1:-1]
-        list = list.split(",")
+        lst = json.loads(request.POST.get('lst'))
 
-        correct = request.POST.get("correct")
-        question = request.POST.get("question")
+        correct = int(request.POST.get('correct'))
+        question = request.POST.get('question').strip()
         topic_id = request.POST.get('topic')
-        topic = Topic.objects.get(pk=topic_id)
-        quest = Question.objects.create(question_text=question,topic=topic,
-                                        available=False)
-        for i, val in enumerate(list):
-            list[i] = list[i][1:-1]
-            if correct == i:
-                Answer.objects.create(answer_text= list[i], question=quest,
-                                      correct=True)
-            else:
-                Answer.objects.create(answer_text= list[i], question=quest,
-                                      correct=False)
-        return HttpResponse("OK")
+
+        result = upload.questions_already_exist([question], topic_id)
+        if result['status'] == True:
+            data = {'status': True}
+            return HttpResponse(json.dumps(data),
+                                content_type='application/json')
+        else:
+            topic = Topic.objects.get(pk=topic_id)
+            quest = Question.objects.create(question_text=question, topic=topic,
+                                            available=False)
+
+            lst_len = len(lst)
+            for i in range(lst_len):
+                el = lst[i]
+                if correct == i:
+                    Answer.objects.create(answer_text=el, question=quest,
+                                          correct=True)
+                else:
+                    Answer.objects.create(answer_text=el, question=quest,
+                                          correct=False)
+            data = {'status': False}
+            return HttpResponse(json.dumps(data),
+                                content_type='application/json')
     else:
         return HttpResponse("Something went wrong")
 
