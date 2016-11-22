@@ -51,6 +51,7 @@ class Exam(models.Model):
     questions_used = models.ManyToManyField(Question, related_name="used")
     remaining = models.IntegerField(default=0)
     mistakes = models.TextField(null=True, default='{}')
+    closed = models.BooleanField(default=False)
     # JSON - serialized (text) version of the list
     amount_correct = models.IntegerField(default=0)
     passing_score = models.FloatField(default=0.6)
