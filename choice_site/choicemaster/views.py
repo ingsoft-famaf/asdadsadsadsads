@@ -55,10 +55,24 @@ def add_question(request):
 def report(request):
     """
     Pass on to the reports template, the number of reports not evaluated so far
+    :param request: Request
+    :return: View
     """
     context = dict()
     context['reports'] = Report.objects.exclude(report_state="E")
     return render(request, 'choicemaster/report.html', context)
+
+
+def suggestions(request):
+    """
+    Pass on to the suggested questions template, the number of questions
+    suggested so far
+    :param request: Request
+    :return: View
+    """
+    context = dict()
+    context['questions'] = models.Question.objects.filter(available=False)
+    return render(request, 'choicemaster/suggestions.html', context)
 
 
 # Nuevos configure
@@ -95,7 +109,7 @@ def configure_exam2(request, exam_id):
     configuration template
     """
     e = models.Exam.objects.get(pk=exam_id)
-    ids = models.Subject.objects.get(pk=e.subject.id).id
+    ids = e.subject.id
     context = dict()
     context['subject_text'] = e.subject.subject_title
     context['exam_id'] = exam_id
@@ -131,7 +145,7 @@ def configure_exam3(request, exam_id):
     context['topics'] = e.topic.all()
 
     for t in e.topic.all():
-        questions = models.Question.objects.filter(topic=t.id)
+        questions = models.Question.objects.filter(topic=t.id, available=True)
         max_quantity += len(questions)
     if request.method == 'POST':
         form = ConfigForm(max_quantity, request.POST)
@@ -170,8 +184,7 @@ def resolve_exam(request, exam_id=''):
     order to display it in the resolve_exam template
     2. request method is POST, which means it has been triggered by a solution
     submitted in the front end. Check whether the answer given by the user is
-    right or wrong, and create a snapshot accordingly. Keep a record of right
-    and wrong guesses to be used in the algorithm to display questions
+    right or wrong to keep a record to be used in the algorithm to display questions
     afterwards. Also, keep track of remaining time and use it to pass to the
     next question in case it is over.
     """
@@ -182,13 +195,14 @@ def resolve_exam(request, exam_id=''):
         algorithm = exam.exam_algorithm
         # exam_tmp = ExamView(subject.id, timer, quantity, algorithm, exam.id)
 
-        topic_ids = exam.topic.all()  # TODO
+        topic_ids = exam.topic.all()
         mistakes = {}
         # We store all the questions of the selected topics
         for item in topic_ids:
             questions_tmp = models.Question.objects.filter(topic=models.Topic
                                                            .objects
-                                                           .get(pk=item.id))
+                                                           .get(pk=item.id),
+                                                           available=True)
             mistakes[str(item.id)] = 0
             for q in questions_tmp:
                 exam.questions.add(q)
@@ -218,7 +232,7 @@ def resolve_exam(request, exam_id=''):
         exam = models.Exam.objects.get(pk=exam_id)
         timer = exam.exam_timer
         question_id = request.POST.get('question_id')
-        question = Question.objects.get(pk=question_id)
+        question = models.Question.objects.get(pk=question_id)
         answers = Answer.objects.filter(question=question.id)
         correct_answer = answers.filter(correct=True)[0]
 
@@ -232,15 +246,6 @@ def resolve_exam(request, exam_id=''):
 
         topic_id = question.topic.id
         value = (correct_answer.id == answer.id)
-        # Generate the snapshot of the answer
-        snap = QuestionSnapshot.objects\
-            .create(exam=exam,
-                    question=question,
-                    chosen_answer=answer.answer_text,
-                    correct_answer=correct_answer.answer_text,
-                    choice_correct=value)
-        snap.save()
-
         exam.remaining -= 1
         mistakes = get_mistakes(exam_id)
         if not value:
@@ -300,7 +305,7 @@ def subjects_statistics(request):
     :return: View
     """
     user = request.user
-    user_exams_deleteable = models.Exam.objects\
+    user_exams_deleteable = models.Exam.objects \
         .filter(user=user,
                 exam_quantity_questions=0)
     user_exams_deleteable.delete()

@@ -1,17 +1,8 @@
-from django.forms import Form, ModelForm, FileField, DecimalField
 from django import forms
-from .models import Subject, Topic, Question, Answer, QuestionSnapshot
+from .models import Subject, Topic, Answer
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-
-def get_subjects():
-    subjects = Subject.objects.all()
-    choices = dict()
-    for s in subjects:
-        choices[str(s.id)] = s.subject_title
-    choices['0'] = 'None'
-    choices = sorted(choices.items())
-    return choices
+import customWidget
 
 
 def get_topics(ids):
@@ -23,19 +14,29 @@ def get_topics(ids):
     return choices
 
 
-class SubjectForm(forms.Form):
-    subject = forms.ChoiceField(choices=get_subjects(),
+class SubjectForm(forms.ModelForm):
+    subject = forms.ModelChoiceField(queryset=Subject.objects.all(),
                                 widget=forms.Select(attrs={'onchange':
                                                            'form.submit();'}))
 
+    class Meta:
+        model = Subject
+        exclude = ['subject_title', 'subject_description', 'subject_department']
 
-class MultipleTopicForm(forms.Form):
-    topic = forms.MultipleChoiceField(choices=get_subjects(),
-                                      widget=forms.CheckboxSelectMultiple)
+
+class MultipleTopicForm(forms.ModelForm):
+    topic = forms.ModelMultipleChoiceField(
+        queryset=Topic.objects.all(),
+        required=False,
+        widget=customWidget.CheckboxSelectMultiple)
 
     def __init__(self, ids, *args, **kwargs):
         super(MultipleTopicForm, self).__init__(*args, **kwargs)
-        self.fields['topic'].choices = get_topics(ids)
+        self.fields['topic'].queryset = Topic.objects.filter(subject_id=ids)
+
+    class Meta:
+        model = Topic
+        exclude = ['subject', 'topic_title', 'topic_description']
 
 
 ALGORITHMS = (('0', 'Based on errors'), ('1', 'Random'))
@@ -57,7 +58,7 @@ class ConfigForm(forms.Form):
             [MaxValueValidator(max_quantity)]
 
 
-class ExamForm(ModelForm):
+class ExamForm(forms.ModelForm):
 
     answer = forms.ModelChoiceField(required=True, widget=forms.RadioSelect,
                                     queryset=Answer.objects.all())
@@ -89,8 +90,3 @@ class UploadQuestionForm(forms.Form):
                                      queryset=Subject.objects.all())
     topic = forms.ChoiceField(choices=TOPICS)
     xmlfile = forms.FileField(label='Choose XML file')
-
-
-# class TopicsForm(forms.Form):
-#    topic_field = forms.ChoiceField(choices=TOPICS, widget=forms.Select(
-#        attrs={'onchange': "this.form.submit();"}))

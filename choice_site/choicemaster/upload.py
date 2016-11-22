@@ -1,5 +1,4 @@
 from lxml import etree
-from io import BytesIO, StringIO
 from choicemaster import models
 import os
 
@@ -12,7 +11,7 @@ def questions_already_exist(questions_xml, topic_id):
     a 'topic_id' from the topic the questions are in.
     """
     result = dict()
-    result['status'] = True
+    result['status'] = False
     result['topic_id'] = topic_id
 
     questions_db_texts = []
@@ -26,18 +25,20 @@ def questions_already_exist(questions_xml, topic_id):
     # Add all questions that we want to add, one by one, checking an equal
     # question.
     for q in questions_xml:
-        if q.text in questions_db_texts:
+        q_text = q.text.strip()
+        if q_text in questions_db_texts:
             result['in_db'] = True
-            result['question_id'] = models.Question.objects.filter(
-                question_text=q.text)[0]
+            result['status'] = True
+            result['question_id'] = questions_db.get(
+                question_text=q.text)
             return result
         elif q.text in questions_xml_texts:
             result['in_db'] = False
+            result['status'] = True
             return result
         else:
             questions_xml_texts.append(q.text)
 
-    result['status'] = False
     return result
 
 
@@ -113,6 +114,7 @@ def parse_xml_question(xmlfile, topic_id):
         question = models.Question()
         question.question_text = item.text
         question.topic_id = topic_id
+        question.available = True
         question.save()
         item_children = item.getchildren()
         for children in item_children:

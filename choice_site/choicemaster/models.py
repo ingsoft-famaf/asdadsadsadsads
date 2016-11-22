@@ -30,6 +30,7 @@ class Topic(models.Model):
 class Question(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)
+    available = models.BooleanField(default=False)
 
     def __unicode__(self):
         """
@@ -72,15 +73,6 @@ class Answer(models.Model):
         Method to show the correct object name in the admin interface.
         """
         return self.answer_text
-
-
-class QuestionSnapshot(models.Model):
-    exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, default=0)
-    question_text = models.CharField(max_length=200)
-    chosen_answer = models.CharField(max_length=200)
-    correct_answer = models.CharField(max_length=200)
-    choice_correct = models.BooleanField(default=True)
 
 
 class Report(models.Model):
