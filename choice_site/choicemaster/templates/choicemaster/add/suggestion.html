@@ -61,15 +61,15 @@
                     success: function(data) {
                         console.log("Iegamos");
                         if (data['status'] == false) {
-                            $(location).attr('href','/index/');
+                            console.log("entro como papa");
+                            window.location.href = "/suggestion/redirect/";
                         } else {
                             document.getElementById("messages").value =
                                 "Question already present in database"
                         }
                     }
                 });
-                location.reload(false);
-                alert("Question submitted correctly");
+                 window.location.href = "/suggestion/redirect/";
             }
         }
 

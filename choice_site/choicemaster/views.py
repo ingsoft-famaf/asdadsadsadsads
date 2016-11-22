@@ -1,3 +1,4 @@
+import sys
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -28,6 +29,10 @@ def index(request, message=''):
 
     return render(request, 'choicemaster/index.html', context)
 
+
+def redirect_suggestion(request):
+    context = {'message': 'Suggestion submitted successfully'}
+    return render(request, 'choicemaster/index.html', context)
 
 @login_required
 def add_question(request):

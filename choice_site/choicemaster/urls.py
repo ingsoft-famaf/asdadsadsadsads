@@ -4,6 +4,7 @@ from . import views, ajax
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^add/question/$', views.add_question, name='add_question'),
+    url(r'^suggestion/redirect/$', views.redirect_suggestion, name='Suggestion'),
 
     url(r'^report/$', views.report, name='report'),
     url(r'^suggestions/$', views.suggestions, name='suggestions'),
