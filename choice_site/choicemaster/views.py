@@ -277,13 +277,11 @@ def resolve_exam(request, exam_id=''):
 
             # Build the context for the next iteration
             context = dict()
-            context['exam_id'] = exam_id
             context['exam_finished'] = True
             context['passed'] = False
             context['no_questions'] = exam.exam_quantity_questions
             context['no_correct_answers'] = exam.amount_correct
             context['result'] = "{0:.2f}".format(exam.exam_result*100)
-            print context['result']
 
             if exam.exam_result >= exam.passing_score:
                 exam.passed = True

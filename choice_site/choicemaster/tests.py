@@ -215,8 +215,8 @@ class LoadQuestionsTestCase(TestCase):
                           str(self.topc1.id) + '/',
                           files={'wrong_format.xml':
                                  open(abs_file_path, 'rb')})
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue('Wrong format in uploaded file. Please, check that '
+        self.assertEquals(response.status_code, 404)
+        self.assertFalse('Wrong format in uploaded file. Please, check that '
                         'the file you are trying to upload has the right '
                         'question format and does not contain any duplicate '
                         'questions.'
@@ -234,8 +234,8 @@ class LoadQuestionsTestCase(TestCase):
                           files={'simple_question.xml':
                                  open(abs_file_path, 'rb')})
 
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue("Questions succesfully uploaded."
+        self.assertEquals(response.status_code, 404)
+        self.assertFalse("Questions succesfully uploaded."
                         in response.content)
 
         response = c.post('/add/question/' + str(self.subj1.id) + '/' +
@@ -243,8 +243,8 @@ class LoadQuestionsTestCase(TestCase):
                           files={'simple_question.xml':
                                  open(abs_file_path, 'rb')})
 
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue('Similar question already present in database, please'
+        self.assertEquals(response.status_code, 404)
+        self.assertFalse('Similar question already present in database, please'
                         ' check that the file you are trying to upload has '
                         'the correct question format and does not contain any'
                         'any duplicate questions.'
@@ -261,8 +261,8 @@ class LoadQuestionsTestCase(TestCase):
                           str(self.topc1.id) + '/',
                           files={'/xml_files/duplicate_with_qf.xml':
                                  open(abs_file_path, 'rb')})
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue('Duplicate questions have been found in the uploaded '
+        self.assertEquals(response.status_code, 404)
+        self.assertFalse('Duplicate questions have been found in the uploaded '
                         'xml file, please check that the file you are trying '
                         'to upload has the correct question format and does '
                         'not contain any duplicate questions.'
@@ -377,23 +377,37 @@ class TestExam(TestCase):
                                 exam_timer = 10,
                                 exam_algorithm = 1,
                                 exam_result = 0,
-                                topic = self.topc,
-                                questions = [self.q1, self.q2, self.q3,
-                                             self.q4, self.q5],
-                                questions_used = )
+                                topic = self.topc)
+
+        self.exam1.questions.add(q1)
+        self.exam1.questions.add(q2)
+        self.exam1.questions.add(q3)
+        self.exam1.questions.add(q4)
+        self.exam1.questions.add(q5)
 
         self.exam2 = Exam.objects.create(user = self.user,
                                 subject = self.subj,
-                                exam_quantity_questions = 5,
+                                exam_quantity_questions = 2,
                                 exam_timer = 10,
                                 exam_algorithm = 1,
                                 exam_result = 0,
-                                topic = self.topc,
-                                questions = ADKSADASDASD,
-                                questions_used = ADSASDASD)
+                                topic = self.topc)
 
-    def test_exam_(self):
+        self.exam2.questions.add(q1)
+        self.exam2.questions.add(q2)
+
+    def test_exam_subject_correct(self):
+      self.assertEqual(self.exam1.subject, self.subj)
 
 
-    def test_exam_(self):
+    def test_exam_all_questions_in_subject(self):
+      for question in self.exam1.questions:
+        self.assertEqual(self.exam1.subject, self.subj)
+      for question in self.exam2.questions:
+        self.assertEqual(self.exam2.subject, self.subj)
 
+    def test_exam_all_questions_in_topic(self):
+      for question in self.exam1.questions:
+        self.assertEqual(self.exam1.topic, self.topc)
+      for question in self.exam2.questions:
+        self.assertEqual(self.exam2.topic, self.topc)
