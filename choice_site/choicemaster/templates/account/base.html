@@ -19,7 +19,7 @@
             <h1><a href="/"><img src="{% static "choicemaster.png" %}" alt="Choice Master"></a></h1>
             <div class="c-nav" style="padding-bottom: 5px;">
                 {% if request.user.get_username %}
-                    <a class="btn btn-default navbar-btn navbar-right" role="button" href="/accounts/logout">Sign out</a>
+                    <a class="btn btn-default navbar-btn navbar-right" role="button" style="margin-right: 10px; margin-top: -30px;" href="/accounts/logout">Sign out</a>
                 {% else %}
                     <a class="btn btn-default navbar-btn navbar-right" role="button" style="margin-right: 10px; margin-top: -30px;" href="/accounts/login">Sign in</a>
                     <a class="btn btn-default navbar-btn navbar-right" role="button" style="margin-right: 10px; margin-top: -30px;" href="/accounts/signup">Sign up</a>
