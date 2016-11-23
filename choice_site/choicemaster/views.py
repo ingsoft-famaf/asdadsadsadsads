@@ -34,6 +34,7 @@ def redirect_suggestion(request):
     context = {'message': 'Suggestion submitted successfully'}
     return render(request, 'choicemaster/index.html', context)
 
+
 @login_required
 def add_question(request):
     """
@@ -146,11 +147,15 @@ def configure_exam2(request, exam_id):
             form = MultipleTopicForm(e.subject.id)
 
         context['form'] = form
-        return render(request, 'choicemaster/exam/configure_exam2.html', context)
+        return render(
+            request,
+            'choicemaster/exam/configure_exam2.html',
+            context)
     else:
         message = "You have already taken that exam." \
             + "Please create a new one from the 'Take an exam' section"
         return render(request, 'choicemaster/index.html', {'message': message})
+
 
 @login_required
 def configure_exam3(request, exam_id):
@@ -171,7 +176,8 @@ def configure_exam3(request, exam_id):
         context['topics'] = e.topic.all()
 
         for t in e.topic.all():
-            questions = models.Question.objects.filter(topic=t.id, available=True)
+            questions = models.Question.objects.filter(
+                topic=t.id, available=True)
             max_quantity += len(questions)
         if request.method == 'POST':
             form = ConfigForm(max_quantity, request.POST)
@@ -190,11 +196,17 @@ def configure_exam3(request, exam_id):
             if max_quantity > 0:
                 form = ConfigForm(max_quantity)
                 context['form'] = form
-                return render(request, 'choicemaster/exam/configure_exam3.html', context)
+                return render(
+                    request,
+                    'choicemaster/exam/configure_exam3.html',
+                    context)
             else:
-                message = "Sorry there are not questions about those topics yet!" \
-                + " We invite you to suggest some on the Suggest a question section"
-                return render(request, 'choicemaster/index.html', {'message': message})                
+                message = "Sorry there are not questions about those topics" \
+                          "yet! We invite you to suggest some on the Suggest" \
+                          " a question section"
+                return render(request,
+                              'choicemaster/index.html',
+                              {'message': message})
 
     else:
         message = "You have already taken that exam." \
@@ -220,10 +232,9 @@ def resolve_exam(request, exam_id=''):
 
     2. request method is POST, which means it has been triggered by a solution
     submitted in the front end. Check whether the answer given by the user is
-    right or wrong to keep a record to be used in the algorithm to display questions
-    afterwards. Also, keep track of remaining time and use it to pass to the
-    next question in case it is over.
-
+    right or wrong to keep a record to be used in the algorithm to display
+    questions afterwards. Also, keep track of remaining time and use it to pass
+    to the next question in case it is over.
     :param request: Request, str
     :return: View
     """
@@ -233,8 +244,6 @@ def resolve_exam(request, exam_id=''):
             subject = exam.subject
             timer = exam.exam_timer
             algorithm = exam.exam_algorithm
-            # exam_tmp = ExamView(subject.id, timer, quantity, algorithm, exam.id)
-
             topic_ids = exam.topic.all()  # TODO
             mistakes = {}
             # We store all the questions of the selected topics
@@ -268,8 +277,8 @@ def resolve_exam(request, exam_id=''):
             return render(request, 'choicemaster/exam/resolve_exam.html',
                           context)
         else:
-            message = "You have already taken that exam." \
-                      + " Please create a new one from the 'Take an exam' section"
+            message = "You have already taken that exam." + \
+                " Please create a new one from the 'Take an exam' section"
             return render(request, 'choicemaster/index.html',
                           {'message': message})
 
@@ -304,7 +313,7 @@ def resolve_exam(request, exam_id=''):
 
             exam.mistakes = json.dumps(mistakes)
             exam.exam_result = exam.amount_correct / \
-                               float(exam.exam_quantity_questions)
+                float(exam.exam_quantity_questions)
             exam.save()
 
             if exam.remaining:
@@ -328,7 +337,7 @@ def resolve_exam(request, exam_id=''):
             else:
                 # End of the exam
                 exam.exam_result = exam.amount_correct / \
-                                   float(exam.exam_quantity_questions)
+                    float(exam.exam_quantity_questions)
                 exam.closed = True
 
                 context = dict()
@@ -377,7 +386,7 @@ def subjects_statistics(request):
             for exam in s_exams:
                 partial += exam.exam_result * 10
             # Calculate the final result of the subject s
-            result = "{0:.2f}".format(partial /total)
+            result = "{0:.2f}".format(partial / total)
             evaluated[s.id] = (s, result)
 
     context = dict()
@@ -414,8 +423,13 @@ def subject_detail(request, subject_id):
         questions += e.exam_quantity_questions
         correct += e.amount_correct
 
-    exams_general = ("{0:.2f}".format((avg / taken) * 10), taken, questions, correct,
-                     questions - correct)
+    exams_general = (
+        "{0:.2f}".format(
+            (avg / taken) * 10),
+        taken,
+        questions,
+        correct,
+        questions - correct)
 
     data_source = SimpleDataSource(data=data)
     chart = LineChart(data_source)

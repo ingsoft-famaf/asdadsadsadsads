@@ -35,14 +35,14 @@ def suggestion(request):
         topic_id = request.POST.get('topic')
 
         result = upload.questions_already_exist([question], topic_id)
-        if result['status'] == True:
+        if result['status']:
             data = {'status': True}
             return HttpResponse(json.dumps(data),
                                 content_type='application/json')
         else:
             topic = Topic.objects.get(pk=topic_id)
-            quest = Question.objects.create(question_text=question, topic=topic,
-                                            available=False)
+            quest = Question.objects.create(
+                question_text=question, topic=topic, available=False)
 
             lst_len = len(lst)
             for i in range(lst_len):

@@ -7,19 +7,22 @@ from django.utils.safestring import mark_safe
 
 
 class CheckboxSelectMultiple(SelectMultiple):
+
     def render(self, name, value, attrs=None, choices=()):
         """
-        Renders the received choices. 
+        Renders the received choices.
         :param request: SelectMultiple, str, int, list, list
         :return: chain
         """
-        if value is None: value = []
+        if value is None:
+            value = []
         has_id = attrs and 'id' in attrs
         final_attrs = self.build_attrs(attrs, name=name)
         output = [u'<div>']
         # Normalize to strings
         str_values = set([force_unicode(v) for v in value])
-        for i, (option_value, option_label) in enumerate(chain(self.choices, choices)):
+        for i, (option_value, option_label) in enumerate(
+                chain(self.choices, choices)):
             # If an ID attribute was given, add a numeric index as a suffix,
             # so that the checkboxes don't all have the same ID attribute.
             if has_id:
@@ -28,13 +31,14 @@ class CheckboxSelectMultiple(SelectMultiple):
             else:
                 label_for = ''
 
-            cb = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
+            cb = CheckboxInput(final_attrs,
+                               check_test=lambda value: value in str_values)
             option_value = force_unicode(option_value)
             rendered_cb = cb.render(name, option_value)
             option_label = conditional_escape(force_unicode(option_label))
-            output.append(u'<span><label%s>%s %s</label></span><br>' % (label_for,
-                                                                        rendered_cb,
-                                                                        option_label))
+            output.append(
+                u'<span><label%s>%s %s</label></span><br>' %
+                (label_for, rendered_cb, option_label))
         output.append(u'</div>')
         return mark_safe(u'\n'.join(output))
 

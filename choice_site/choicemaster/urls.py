@@ -4,12 +4,15 @@ from . import views, ajax
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^add/question/$', views.add_question, name='add_question'),
-    url(r'^suggestion/redirect/$', views.redirect_suggestion, name='Suggestion'),
+    url(r'^suggestion/redirect/$', views.redirect_suggestion,
+        name='Suggestion'),
 
     url(r'^report/$', views.report, name='report'),
     url(r'^suggestions/$', views.suggestions, name='suggestions'),
 
-    url(r'ajax/get_quantity_suggestions/$', ajax.get_quantity_suggestions, name='get_quantity_suggestions'),
+    url(r'ajax/get_quantity_suggestions/$',
+        ajax.get_quantity_suggestions,
+        name='get_quantity_suggestions'),
     url(r'ajax_view/$', ajax.ajax_view, name='ajax_view'),
     url(r'^ajax/delete/report$', ajax.delete_report, name="delete_report"),
     url(r'^ajax/delete/question/$', ajax.delete_question,

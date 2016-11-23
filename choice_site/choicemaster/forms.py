@@ -20,13 +20,18 @@ def get_topics(ids):
 
 
 class SubjectForm(forms.ModelForm):
-    subject = forms.ModelChoiceField(queryset=Subject.objects.all(),
-                                widget=forms.Select(attrs={'onchange':
-                                                           'form.submit();'}))
+    subject = forms.ModelChoiceField(
+        queryset=Subject.objects.all(),
+        widget=forms.Select(
+            attrs={
+                'onchange': 'form.submit();'}))
 
     class Meta:
         model = Subject
-        exclude = ['subject_title', 'subject_description', 'subject_department']
+        exclude = [
+            'subject_title',
+            'subject_description',
+            'subject_department']
 
 
 class MultipleTopicForm(forms.ModelForm):

@@ -173,32 +173,34 @@ class UserTestCase(TestCase):
 
 
 class TestQuestionModel(TestCase):
+
     def setUp(self):
         self.subj = Subject.objects.create(
-                                subject_title='Subject X',
-                                subject_description='Subject X description',
-                                subject_department='Tests Department')
+            subject_title='Subject X',
+            subject_description='Subject X description',
+            subject_department='Tests Department')
 
-        self.topc = Topic.objects.create(subject=self.subj,
-                                topic_title='Topic X',
-                                topic_description='Topic X description')
+        self.topc = Topic.objects.create(
+            subject=self.subj,
+            topic_title='Topic X',
+            topic_description='Topic X description')
 
+        self.q = Question.objects.create(
+            topic=self.topc,
+            question_text='Which of the following choices '
+            'is the correct answer for Q?')
 
-        self.q = Question.objects.create(topic= self.topc,
-                                question_text= 'Which of the following choices '\
-                                               'is the correct answer for Q?')
+        self.a1 = Answer.objects.create(question=self.q,
+                                        answer_text='Wrong answer',
+                                        correct=False)
 
-        self.a1 = Answer.objects.create(question= self.q,
-                                          answer_text= 'Wrong answer',
-                                          correct=False)
+        self.a2 = Answer.objects.create(question=self.q,
+                                        answer_text='Correct answer',
+                                        correct=True)
 
-        self.a2 = Answer.objects.create(question= self.q,
-                                          answer_text= 'Correct answer',
-                                          correct=True)
-
-        self.a3 = Answer.objects.create(question= self.q,
-                                          answer_text= 'Wrong answer',
-                                          correct=False)
+        self.a3 = Answer.objects.create(question=self.q,
+                                        answer_text='Wrong answer',
+                                        correct=False)
 
     def test_answers(self):
         answers = Answer.objects.filter(question=self.q)
@@ -209,117 +211,121 @@ class TestQuestionModel(TestCase):
         self.assertEqual(correct_a.answer_text, "Correct answer")
 
         for answer in answers:
-          if answer != correct_a:
-            self.assertEqual(answer.correct, False)
+            if answer != correct_a:
+                self.assertEqual(answer.correct, False)
 
 
 class TestExam(TestCase):
-    def setUp(self):      
+
+    def setUp(self):
         self.user = User.objects.create(username='testuser')
         self.user.set_password('dga-245vl,')
         self.user.email = 'testmail@test.com'
         self.user.save()
         self.c = Client()
-        self.logged_in = self.c.login(username='testuser', password='dga-245vl,')
+        self.logged_in = self.c.login(
+            username='testuser', password='dga-245vl,')
 
         self.subj = Subject.objects.create(
-                                subject_title='Subject X',
-                                subject_description='Subject X description',
-                                subject_department='Tests Department')
+            subject_title='Subject X',
+            subject_description='Subject X description',
+            subject_department='Tests Department')
 
-        self.topc = Topic.objects.create(subject=self.subj,
-                                topic_title='Topic X',
-                                topic_description='Topic X description')
+        self.topc = Topic.objects.create(
+            subject=self.subj,
+            topic_title='Topic X',
+            topic_description='Topic X description')
 
+        self.q1 = Question.objects.create(
+            topic=self.topc,
+            question_text='Which of the following choices '
+            'is the correct answer for Q1?')
 
-        self.q1 = Question.objects.create(topic= self.topc,
-                                question_text= 'Which of the following choices '\
-                                               'is the correct answer for Q1?')
-
-        self.q1a1 = Answer.objects.create(question= self.q1,
-                                          answer_text= 'Wrong answer.',
+        self.q1a1 = Answer.objects.create(question=self.q1,
+                                          answer_text='Wrong answer.',
                                           correct=False)
 
-        self.q1a2 = Answer.objects.create(question= self.q1,
-                                          answer_text= 'Correct answer.',
+        self.q1a2 = Answer.objects.create(question=self.q1,
+                                          answer_text='Correct answer.',
                                           correct=True)
 
-        self.q1a3 = Answer.objects.create(question= self.q1,
-                                          answer_text= 'Wrong answer.',
+        self.q1a3 = Answer.objects.create(question=self.q1,
+                                          answer_text='Wrong answer.',
                                           correct=False)
 
+        self.q2 = Question.objects.create(
+            topic=self.topc,
+            question_text='Which of the following choices '
+            'is the correct answer for Q2?')
 
-        self.q2 = Question.objects.create(topic= self.topc,
-                                question_text= 'Which of the following choices '\
-                                               'is the correct answer for Q2?')
-
-        self.q2a1 = Answer.objects.create(question= self.q2,
-                                          answer_text= 'Wrong answer.',
+        self.q2a1 = Answer.objects.create(question=self.q2,
+                                          answer_text='Wrong answer.',
                                           correct=False)
 
-        self.q2a2 = Answer.objects.create(question= self.q2,
-                                          answer_text= 'Correct answer.',
+        self.q2a2 = Answer.objects.create(question=self.q2,
+                                          answer_text='Correct answer.',
                                           correct=True)
 
-        self.q2a3 = Answer.objects.create(question= self.q2,
-                                          answer_text= 'Wrong answer.',
+        self.q2a3 = Answer.objects.create(question=self.q2,
+                                          answer_text='Wrong answer.',
                                           correct=False)
 
-        self.q3 = Question.objects.create(topic= self.topc,
-                                question_text= 'Which of the following choices '\
-                                               'is the correct answer for Q3?')
+        self.q3 = Question.objects.create(
+            topic=self.topc,
+            question_text='Which of the following choices '
+            'is the correct answer for Q3?')
 
-        self.q3a1 = Answer.objects.create(question= self.q3,
-                                          answer_text= 'Wrong answer.',
+        self.q3a1 = Answer.objects.create(question=self.q3,
+                                          answer_text='Wrong answer.',
                                           correct=False)
 
-        self.q3a2 = Answer.objects.create(question= self.q3,
-                                          answer_text= 'Correct answer.',
+        self.q3a2 = Answer.objects.create(question=self.q3,
+                                          answer_text='Correct answer.',
                                           correct=True)
 
-        self.q3a3 = Answer.objects.create(question= self.q3,
-                                          answer_text= 'Wrong answer.',
+        self.q3a3 = Answer.objects.create(question=self.q3,
+                                          answer_text='Wrong answer.',
                                           correct=False)
 
+        self.q4 = Question.objects.create(
+            topic=self.topc,
+            question_text='Which of the following choices '
+            'is the correct answer for Q4?')
 
-        self.q4 = Question.objects.create(topic= self.topc,
-                                question_text= 'Which of the following choices '\
-                                               'is the correct answer for Q4?')
-
-        self.q4a1 = Answer.objects.create(question= self.q4,
-                                          answer_text= 'Wrong answer.',
+        self.q4a1 = Answer.objects.create(question=self.q4,
+                                          answer_text='Wrong answer.',
                                           correct=False)
 
-        self.q4a2 = Answer.objects.create(question= self.q4,
-                                          answer_text= 'Correct answer.',
+        self.q4a2 = Answer.objects.create(question=self.q4,
+                                          answer_text='Correct answer.',
                                           correct=True)
 
-        self.q4a3 = Answer.objects.create(question= self.q4,
-                                          answer_text= 'Wrong answer.',
+        self.q4a3 = Answer.objects.create(question=self.q4,
+                                          answer_text='Wrong answer.',
                                           correct=False)
 
+        self.q5 = Question.objects.create(
+            topic=self.topc,
+            question_text='Which of the following choices '
+            'is the correct answer for Q5?')
 
-        self.q5 = Question.objects.create(topic= self.topc,
-                                question_text= 'Which of the following choices '\
-                                               'is the correct answer for Q5?')
-
-        self.q5a1 = Answer.objects.create(question= self.q5,
-                                          answer_text= 'Wrong answer.',
+        self.q5a1 = Answer.objects.create(question=self.q5,
+                                          answer_text='Wrong answer.',
                                           correct=False)
 
-        self.q5a2 = Answer.objects.create(question= self.q5,
-                                          answer_text= 'Correct answer.',
+        self.q5a2 = Answer.objects.create(question=self.q5,
+                                          answer_text='Correct answer.',
                                           correct=True)
 
-        self.q5a3 = Answer.objects.create(question= self.q5,
-                                          answer_text= 'Wrong answer.',
+        self.q5a3 = Answer.objects.create(question=self.q5,
+                                          answer_text='Wrong answer.',
                                           correct=False)
 
-        self.exam1 = Exam.objects.create(user = self.user,
-                                subject = self.subj,
-                                exam_quantity_questions = 5,
-                                exam_timer = 10,
-                                exam_algorithm = 1)
+        self.exam1 = Exam.objects.create(user=self.user,
+                                         subject=self.subj,
+                                         exam_quantity_questions=5,
+                                         exam_timer=10,
+                                         exam_algorithm=1)
 
         self.exam1.topic.add(self.topc)
 
@@ -329,11 +335,11 @@ class TestExam(TestCase):
         self.exam1.questions.add(self.q4)
         self.exam1.questions.add(self.q5)
 
-        self.exam2 = Exam.objects.create(user = self.user,
-                                subject = self.subj,
-                                exam_quantity_questions = 2,
-                                exam_timer = 10,
-                                exam_algorithm = 1)
+        self.exam2 = Exam.objects.create(user=self.user,
+                                         subject=self.subj,
+                                         exam_quantity_questions=2,
+                                         exam_timer=10,
+                                         exam_algorithm=1)
 
         self.exam1.topic.add(self.topc)
 
@@ -341,23 +347,22 @@ class TestExam(TestCase):
         self.exam2.questions.add(self.q2)
 
     def test_exam_subject_correct(self):
-      self.assertEqual(self.exam1.subject, self.subj)
-
+        self.assertEqual(self.exam1.subject, self.subj)
 
     def test_exam_all_questions_in_subject(self):
-      exam1_questions = self.exam1.questions.all()
-      exam2_questions = self.exam2.questions.all()
-      for question in exam1_questions:
-        question_subject = question.topic.subject
-        self.assertEqual(question_subject, self.subj)
-      for question in exam2_questions:
-        question_subject = question.topic.subject
-        self.assertEqual(question_subject, self.subj)
+        exam1_questions = self.exam1.questions.all()
+        exam2_questions = self.exam2.questions.all()
+        for question in exam1_questions:
+            question_subject = question.topic.subject
+            self.assertEqual(question_subject, self.subj)
+        for question in exam2_questions:
+            question_subject = question.topic.subject
+            self.assertEqual(question_subject, self.subj)
 
     def test_exam_all_questions_in_topic(self):
-      exam1_questions = self.exam1.questions.all()
-      exam2_questions = self.exam2.questions.all()
-      for question in exam1_questions:
-        self.assertEqual(question.topic, self.topc)
-      for question in exam2_questions:
-        self.assertEqual(question.topic, self.topc)
+        exam1_questions = self.exam1.questions.all()
+        exam2_questions = self.exam2.questions.all()
+        for question in exam1_questions:
+            self.assertEqual(question.topic, self.topc)
+        for question in exam2_questions:
+            self.assertEqual(question.topic, self.topc)
