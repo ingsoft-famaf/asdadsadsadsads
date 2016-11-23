@@ -1,6 +1,6 @@
 # asdadsadsadsads - Choice Master
 
-Para instalar los requerimientos:
+### Para instalar los requerimientos:
 
 1. Creamos un entorno virtual para evitar conflictos.
 
@@ -21,7 +21,13 @@ source ./venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Como modificar y compilar el *CSS*:
+### Para hacer funcionar el login por Github o Google, en una terminal ejecutamos:
+
+```sh
+python manage.py loaddata choicemaster/fixtures/socialapps.json
+```
+
+### Como modificar y compilar el *CSS*:
 
 - Para modificar el **CSS**, en realidad, debemos editar los archivos de terminación: **.scss**
 - Estos son más poderosos que los **.css** de siempre.
