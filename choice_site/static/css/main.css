@@ -25,10 +25,11 @@ body {
  * Site header
  */
 .header {
-  border-top: 1px solid #c6c6c6;
-  border-bottom: 3px solid rgba(159, 113, 47, 0.6);
-  background-color: rgba(203, 152, 80, 0.6);
-  width: 100%; }
+  border-top: 1px solid #afa9b0;
+  border-bottom: 3px solid #948973;
+  background-color: #c7ab70;
+  width: 100%;
+  height: 18%; }
   .header a {
     text-decoration: none;
     color: black; }

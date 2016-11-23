@@ -21,54 +21,58 @@
             <div class="c-nav">
                 <table>
                     {% if request.user.get_username %}
-                        <td><a class="light medium-text" href="/accounts/logout">Sign out</a></td>
+                        <a href="/accounts/logout" title="Sign out" class="btn btn-default navbar-btn navbar-right" style="margin-right: 20px; margin-top: -60px;">Sign out</a>
                     {% else %}
-                        <a href="/accounts/login" title="Sign in" class="btn btn-default navbar-btn navbar-right" style="margin-right: 10px; margin-top: -30px;">Sign in</a>
-                        <a href="/accounts/signup" title="Sign up" class="btn btn-info navbar-btn navbar-right" style="margin-right: 10px; margin-top: -30px;">Sign up</a>
+
+                        <div class="col-md-7">
+                          <h1>Practice multiple choice exams online</h1>
+                          <p class="lead">Mastering the skills in test-taking is a labor-intensive task that requires a huge amount of practice. <strong>Choice Master</strong> will help you to learn or review key subjects by providing you questions and answers to practice in a multiple choice style format.</p>
+                        </div>
+
+                        <a href="/accounts/login" title="Sign in" class="btn btn-default navbar-btn navbar-right" style="margin-right: 20px; margin-top: -60px;">Sign in</a>
+                        <a href="/accounts/signup" title="Sign up" class="btn btn-primary navbar-btn navbar-right" style="margin-right: 100px; margin-top: -60px;">Sign up</a>
                     {% endif %}
                 </table>
             </div>
         </div>
 
-        <div class="container">
-            <div class="row">
-                <div class="col-md-9">
-                    {% block content %}
-                    {% endblock %}
-                </div>
+        <div class="row">
+            <div class="col-md-5">
+                {% block content %}
+                {% endblock %}
+            </div>
 
-                <div class="col-md-3">
-                    {% if request.user.get_username %}
-                        {% if request.user.is_staff %}
-                            <div class="section">
-                                <h3>Admin</h3>
-                                <a class="section-a" href="/admin/choicemaster/subject/add">Add subject.</a>
-                                <br>
-                                <a class="section-a" href="/admin/choicemaster/topic/add">Add topic.</a>
-                                <br>
-                                <a class="section-a" href="{% url 'add_question' %}">Add questions.</a>
-                                <br>
-                                <a class="section-a" href="{% url 'suggestions' %}">Suggested questions.</a>
-                                <h4><a class="sauvage-a" href="{% url 'report' %}">Reports.</a></h4>
-                                {% if reported > 0 %}
-                                    Reported questions({{reported}}).
-                                {% else %}
-                                    No complaints.
-                                {% endif %}
-                            </div>
-                        {% else %}
-                            <h3>User</h3>
-                            <a class="section-a" href="{% url 'add_question' %}">Suggest a question.</a>
-                        {% endif %}
-
-                        <div id="messages" class="section">
-                        {% if message %}
-                            <h3>Messages</h3>
-                            <p>{{ message }}</p>
-                        {% endif %}
+            <div class="col-md-3">
+                {% if request.user.get_username %}
+                    {% if request.user.is_staff %}
+                        <div class="section">
+                            <h3>Admin</h3>
+                            <a class="section-a" href="/admin/choicemaster/subject/add">Add subject.</a>
+                            <br>
+                            <a class="section-a" href="/admin/choicemaster/topic/add">Add topic.</a>
+                            <br>
+                            <a class="section-a" href="{% url 'add_question' %}">Add questions.</a>
+                            <br>
+                            <a class="section-a" href="{% url 'suggestions' %}">Suggested questions.</a>
+                            <h4><a class="sauvage-a" href="{% url 'report' %}">Reports.</a></h4>
+                            {% if reported > 0 %}
+                                Reported questions({{reported}}).
+                            {% else %}
+                                No complaints.
+                            {% endif %}
                         </div>
+                    {% else %}
+                        <h3>User</h3>
+                        <a class="section-a" href="{% url 'add_question' %}">Suggest a question.</a>
                     {% endif %}
-                </div>
+
+                    <div id="messages" class="section">
+                    {% if message %}
+                        <h3>Messages</h3>
+                        <p>{{ message }}</p>
+                    {% endif %}
+                    </div>
+                {% endif %}
             </div>
         </div>
     </body>

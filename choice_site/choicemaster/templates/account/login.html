@@ -10,7 +10,7 @@
     or your <a href="/accounts/google/login/">Google account<div class="gl"></div></a></h3>
     {% include "socialaccount/snippets/login_extra.html" %}
     <div class="inset">
-        <div class="inset">Or sign in directly</div>
+        <div class="inset">Or login directly with your Choice Master account</div>
         <form class="login" method="POST" action="{% url 'account_login' %}">
           {% csrf_token %}
             {{ form.non_field_errors }}
@@ -18,7 +18,7 @@
             <input id="id_password"  class="login-input" name="password" placeholder="Password" type="password" />{{ form.password.errors }}<br>
             <div class="remember-forgot-section">
                 <input id="id_remember" name="remember" type="checkbox" />
-                <label for="id_remember">Remember Me</label>
+                <label for="id_remember">Remember Me</label><br>
                 <a class="forgot" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
             </div>
           {% if redirect_field_value %}
