@@ -1,35 +1,44 @@
-{% extends "choicemaster/base2.html" %}
+{% extends "account/base.html" %}
 
 {% load i18n %}
 {% load account %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
-{% block content %}
-    <h3>Log in with your<a href="/accounts/github/login/"> Github account<div class="gh"></div></a>
-    or your <a href="/accounts/google/login/">Google account<div class="gl"></div></a></h3>
+{% block content4 %}
+    <p class="medium-text light">
+        Log in with your <a href="/accounts/github/login/">Github account</a> or your <a href="/accounts/google/login/">Google account</a>
+    </p>
     {% include "socialaccount/snippets/login_extra.html" %}
     <div class="inset">
-        <div class="inset">Or login directly with your Choice Master account</div>
+        <span>Or login directly with your Choice Master account</span>
         <form class="login" method="POST" action="{% url 'account_login' %}">
-          {% csrf_token %}
+            {% csrf_token %}
             {{ form.non_field_errors }}
-            <input id="id_login" class="login-input" maxlength="30" name="login" placeholder="Username" type="text" />{{ form.login.errors }}<br>
+            <input id="id_login" class="login-input" maxlength="30" name="login" placeholder="Username" type="text" style="margin-bottom: 5px; margin-top: 5px;"/>{{ form.login.errors }}<br>
             <input id="id_password"  class="login-input" name="password" placeholder="Password" type="password" />{{ form.password.errors }}<br>
-            <div class="remember-forgot-section">
-                <input id="id_remember" name="remember" type="checkbox" />
-                <label for="id_remember">Remember Me</label><br>
-                <a class="forgot" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-            </div>
-          {% if redirect_field_value %}
-          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-          {% endif %}
+            <input id="id_remember" name="remember" type="checkbox" />
+            <label for="id_remember">Remember me</label>
+            <br>
+            <button class="btn btn-default" role="button" type="submit">{% trans "Sign In" %}</button>
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
 
-          <button class="btn" type="submit">{% trans "Sign In" %}</button>
         </form>
+        <br>
+        <span><a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a></span>
+        <br>
+        <span>Don't have an account? Login with Github or Google above or <a href="{% url 'account_signup' %}">Sign Up</a></span>
 
-        <div class="footnote">
-            Don't have an account? Login with Github or Google above or <a href="{% url 'account_signup' %}">Sign Up</a>
-        </div>
     </div>
+{% endblock %}
+
+{% block content8 %}
+    <h1>Practice multiple choice exams online</h1>
+    <p class="medium-text light">
+        Mastering skills in test-taking is a labor-intensive task that requires a huge amount of practice.
+        <b>Choice Master</b> will help you to learn or review key subjects by providing you questions and answers to
+        practice in a multiple choice style format.
+    </p>
 {% endblock %}
