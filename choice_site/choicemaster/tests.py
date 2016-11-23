@@ -172,8 +172,49 @@ class UserTestCase(TestCase):
         self.assertEquals(response.status_code, 200)
 
 
-class TestExam(TestCase):
+class TestQuestionModel(TestCase):
     def setUp(self):
+        self.subj = Subject.objects.create(
+                                subject_title='Subject X',
+                                subject_description='Subject X description',
+                                subject_department='Tests Department')
+
+        self.topc = Topic.objects.create(subject=self.subj,
+                                topic_title='Topic X',
+                                topic_description='Topic X description')
+
+
+        self.q = Question.objects.create(topic= self.topc,
+                                question_text= 'Which of the following choices '\
+                                               'is the correct answer for Q?')
+
+        self.a1 = Answer.objects.create(question= self.q,
+                                          answer_text= 'Wrong answer',
+                                          correct=False)
+
+        self.a2 = Answer.objects.create(question= self.q,
+                                          answer_text= 'Correct answer',
+                                          correct=True)
+
+        self.a3 = Answer.objects.create(question= self.q,
+                                          answer_text= 'Wrong answer',
+                                          correct=False)
+
+    def test_answers(self):
+        answers = Answer.objects.filter(question=self.q)
+        correct_a = Answer.objects.get(question=self.q,
+                                       correct=True)
+
+        self.assertEqual(answers.count(), 3)
+        self.assertEqual(correct_a.answer_text, "Correct answer")
+
+        for answer in answers:
+          if answer != correct_a:
+            self.assertEqual(answer.correct, False)
+
+
+class TestExam(TestCase):
+    def setUp(self):      
         self.user = User.objects.create(username='testuser')
         self.user.set_password('dga-245vl,')
         self.user.email = 'testmail@test.com'
