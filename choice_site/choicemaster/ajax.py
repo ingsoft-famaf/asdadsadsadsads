@@ -6,6 +6,18 @@ import json
 from . import upload
 
 
+@csrf_exempt
+def get_quantity_suggestions(request):
+    """
+    Gets the quantity of suggestions and returns just that
+    :param request: Request
+    :return: HttpResponse
+    """
+    if request.method == 'POST' and request.is_ajax:
+        suggestions = Question.objects.filter(available=False)
+        data = str(len(suggestions))
+        return HttpResponse(data)
+
 
 @csrf_exempt
 def suggestion(request):
